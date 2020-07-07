@@ -1,0 +1,14 @@
+*.iml
+*.ipr
+*.iws
+*.ids
+.gradle/
+.idea/
+.settings/
+.nb-gradle/
+build/
+out/
+logs/
+gradle-wrapper.*
+gradlew
+gradlew.bat
