@@ -1,7 +1,9 @@
+ext.Spring_VERSION = '5.2.3.RELEASE'
+
 subprojects {
 
   apply plugin: 'java'
-  
+
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
 
@@ -13,6 +15,9 @@ subprojects {
   }
 
   dependencies {
+      compile	"org.springframework:spring-context:${Spring_VERSION}",
+                "org.springframework:spring-core:${Spring_VERSION}"
+
       testCompile 'junit:junit:4.12'
   }
 

@@ -15,11 +15,13 @@ project(':bl:blLogin').projectDir = file("bl/blLogin")
 include 'bl:blSale'
 project(':bl:blSale').projectDir = file("bl/blSale")
 
-include 'il:db'
-include 'il:hw'
+include 'il:db:userApi'
+project(':il:db:userApi').projectDir = file("il/db/userApi")
+
+include 'il:hw:hwEventApi'
+project(':il:hw:hwEventApi').projectDir = file("il/hw/hwEventApi")
+
 include 'il:integration'
 include 'il:loyal'
 
 include 'ui:swing'
-
-

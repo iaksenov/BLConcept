@@ -1,3 +1,6 @@
 dependencies {
 
+    compile project(':il:hw:hwEventApi'),
+            project(':api:uiApi')
+
 }
