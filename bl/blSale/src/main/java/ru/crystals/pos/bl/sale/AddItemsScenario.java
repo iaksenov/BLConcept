@@ -4,7 +4,7 @@ import ru.crystals.pos.bl.api.VoidListener;
 import ru.crystals.pos.bl.api.sale.SaleAddItemsScenario;
 import ru.crystals.pos.hw.events.listeners.MSRTracks;
 import ru.crystals.pos.ui.UI;
-import ru.crystals.pos.ui.forms.input.InputStringForm;
+import ru.crystals.pos.ui.forms.input.InputStringFormModel;
 
 import java.util.function.Consumer;
 
@@ -28,7 +28,7 @@ public class AddItemsScenario implements SaleAddItemsScenario {
 
     @Override
     public void start(Consumer<Void> onComplete, VoidListener onCancel) {
-        ui.showForm(new InputStringForm("Поиск товара", "введите код товара", this::searchByInput));
+        ui.showForm(new InputStringFormModel("Поиск товара", "введите код товара", this::searchByInput));
     }
 
     private void searchByInput(String s) {

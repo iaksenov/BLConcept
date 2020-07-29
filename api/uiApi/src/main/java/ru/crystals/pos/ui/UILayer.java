@@ -1,6 +1,6 @@
 package ru.crystals.pos.ui;
 
-public enum UIMode {
+public enum UILayer {
 
     START,
 

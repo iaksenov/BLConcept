@@ -5,13 +5,13 @@ import java.util.Set;
 
 public class User {
 
-    private String firstName;
+    protected String firstName;
 
-    private String lastName;
+    protected String lastName;
 
-    private String middleName;
+    protected String middleName;
 
-    private Set<UserRight> rights = Collections.emptySet();
+    protected Set<UserRight> rights = Collections.emptySet();
 
     public String getFirstName() {
         return firstName;

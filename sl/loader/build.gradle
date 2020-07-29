@@ -1,0 +1,14 @@
+dependencies {
+    compile project(':api:uiApi'),
+        project(':api:blApi'),
+
+        project(':bl:blCore'),
+        project(':bl:blLogin'),
+        project(':bl:blSale'),
+
+        project(':il:db:userApi'),
+        project(':il:db:user'),
+        project(':il:hw:hwEventApi'),
+
+        project(':ui:swing')
+}

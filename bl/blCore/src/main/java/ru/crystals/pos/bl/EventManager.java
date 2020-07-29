@@ -3,9 +3,10 @@ package ru.crystals.pos.bl;
 import org.springframework.stereotype.Service;
 import ru.crystals.pos.bl.api.Scenario;
 import ru.crystals.pos.hw.events.listeners.BarcodeListener;
-import ru.crystals.pos.hw.events.listeners.FuncKeyListener;
 import ru.crystals.pos.hw.events.listeners.MSRListener;
 import ru.crystals.pos.hw.events.listeners.MSRTracks;
+import ru.crystals.pos.hw.events.listeners.key.FuncKey;
+import ru.crystals.pos.hw.events.listeners.key.FuncKeyListener;
 
 import javax.annotation.PostConstruct;
 

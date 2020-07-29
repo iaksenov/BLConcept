@@ -5,8 +5,8 @@ import ru.crystals.pos.bl.api.login.LoginScenario;
 import ru.crystals.pos.bl.api.sale.SaleScenario;
 import ru.crystals.pos.hw.events.listeners.MSRTracks;
 import ru.crystals.pos.ui.UI;
-import ru.crystals.pos.ui.UIMode;
-import ru.crystals.pos.ui.forms.loading.LoginForm;
+import ru.crystals.pos.ui.UILayer;
+import ru.crystals.pos.ui.forms.loading.LoginFormModel;
 import ru.crystals.pos.ui.label.Label;
 import ru.crystals.pos.user.LoginFailedException;
 import ru.crystals.pos.user.User;
@@ -30,7 +30,6 @@ public class LoginScenarioImpl implements LoginScenario {
 
     @Override
     public void start() {
-        ui.setMode(UIMode.LOGIN);
         showLoginForm("");
     }
 
@@ -78,7 +77,7 @@ public class LoginScenarioImpl implements LoginScenario {
     }
 
     private void showLoginForm(String errorText) {
-        ui.showForm(new LoginForm(getShiftText(), getInfoText(), Label.error(errorText), this::onPasswordEntered));
+        ui.showForm(UILayer.LOGIN, new LoginFormModel(getShiftText(), getInfoText(), Label.error(errorText), this::onPasswordEntered));
     }
 
     private Label getInfoText() {
