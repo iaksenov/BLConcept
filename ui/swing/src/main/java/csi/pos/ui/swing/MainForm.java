@@ -1,8 +1,9 @@
 package csi.pos.ui.swing;
 
-import csi.pos.ui.swing.form.Form;
+import csi.pos.ui.swing.forms.Form;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.crystals.pos.ui.UI;
 import ru.crystals.pos.ui.UILayer;
 import ru.crystals.pos.ui.forms.UIFormModel;
 
@@ -64,13 +65,13 @@ public class MainForm extends JFrame {
     }
 
     public void showForm(UIFormModel uiFormModel) {
-        Class<? extends UIFormModel> modelClass = uiFormModel.getClass();
-        Form form = formsCatalog.get(modelClass);
+        Form<UIFormModel> form = formsCatalog.get(uiFormModel);
         if (form != null) {
-            layers.get(uiLayer).showForm(form.getPanel(uiFormModel));
+            layers.get(uiLayer).showForm(form.createPanel());
+            form.onModelChanged(uiFormModel);
             uiFormModel.setListener(form);
         } else {
-            System.out.println("Form for model not implemented: " + modelClass);
+            System.out.println("Form for model not implemented: " + uiFormModel.getClass());
         }
     }
 

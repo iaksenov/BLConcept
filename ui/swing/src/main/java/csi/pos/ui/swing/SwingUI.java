@@ -8,8 +8,6 @@ import ru.crystals.pos.ui.UI;
 import ru.crystals.pos.ui.UILayer;
 import ru.crystals.pos.ui.forms.UIFormModel;
 
-import javax.swing.SwingUtilities;
-
 @Component
 public class SwingUI implements UI {
 
@@ -30,17 +28,14 @@ public class SwingUI implements UI {
     }
 
     @Override
-    public <U extends UIFormModel> U showForm(U uiFormModel) {
-        return null;
+    public void showForm(UIFormModel uiFormModel) {
+        mainForm.showForm(uiFormModel);
     }
 
     @Override
-    public <U extends UIFormModel> U showForm(UILayer uiLayer, U uiFormModel) {
-        SwingUtilities.invokeLater(() -> {
-            mainForm.setLayer(uiLayer);
-            mainForm.showForm(uiFormModel);
-        });
-        return null;
+    public void showForm(UILayer uiLayer, UIFormModel uiFormModel) {
+        mainForm.setLayer(uiLayer);
+        mainForm.showForm(uiFormModel);
     }
 
     @Override

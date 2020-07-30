@@ -27,5 +27,11 @@ public class Label {
         return new Label(LabelIcon.ERROR, text);
     }
 
+    public LabelIcon getLabelIcon() {
+        return labelIcon;
+    }
 
+    public String getText() {
+        return text;
+    }
 }

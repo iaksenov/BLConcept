@@ -2,15 +2,15 @@ package ru.crystals.pos.ui.forms;
 
 public abstract class UIFormModel {
 
-    private UIModelListener<UIFormModel> uiModelListener;
+    private UIModelListener<UIFormModel> modelListener;
 
-    public void setListener(UIModelListener<UIFormModel> uiModelListener) {
-        this.uiModelListener = uiModelListener;
+    public void setListener(UIModelListener<UIFormModel> modelListener) {
+        this.modelListener = modelListener;
     }
 
     public void modelChanged() {
-        if (uiModelListener != null) {
-            uiModelListener.onModelChanged(this);
+        if (modelListener != null) {
+            modelListener.onModelChanged(this);
         }
     }
 

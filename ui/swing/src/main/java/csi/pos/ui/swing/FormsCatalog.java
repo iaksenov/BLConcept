@@ -1,6 +1,6 @@
 package csi.pos.ui.swing;
 
-import csi.pos.ui.swing.form.Form;
+import csi.pos.ui.swing.forms.Form;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.crystals.pos.ui.forms.UIFormModel;
@@ -12,17 +12,17 @@ import java.util.Map;
 @Component
 public class FormsCatalog {
 
-    private final Map<Class<? extends UIFormModel>, Form> forms = new HashMap<>();
+    private final Map<Class<? extends UIFormModel>, Form<UIFormModel>> forms = new HashMap<>();
 
-    public FormsCatalog(@Autowired List<Form<?>> forms) {
+    public FormsCatalog(@Autowired List<Form> forms) {
         forms.forEach(this::put);
     }
 
-    public <T extends UIFormModel> Form<T> get(Class<T> modelClass) {
-        return forms.get(modelClass);
+    public Form<UIFormModel> get(UIFormModel model) {
+        return forms.get(model.getClass());
     }
 
-    private <T extends UIFormModel> void put(Form<T> form) {
+    private void put(Form<UIFormModel> form) {
         forms.put(form.getModelClass(), form);
     }
 

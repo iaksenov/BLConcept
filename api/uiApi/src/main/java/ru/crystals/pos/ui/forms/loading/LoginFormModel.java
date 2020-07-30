@@ -22,4 +22,19 @@ public class LoginFormModel extends UIFormModel {
         this.passwordCallback = passwordCallback;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public Label getInfoLabel() {
+        return infoLabel;
+    }
+
+    public Label getLoginFailedText() {
+        return loginFailedText;
+    }
+
+    public Consumer<String> getPasswordCallback() {
+        return passwordCallback;
+    }
 }

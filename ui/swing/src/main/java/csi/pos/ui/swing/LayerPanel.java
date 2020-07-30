@@ -1,7 +1,5 @@
 package csi.pos.ui.swing;
 
-import csi.pos.ui.swing.form.Form;
-
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Color;
