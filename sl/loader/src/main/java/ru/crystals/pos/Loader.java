@@ -1,14 +1,11 @@
 package ru.crystals.pos;
 
-import csi.pos.ui.swing.forms.LoginForm;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.crystals.pos.bl.ScenarioManager;
+import ru.crystals.pos.bl.api.login.LoginScenario;
 import ru.crystals.pos.ui.UI;
 import ru.crystals.pos.ui.UILayer;
 import ru.crystals.pos.ui.forms.loading.LoadingFormModel;
-import ru.crystals.pos.ui.forms.loading.LoginFormModel;
-import ru.crystals.pos.ui.label.Label;
-
-import java.util.function.Consumer;
 
 
 public class Loader {
@@ -18,10 +15,10 @@ public class Loader {
 
     public static void main(String[] args) throws InterruptedException {
         Loader loader = new Loader();
-        loader.start();
+        loader.startSpring();
     }
 
-    private void start() throws InterruptedException {
+    private void startSpring() throws InterruptedException {
         AnnotationConfigApplicationContext context1 = new AnnotationConfigApplicationContext();
         context1.scan("csi.pos.ui.swing");
         context1.refresh();
@@ -30,37 +27,19 @@ public class Loader {
         LoadingFormModel loadingFormModel = new LoadingFormModel("Загрузка", "v0.0.1");
         ui.showForm(UILayer.START, loadingFormModel);
 
-        Thread.sleep(200L);
+        Thread.sleep(600L);
 
         AnnotationConfigApplicationContext context2 = new AnnotationConfigApplicationContext();
         context2.scan("ru.crystals.pos");
         context2.setParent(context1);
         context2.refresh();
-
-        Thread.sleep(200L);
-
-        loadingFormModel.setCaption("Загрузилось");
-        loadingFormModel.modelChanged();
-        System.out.println("Application started");
-
-        Thread.sleep(200L);
-
-        LoginFormModel login = new LoginFormModel("Открыта смена", Label.empty("С фискальником всё нормально"),
-            null, this::onPasswordEntered);
-        ui.showForm(UILayer.LOGIN, login);
-
-        Thread.sleep(500L);
-
-        ui.setLayer(UILayer.START);
-
-        Thread.sleep(500L);
-
-        ui.setLayer(UILayer.LOGIN);
-
+        startBL(context2);
     }
 
-    private void onPasswordEntered(String pwd) {
-
+    public void startBL(AnnotationConfigApplicationContext ctx) {
+        ScenarioManager scenarioManager = ctx.getBean(ScenarioManager.class);
+        LoginScenario loginScenario = ctx.getBean(LoginScenario.class);
+        scenarioManager.startScenario(loginScenario);
     }
 
 }
