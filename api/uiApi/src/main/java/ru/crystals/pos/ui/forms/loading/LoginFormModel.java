@@ -11,7 +11,7 @@ public class LoginFormModel extends UIFormModel {
 
     private final Label infoLabel;
 
-    private final Label loginFailedText;
+    private Label loginFailedText;
 
     private final Consumer<String> passwordCallback;
 
@@ -32,6 +32,10 @@ public class LoginFormModel extends UIFormModel {
 
     public Label getLoginFailedText() {
         return loginFailedText;
+    }
+
+    public void setLoginFailedText(Label loginFailedText) {
+        this.loginFailedText = loginFailedText;
     }
 
     public Consumer<String> getPasswordCallback() {

@@ -25,7 +25,7 @@ public class InputLabel extends JLabel implements ControlKeyListener, TypedKeyLi
         if (ControlKeyType.ESC == controlKey.getControlKeyType()) {
             setText(" ");
         } else if (ControlKeyType.BACKSPACE == controlKey.getControlKeyType() && getText().length() > 0) {
-            String text = getText();
+            String text = getTextOverride();
             String substring = text.substring(0, text.length() - 1);
             if (substring.length() == 0) {
                 substring = " ";
@@ -34,9 +34,13 @@ public class InputLabel extends JLabel implements ControlKeyListener, TypedKeyLi
         }
     }
 
+    protected String getTextOverride() {
+        return super.getText();
+    }
+
     @Override
     public void onTypedKey(TypedKey key) {
         Character character = key.getCharacter();
-        setText(getText().concat(String.valueOf(character)));
+        setText(getTextOverride().concat(String.valueOf(character)));
     }
 }

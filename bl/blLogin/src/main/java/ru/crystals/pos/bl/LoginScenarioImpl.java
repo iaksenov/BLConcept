@@ -20,6 +20,8 @@ public class LoginScenarioImpl implements LoginScenario {
     private final UserModule userModule;
     private final SaleScenario saleScenario;
 
+    private LoginFormModel model;
+
     public LoginScenarioImpl(UI ui, ScenarioManager scenarioManager, UserModule userModule, SaleScenario saleScenario) {
         this.ui = ui;
         this.scenarioManager = scenarioManager;
@@ -29,7 +31,7 @@ public class LoginScenarioImpl implements LoginScenario {
 
     @Override
     public void start() {
-        showLoginForm("");
+        this.model = showLoginForm("");
     }
 
     private void onPasswordEntered(String password) {
@@ -62,7 +64,8 @@ public class LoginScenarioImpl implements LoginScenario {
     }
 
     private void onLoginError(LoginFailedException error) {
-        showLoginForm(error.getLocalizedMessage());
+        model.setLoginFailedText(Label.error(error.getLocalizedMessage()));
+        model.modelChanged();
     }
 
     private void startNextScenario(User user) {
@@ -76,8 +79,10 @@ public class LoginScenarioImpl implements LoginScenario {
 //        }
     }
 
-    private void showLoginForm(String errorText) {
-        ui.showForm(UILayer.LOGIN, new LoginFormModel(getShiftText(), getInfoText(), Label.error(errorText), this::onPasswordEntered));
+    private LoginFormModel showLoginForm(String errorText) {
+        LoginFormModel model = new LoginFormModel(getShiftText(), getInfoText(), Label.error(errorText), this::onPasswordEntered);
+        ui.showForm(UILayer.LOGIN, model);
+        return model;
     }
 
     private Label getInfoText() {

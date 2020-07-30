@@ -1,6 +1,6 @@
 package csi.pos.ui.swing.forms;
 
-import csi.pos.ui.swing.csi.pos.ui.swing.components.InputLabel;
+import csi.pos.ui.swing.csi.pos.ui.swing.components.PwdLabel;
 import org.springframework.stereotype.Component;
 import ru.crystals.pos.hw.events.keys.ControlKey;
 import ru.crystals.pos.hw.events.keys.ControlKeyType;
@@ -21,7 +21,7 @@ public class LoginForm extends Form<LoginFormModel> implements ControlKeyListene
     private JLabel title;
     private JLabel info;
     private JLabel error;
-    private InputLabel input;
+    private PwdLabel input;
     private Consumer<String> passwordCallback;
 
     @Override
@@ -31,7 +31,7 @@ public class LoginForm extends Form<LoginFormModel> implements ControlKeyListene
         title = new JLabel();
         info = new JLabel();
         error = new JLabel();
-        input = new InputLabel();
+        input = new PwdLabel();
         panel.add(title, BorderLayout.NORTH);
         panel.add(info, BorderLayout.CENTER);
         JPanel downPanel = new JPanel(new BorderLayout());
@@ -58,7 +58,8 @@ public class LoginForm extends Form<LoginFormModel> implements ControlKeyListene
     @Override
     public void onControlKey(ControlKey controlKey) {
         if (ControlKeyType.ENTER == controlKey.getControlKeyType() && passwordCallback != null) {
-            passwordCallback.accept(input.getText().trim());
+            passwordCallback.accept(input.getPwd().trim());
+            input.setText("");
         } else {
             input.onControlKey(controlKey);
         }

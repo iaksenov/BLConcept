@@ -4,9 +4,9 @@ import ru.crystals.pos.ui.forms.UIFormModel;
 
 public class LoadingFormModel extends UIFormModel {
 
-    private String caption;
+    private final String caption;
 
-    private String version;
+    private final String version;
 
     public LoadingFormModel(String caption, String version) {
         this.caption = caption;
@@ -21,7 +21,4 @@ public class LoadingFormModel extends UIFormModel {
         return version;
     }
 
-    public void setCaption(String caption) {
-        this.caption = caption;
-    }
 }
