@@ -16,9 +16,7 @@ public class SwingUI implements UI {
     }
 
     @Override
-    public void setLocale(Locale locale) {
-
-    }
+    public void setLocale(Locale locale) {}
 
     @Override
     public void setLayer(UILayer uiLayer) {

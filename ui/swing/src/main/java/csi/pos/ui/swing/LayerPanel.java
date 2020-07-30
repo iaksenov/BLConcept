@@ -29,7 +29,7 @@ public class LayerPanel implements TypedKeyListener, ControlKeyListener {
     public void showForm(Form form) {
         jPanel.removeAll();
         this.currentForm = form;
-        jPanel.add(form.createPanel(), BorderLayout.CENTER);
+        jPanel.add(form.create(), BorderLayout.CENTER);
         jPanel.invalidate();
     }
 

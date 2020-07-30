@@ -25,7 +25,7 @@ public class LoginForm extends Form<LoginFormModel> implements ControlKeyListene
     private Consumer<String> passwordCallback;
 
     @Override
-    public JPanel createPanel() {
+    public JPanel create() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(new EmptyBorder(10, 10, 10, 10));
         title = new JLabel();

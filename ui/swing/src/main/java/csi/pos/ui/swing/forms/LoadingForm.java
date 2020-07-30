@@ -1,7 +1,6 @@
 package csi.pos.ui.swing.forms;
 
 import org.springframework.stereotype.Component;
-import ru.crystals.pos.ui.forms.UIFormModel;
 import ru.crystals.pos.ui.forms.loading.LoadingFormModel;
 
 import javax.swing.JLabel;
@@ -18,7 +17,7 @@ public class LoadingForm extends Form<LoadingFormModel> {
     private JLabel captionLabel;
 
     @Override
-    public JPanel createPanel() {
+    public JPanel create() {
         JPanel panel = new JPanel();
         versionLabel = new JLabel();
         versionLabel.setBackground(Color.GRAY);
