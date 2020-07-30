@@ -1,31 +1,24 @@
-package ru.crystals.pos.bl;
+package ru.crystals.pos.bl.events;
 
 import org.springframework.stereotype.Service;
+import ru.crystals.pos.bl.ScenarioManager;
 import ru.crystals.pos.bl.api.Scenario;
+import ru.crystals.pos.hw.events.keys.FuncKey;
 import ru.crystals.pos.hw.events.listeners.BarcodeListener;
+import ru.crystals.pos.hw.events.listeners.FuncKeyListener;
 import ru.crystals.pos.hw.events.listeners.MSRListener;
 import ru.crystals.pos.hw.events.listeners.MSRTracks;
-import ru.crystals.pos.hw.events.listeners.key.FuncKey;
-import ru.crystals.pos.hw.events.listeners.key.FuncKeyListener;
-
-import javax.annotation.PostConstruct;
 
 @Service
-public class EventManager implements BarcodeListener, MSRListener, FuncKeyListener {
+public class ScenarioEventSender {
 
     private ScenarioManager scenarioManager;
 
-    public EventManager(ScenarioManager scenarioManager) {
+    public ScenarioEventSender(ScenarioManager scenarioManager) {
         this.scenarioManager = scenarioManager;
     }
 
-    @PostConstruct
-    private void postConstruct() {
-        // подписаться на hardware события
-    }
-
-    @Override
-    public void onBarcode(String code) {
+    void onBarcode(String code) {
         // preProcessor
         processBarcode(code, scenarioManager.getCurrentScenario());
     }
@@ -38,8 +31,7 @@ public class EventManager implements BarcodeListener, MSRListener, FuncKeyListen
         }
     }
 
-    @Override
-    public void onFunctionalKey(FuncKey funcKey) {
+    void onFunctionalKey(FuncKey funcKey) {
         // preProcessor
         processFunctionalKey(funcKey, scenarioManager.getCurrentScenario());
     }
@@ -52,8 +44,7 @@ public class EventManager implements BarcodeListener, MSRListener, FuncKeyListen
         }
     }
 
-    @Override
-    public void onMSR(MSRTracks msrTracks) {
+    void onMSR(MSRTracks msrTracks) {
         // preProcessor
         processMSR(msrTracks, scenarioManager.getCurrentScenario());
     }

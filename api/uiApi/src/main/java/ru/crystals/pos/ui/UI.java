@@ -1,7 +1,5 @@
 package ru.crystals.pos.ui;
 
-import ru.crystals.pos.hw.events.listeners.key.ControlKey;
-import ru.crystals.pos.hw.events.listeners.key.TypedKey;
 import ru.crystals.pos.ui.forms.UIFormModel;
 
 public interface UI {
@@ -26,9 +24,5 @@ public interface UI {
      * @param uiForm модель формы
      */
     void showForm(UILayer uiLayer, UIFormModel uiForm);
-
-    void dispatchControlKey(ControlKey controlKey);
-
-    void dispatchTypedKey(TypedKey controlKey);
 
 }

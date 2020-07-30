@@ -1,10 +1,11 @@
-package ru.crystals.pos.bl;
+package ru.crystals.pos.bl.manager;
 
 import org.springframework.stereotype.Component;
-import ru.crystals.pos.bl.api.VoidListener;
+import ru.crystals.pos.bl.ScenarioManager;
 import ru.crystals.pos.bl.api.CompletedScenario;
 import ru.crystals.pos.bl.api.Scenario;
 import ru.crystals.pos.bl.api.SimpleScenario;
+import ru.crystals.pos.bl.api.VoidListener;
 
 import java.util.HashMap;
 import java.util.Map;

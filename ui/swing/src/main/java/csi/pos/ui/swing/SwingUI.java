@@ -1,8 +1,6 @@
 package csi.pos.ui.swing;
 
 import org.springframework.stereotype.Component;
-import ru.crystals.pos.hw.events.listeners.key.ControlKey;
-import ru.crystals.pos.hw.events.listeners.key.TypedKey;
 import ru.crystals.pos.ui.Locale;
 import ru.crystals.pos.ui.UI;
 import ru.crystals.pos.ui.UILayer;
@@ -38,13 +36,4 @@ public class SwingUI implements UI {
         mainForm.showForm(uiFormModel);
     }
 
-    @Override
-    public void dispatchControlKey(ControlKey controlKey) {
-
-    }
-
-    @Override
-    public void dispatchTypedKey(TypedKey controlKey) {
-
-    }
 }

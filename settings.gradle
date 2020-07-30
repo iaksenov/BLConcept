@@ -30,6 +30,10 @@ project(':il:db:user').projectDir = file("il/db/user")
 include 'il:hw:hwEventApi'
 project(':il:hw:hwEventApi').projectDir = file("il/hw/hwEventApi")
 
+include 'il:hw:kbdHook'
+project(':il:hw:kbdHook').projectDir = file("il/hw/kbdHook")
+
+
 include 'il:integration'
 include 'il:loyal'
 

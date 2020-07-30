@@ -1,5 +1,8 @@
 package ru.crystals.pos;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.crystals.pos.bl.ScenarioManager;
 import ru.crystals.pos.bl.api.login.LoginScenario;
@@ -10,10 +13,15 @@ import ru.crystals.pos.ui.forms.loading.LoadingFormModel;
 
 public class Loader {
 
+    private static final Logger log = LoggerFactory.getLogger(Loader.class);
+
     public Loader() {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
     }
 
     public static void main(String[] args) throws InterruptedException {
+        log.info("App start");
         Loader loader = new Loader();
         loader.startSpring();
     }

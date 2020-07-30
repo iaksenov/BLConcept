@@ -1,8 +1,10 @@
-package ru.crystals.pos.hw.events.listeners.key;
+package ru.crystals.pos.hw.events.keys;
 
-public class ControlKey {
+import ru.crystals.pos.hw.events.HWEventPayload;
 
-    private ControlKeyType controlKeyType;
+public class ControlKey implements HWEventPayload {
+
+    private final ControlKeyType controlKeyType;
 
     public ControlKey(ControlKeyType controlKeyType) {
         this.controlKeyType = controlKeyType;

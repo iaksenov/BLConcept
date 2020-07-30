@@ -7,7 +7,7 @@ import ru.crystals.pos.bl.api.sale.AddPaymentsScenario;
 import ru.crystals.pos.bl.api.sale.CalcDiscountScenario;
 import ru.crystals.pos.bl.api.sale.SaleAddItemsScenario;
 import ru.crystals.pos.bl.api.sale.SaleScenario;
-import ru.crystals.pos.hw.events.listeners.key.FuncKey;
+import ru.crystals.pos.hw.events.keys.FuncKey;
 import ru.crystals.pos.ui.UI;
 
 /**

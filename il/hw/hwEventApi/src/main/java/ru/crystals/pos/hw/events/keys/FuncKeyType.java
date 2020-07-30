@@ -1,4 +1,4 @@
-package ru.crystals.pos.hw.events.listeners.key;
+package ru.crystals.pos.hw.events.keys;
 
 public enum FuncKeyType {
 

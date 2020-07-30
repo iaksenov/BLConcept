@@ -3,7 +3,9 @@ package csi.pos.ui.swing;
 import csi.pos.ui.swing.forms.Form;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.crystals.pos.ui.UI;
+import ru.crystals.pos.hw.events.keys.ControlKey;
+import ru.crystals.pos.hw.events.keys.TypedKey;
+import ru.crystals.pos.ui.UIKeyListener;
 import ru.crystals.pos.ui.UILayer;
 import ru.crystals.pos.ui.forms.UIFormModel;
 
@@ -17,11 +19,11 @@ import java.awt.Container;
 import java.util.EnumMap;
 
 @Component
-public class MainForm extends JFrame {
+public class MainForm extends JFrame implements UIKeyListener {
 
     private JPanel layersPanel;
     private CardLayout cardLayout;
-    private UILayer uiLayer;
+    private UILayer currentLayer;
 
     private final EnumMap<UILayer, LayerPanel> layers = new EnumMap<>(UILayer.class);
 
@@ -58,8 +60,8 @@ public class MainForm extends JFrame {
     }
 
     public void setLayer(UILayer uiLayer) {
-        if (this.uiLayer != uiLayer) {
-            this.uiLayer = uiLayer;
+        if (this.currentLayer != uiLayer) {
+            this.currentLayer = uiLayer;
             cardLayout.show(layersPanel, uiLayer.toString());
         }
     }
@@ -67,7 +69,7 @@ public class MainForm extends JFrame {
     public void showForm(UIFormModel uiFormModel) {
         Form<UIFormModel> form = formsCatalog.get(uiFormModel);
         if (form != null) {
-            layers.get(uiLayer).showForm(form.createPanel());
+            layers.get(currentLayer).showForm(form);
             form.onModelChanged(uiFormModel);
             uiFormModel.setListener(form);
         } else {
@@ -75,4 +77,14 @@ public class MainForm extends JFrame {
         }
     }
 
+
+    @Override
+    public void onControlKey(ControlKey controlKey) {
+        layers.get(currentLayer).onControlKey(controlKey);
+    }
+
+    @Override
+    public void onTypedKey(TypedKey key) {
+        layers.get(currentLayer).onTypedKey(key);
+    }
 }

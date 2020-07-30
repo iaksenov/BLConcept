@@ -11,7 +11,6 @@ import ru.crystals.pos.ui.label.Label;
 import ru.crystals.pos.user.LoginFailedException;
 import ru.crystals.pos.user.User;
 import ru.crystals.pos.user.UserModule;
-import ru.crystals.pos.user.UserRight;
 
 @Component
 public class LoginScenarioImpl implements LoginScenario {
@@ -67,13 +66,14 @@ public class LoginScenarioImpl implements LoginScenario {
     }
 
     private void startNextScenario(User user) {
-        if (user.hasRight(UserRight.SALE)) {
-            scenarioManager.startScenario(saleScenario);
-        } else if (user.hasRight(UserRight.SHIFT)) {
-
-        } else if (user.hasRight(UserRight.CONFIGURATION)) {
-
-        }
+        showLoginForm(user.getFirstName() + " ");
+//        if (user.hasRight(UserRight.SALE)) {
+//            scenarioManager.startScenario(saleScenario);
+//        } else if (user.hasRight(UserRight.SHIFT)) {
+//
+//        } else if (user.hasRight(UserRight.CONFIGURATION)) {
+//
+//        }
     }
 
     private void showLoginForm(String errorText) {

@@ -1,10 +1,12 @@
-package ru.crystals.pos.hw.events.listeners.key;
+package ru.crystals.pos.hw.events.keys;
 
-public class FuncKey {
+import ru.crystals.pos.hw.events.HWEventPayload;
 
-    private FuncKeyType funcKeyType;
+public class FuncKey  implements HWEventPayload {
 
-    private String payload;
+    private final FuncKeyType funcKeyType;
+
+    private final String payload;
 
     public FuncKey(FuncKeyType funcKeyType, String payload) {
         this.funcKeyType = funcKeyType;

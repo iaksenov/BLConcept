@@ -4,10 +4,6 @@ import java.util.Set;
 
 public class DBUser extends User {
 
-    private final String firstName;
-    private final String lastName;
-    private final String middleName;
-    private final Set<UserRight> rights;
     private final String pwd;
     private final String barcode;
     private final String msr;

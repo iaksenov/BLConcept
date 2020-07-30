@@ -2,22 +2,27 @@ package csi.pos.ui.swing.forms;
 
 import csi.pos.ui.swing.csi.pos.ui.swing.components.InputLabel;
 import org.springframework.stereotype.Component;
+import ru.crystals.pos.hw.events.keys.ControlKey;
+import ru.crystals.pos.hw.events.keys.ControlKeyType;
+import ru.crystals.pos.hw.events.keys.TypedKey;
+import ru.crystals.pos.hw.events.listeners.ControlKeyListener;
+import ru.crystals.pos.hw.events.listeners.TypedKeyListener;
 import ru.crystals.pos.ui.forms.loading.LoginFormModel;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import java.awt.BorderLayout;
-import java.awt.Color;
+import java.util.function.Consumer;
 
 @Component
-public class LoginForm extends Form<LoginFormModel> {
+public class LoginForm extends Form<LoginFormModel> implements ControlKeyListener, TypedKeyListener {
 
     private JLabel title;
     private JLabel info;
     private JLabel error;
     private InputLabel input;
+    private Consumer<String> passwordCallback;
 
     @Override
     public JPanel createPanel() {
@@ -47,6 +52,20 @@ public class LoginForm extends Form<LoginFormModel> {
         title.setText(model.getTitle());
         info.setText(model.getInfoLabel() == null ? "" : model.getInfoLabel().getText());
         error.setText(model.getLoginFailedText() == null ? "" : model.getLoginFailedText().getText());
+        passwordCallback = model.getPasswordCallback();
     }
 
+    @Override
+    public void onControlKey(ControlKey controlKey) {
+        if (ControlKeyType.ENTER == controlKey.getControlKeyType() && passwordCallback != null) {
+            passwordCallback.accept(input.getText().trim());
+        } else {
+            input.onControlKey(controlKey);
+        }
+    }
+
+    @Override
+    public void onTypedKey(TypedKey key) {
+        input.onTypedKey(key);
+    }
 }
