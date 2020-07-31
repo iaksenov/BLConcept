@@ -22,7 +22,8 @@ public class LoginScenarioImpl implements LoginScenario {
 
     private LoginFormModel model;
 
-    public LoginScenarioImpl(UI ui, ScenarioManager scenarioManager, UserModule userModule, SaleScenario saleScenario) {
+    public LoginScenarioImpl(UI ui, ScenarioManager scenarioManager,
+                             UserModule userModule, SaleScenario saleScenario) {
         this.ui = ui;
         this.scenarioManager = scenarioManager;
         this.userModule = userModule;
@@ -32,6 +33,15 @@ public class LoginScenarioImpl implements LoginScenario {
     @Override
     public void start() {
         this.model = showLoginForm("");
+    }
+
+    private LoginFormModel showLoginForm(String errorText) {
+        LoginFormModel model = new LoginFormModel(getShiftText(),
+            getInfoText(),
+            Label.error(errorText),
+            this::onPasswordEntered);
+        ui.showForm(UILayer.LOGIN, model);
+        return model;
     }
 
     private void onPasswordEntered(String password) {
@@ -77,12 +87,6 @@ public class LoginScenarioImpl implements LoginScenario {
 //        } else if (user.hasRight(UserRight.CONFIGURATION)) {
 //
 //        }
-    }
-
-    private LoginFormModel showLoginForm(String errorText) {
-        LoginFormModel model = new LoginFormModel(getShiftText(), getInfoText(), Label.error(errorText), this::onPasswordEntered);
-        ui.showForm(UILayer.LOGIN, model);
-        return model;
     }
 
     private Label getInfoText() {

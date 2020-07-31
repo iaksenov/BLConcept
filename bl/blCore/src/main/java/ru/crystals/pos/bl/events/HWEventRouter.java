@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 @Component
-public class HWEventProcessor {
+public class HWEventRouter {
 
     private final ScenarioEventSender scenarioEventSender;
 
@@ -22,7 +22,7 @@ public class HWEventProcessor {
 
     private final Map<Class<? extends HWEventPayload>, Consumer<? extends HWEventPayload>> consumers;
 
-    public HWEventProcessor(ScenarioEventSender scenarioEventSender, UIKeyListener uiKeyListener) {
+    public HWEventRouter(ScenarioEventSender scenarioEventSender, UIKeyListener uiKeyListener) {
         this.scenarioEventSender = scenarioEventSender;
         this.uiKeyListener = uiKeyListener;
         this.consumers = new HashMap<>();
@@ -39,6 +39,18 @@ public class HWEventProcessor {
         consumer.accept(event);
     }
 
+    // send to UI
+
+    private void processTypedKey(TypedKey typedKey) {
+        uiKeyListener.onTypedKey(typedKey);
+    }
+
+    private void processControlKey(ControlKey controlKey) {
+        uiKeyListener.onControlKey(controlKey);
+    }
+
+    // send to BL
+
     private void processFuncKey(FuncKey funcKey) {
         scenarioEventSender.onFunctionalKey(funcKey);
     }
@@ -49,14 +61,6 @@ public class HWEventProcessor {
 
     private void processMSRTracks(MSRTracks msrTracks) {
         scenarioEventSender.onMSR(msrTracks);
-    }
-
-    private void processTypedKey(TypedKey typedKey) {
-        uiKeyListener.onTypedKey(typedKey);
-    }
-
-    private void processControlKey(ControlKey controlKey) {
-        uiKeyListener.onControlKey(controlKey);
     }
 
     ///

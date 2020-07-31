@@ -7,12 +7,24 @@ import java.util.function.Consumer;
 
 public class LoginFormModel extends UIFormModel {
 
+    /**
+     * Заголовок
+     */
     private final String title;
 
+    /**
+     * Информация о состоянии
+     */
     private final Label infoLabel;
 
+    /**
+     * Причина ошибки авторизации
+     */
     private Label loginFailedText;
 
+    /**
+     * Callback ввода пароля
+     */
     private final Consumer<String> passwordCallback;
 
     public LoginFormModel(String title, Label infoLabel, Label loginFailedText, Consumer<String> passwordCallback) {

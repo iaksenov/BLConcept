@@ -16,9 +16,9 @@ public class HWEventListener {
 
     private final BlockingQueue<HWEvent> eventQueue = new LinkedBlockingQueue<>();
 
-    private final HWEventProcessor processor;
+    private final HWEventRouter processor;
 
-    public HWEventListener(HWEventProcessor processor) {
+    public HWEventListener(HWEventRouter processor) {
         this.processor = processor;
     }
 

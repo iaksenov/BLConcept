@@ -38,7 +38,7 @@ public class MainForm extends JFrame implements UIKeyListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setFocusable(true);
         setSize(640, 480);
-        setResizable(false);
+        setResizable(true);
         cardLayout = new CardLayout();
         layersPanel = new JPanel(cardLayout);
         add(layersPanel, BorderLayout.CENTER);
