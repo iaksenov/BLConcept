@@ -2,6 +2,9 @@ package csi.pos.ui.swing.csi.pos.ui.swing.components;
 
 import java.util.Collections;
 
+/**
+ * Для отображения ввода пароля
+ */
 public class PwdLabel extends InputLabel {
 
     private String text;

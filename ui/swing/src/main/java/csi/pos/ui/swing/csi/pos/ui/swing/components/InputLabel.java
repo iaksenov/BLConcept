@@ -12,6 +12,9 @@ import javax.swing.border.LineBorder;
 import java.awt.Color;
 import java.awt.Font;
 
+/**
+ * Для отображения ввода
+ */
 public class InputLabel extends JLabel implements ControlKeyListener, TypedKeyListener {
 
     public InputLabel() {

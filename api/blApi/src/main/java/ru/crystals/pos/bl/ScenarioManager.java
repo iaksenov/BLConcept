@@ -1,12 +1,15 @@
 package ru.crystals.pos.bl;
 
-import ru.crystals.pos.bl.api.VoidListener;
 import ru.crystals.pos.bl.api.CompletedScenario;
 import ru.crystals.pos.bl.api.Scenario;
 import ru.crystals.pos.bl.api.SimpleScenario;
+import ru.crystals.pos.bl.api.VoidListener;
 
 import java.util.function.Consumer;
 
+/**
+ * Менеджер сценариев
+ */
 public interface ScenarioManager {
 
     void startScenario(SimpleScenario scenario);

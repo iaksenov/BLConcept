@@ -9,15 +9,18 @@ import ru.crystals.pos.ui.UIKeyListener;
 import ru.crystals.pos.ui.UILayer;
 import ru.crystals.pos.ui.forms.UIFormModel;
 
+import javax.annotation.PostConstruct;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.util.EnumMap;
 
+/**
+ * Основная UI форма и получатель клавиатурных событий.
+ */
 @Component
 public class MainForm extends JFrame implements UIKeyListener {
 
@@ -31,9 +34,9 @@ public class MainForm extends JFrame implements UIKeyListener {
 
     public MainForm(@Autowired FormsCatalog formsCatalog) {
         this.formsCatalog = formsCatalog;
-        SwingUtilities.invokeLater(this::init);
     }
 
+    @PostConstruct
     private void init() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setFocusable(true);
@@ -76,7 +79,6 @@ public class MainForm extends JFrame implements UIKeyListener {
             System.out.println("Form for model not implemented: " + uiFormModel.getClass());
         }
     }
-
 
     @Override
     public void onControlKey(ControlKey controlKey) {

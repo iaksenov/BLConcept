@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Каталог форм для классов моделей
+ */
 @Component
 public class FormsCatalog {
 

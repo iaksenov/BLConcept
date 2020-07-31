@@ -11,6 +11,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
+/**
+ * Слушает hardware события.
+ * Складывает в очередь.
+ * Отправляет в HWEventRouter.
+ */
 @Service
 public class HWEventListener {
 

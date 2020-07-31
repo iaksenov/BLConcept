@@ -10,12 +10,15 @@ import ru.crystals.pos.ui.UI;
 import ru.crystals.pos.ui.UILayer;
 import ru.crystals.pos.ui.forms.loading.LoadingFormModel;
 
-
+/**
+ * Старт приложения
+ */
 public class Loader {
 
     private static final Logger log = LoggerFactory.getLogger(Loader.class);
 
     public Loader() {
+        // чтобы java.util.logging конфигурить (он в jnativehook используется)
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
     }
@@ -27,15 +30,16 @@ public class Loader {
     }
 
     private void startSpring() throws InterruptedException {
+        // загрузим только UI, он в отдельном пакете
         AnnotationConfigApplicationContext context1 = new AnnotationConfigApplicationContext();
-        context1.scan("csi.pos.ui.swing");
+        context1.scan("csi.pos.ui");
         context1.refresh();
 
         UI ui = context1.getBean(UI.class);
         LoadingFormModel loadingFormModel = new LoadingFormModel("Загрузка", "v0.0.1");
         ui.showForm(UILayer.START, loadingFormModel);
 
-        Thread.sleep(1500L);
+        Thread.sleep(1500L); //
 
         AnnotationConfigApplicationContext context2 = new AnnotationConfigApplicationContext();
         context2.scan("ru.crystals.pos");
@@ -44,6 +48,10 @@ public class Loader {
         startBL(context2);
     }
 
+    /**
+     * Запуск БЛ
+     * @param ctx spring контекст
+     */
     public void startBL(AnnotationConfigApplicationContext ctx) {
         ScenarioManager scenarioManager = ctx.getBean(ScenarioManager.class);
         LoginScenario loginScenario = ctx.getBean(LoginScenario.class);

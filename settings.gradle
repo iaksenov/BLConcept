@@ -3,6 +3,9 @@ rootProject.name = 'BLConcept'
 include 'sl:loader'
 project(':sl:loader').projectDir = file("sl/loader")
 
+include 'sl:eventsCore'
+project(':sl:eventsCore').projectDir = file("sl/eventsCore")
+
 // api
 include 'api:blApi'
 project(':api:blApi').projectDir = file("api/blApi")

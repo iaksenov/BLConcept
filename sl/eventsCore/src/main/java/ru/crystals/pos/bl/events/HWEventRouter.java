@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+/**
+ * Роутер hardware событий
+ */
 @Component
 public class HWEventRouter {
 

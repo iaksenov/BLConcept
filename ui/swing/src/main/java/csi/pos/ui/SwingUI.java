@@ -1,11 +1,15 @@
-package csi.pos.ui.swing;
+package csi.pos.ui;
 
+import csi.pos.ui.swing.MainForm;
 import org.springframework.stereotype.Component;
 import ru.crystals.pos.ui.Locale;
 import ru.crystals.pos.ui.UI;
 import ru.crystals.pos.ui.UILayer;
 import ru.crystals.pos.ui.forms.UIFormModel;
 
+/**
+ * Реализация UI на Swnig
+ */
 @Component
 public class SwingUI implements UI {
 

@@ -10,15 +10,16 @@ import ru.crystals.pos.hw.events.listeners.MSRListener;
 import ru.crystals.pos.hw.events.listeners.MSRTracks;
 
 @Service
-public class ScenarioEventSender {
+public class ScenarioEventSenderImpl implements ScenarioEventSender {
 
     private ScenarioManager scenarioManager;
 
-    public ScenarioEventSender(ScenarioManager scenarioManager) {
+    public ScenarioEventSenderImpl(ScenarioManager scenarioManager) {
         this.scenarioManager = scenarioManager;
     }
 
-    void onBarcode(String code) {
+    @Override
+    public void onBarcode(String code) {
         // preProcessor
         processBarcode(code, scenarioManager.getCurrentScenario());
     }
@@ -31,7 +32,8 @@ public class ScenarioEventSender {
         }
     }
 
-    void onFunctionalKey(FuncKey funcKey) {
+    @Override
+    public void onFunctionalKey(FuncKey funcKey) {
         // preProcessor
         processFunctionalKey(funcKey, scenarioManager.getCurrentScenario());
     }
@@ -44,7 +46,8 @@ public class ScenarioEventSender {
         }
     }
 
-    void onMSR(MSRTracks msrTracks) {
+    @Override
+    public void onMSR(MSRTracks msrTracks) {
         // preProcessor
         processMSR(msrTracks, scenarioManager.getCurrentScenario());
     }

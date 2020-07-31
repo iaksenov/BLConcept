@@ -15,6 +15,9 @@ import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.util.function.Consumer;
 
+/**
+ * Форма логина
+ */
 @Component
 public class LoginForm extends Form<LoginFormModel> implements ControlKeyListener, TypedKeyListener {
 

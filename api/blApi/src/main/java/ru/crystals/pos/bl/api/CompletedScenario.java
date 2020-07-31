@@ -2,8 +2,12 @@ package ru.crystals.pos.bl.api;
 
 import java.util.function.Consumer;
 
-public interface CompletedScenario<O> extends Scenario {
+/**
+ * Интерфейс сценария с двумя исходами: результат и отмена
+ * @param <Result> тип результата
+ */
+public interface CompletedScenario<Result> extends Scenario {
 
-    void start(Consumer<O> onComplete, VoidListener onCancel);
+    void start(Consumer<Result> onComplete, VoidListener onCancel);
 
 }

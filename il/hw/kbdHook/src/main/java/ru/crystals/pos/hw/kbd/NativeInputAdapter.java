@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * Перехватчик native событий от клавиатуры
+ */
 @Service
 public class NativeInputAdapter implements NativeKeyListener {
 
@@ -59,7 +62,6 @@ public class NativeInputAdapter implements NativeKeyListener {
             return;
         }
         String keyText = nativeKeyEvent.getKeyText(nativeKeyEvent.getKeyCode());
-        //System.out.println("pressed: " + keyText + " // " + nativeKeyEvent);
         HWEventPayload hwEventPayload = keysMap.get(keyText);
         if (hwEventPayload != null) {
             eventPublisher.publishEvent(new HWEvent(this, hwEventPayload));
@@ -79,7 +81,6 @@ public class NativeInputAdapter implements NativeKeyListener {
         if (isExcludedWithCtrl(nativeKeyEvent)) {
             return;
         }
-        //System.out.println("typed: " + nativeKeyEvent.getKeyChar());
         eventPublisher.publishEvent(new HWEvent(this, new TypedKey(nativeKeyEvent.getKeyChar())));
     }
 

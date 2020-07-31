@@ -10,6 +10,9 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 
+/**
+ * Панель по умолчанию для UI слоя.
+ */
 public class LayerPanel implements TypedKeyListener, ControlKeyListener {
 
     private JPanel jPanel;
