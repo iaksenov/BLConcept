@@ -1,4 +1,5 @@
 dependencies {
     compile project(':api:blApi'),
-        project(':il:hw:hwEventApi')
+        project(':il:hw:hwEventApi'),
+        project(':il:db:userApi')
 }

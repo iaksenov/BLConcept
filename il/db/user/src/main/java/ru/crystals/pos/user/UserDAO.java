@@ -29,7 +29,6 @@ public class UserDAO {
         return users.stream().filter(u -> password.equals(u.getPwd())).findFirst();
     }
 
-
     public Optional<DBUser> getUserByBarcode(String code) {
         return users.stream().filter(u -> code.equals(u.getBarcode())).findFirst();
     }

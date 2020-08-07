@@ -2,11 +2,14 @@ package csi.pos.ui.swing;
 
 import csi.pos.ui.swing.forms.Form;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import ru.crystals.pos.hw.events.keys.ControlKey;
 import ru.crystals.pos.hw.events.keys.TypedKey;
 import ru.crystals.pos.ui.UIKeyListener;
 import ru.crystals.pos.ui.UILayer;
+import ru.crystals.pos.ui.events.POSStatusEvent;
 import ru.crystals.pos.ui.forms.UIFormModel;
 
 import javax.annotation.PostConstruct;
@@ -14,7 +17,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Color;
 import java.awt.Container;
 import java.util.EnumMap;
 
@@ -24,9 +26,11 @@ import java.util.EnumMap;
 @Component
 public class MainForm extends JFrame implements UIKeyListener {
 
-    private JPanel layersPanel;
+    private JPanel fullFramePanel;
     private CardLayout cardLayout;
     private UILayer currentLayer;
+
+    private StatusPanel statusPanel;
 
     private final EnumMap<UILayer, LayerPanel> layers = new EnumMap<>(UILayer.class);
 
@@ -43,29 +47,30 @@ public class MainForm extends JFrame implements UIKeyListener {
         setSize(640, 480);
         setResizable(true);
         cardLayout = new CardLayout();
-        layersPanel = new JPanel(cardLayout);
-        add(layersPanel, BorderLayout.CENTER);
-        initLayers(layersPanel);
+        fullFramePanel = new JPanel(cardLayout);
+        statusPanel = new StatusPanel();
+        add(fullFramePanel, BorderLayout.CENTER);
+        add(statusPanel, BorderLayout.SOUTH);
+        statusPanel.setVisible(false);
+        initLayers(fullFramePanel);
         setVisible(true);
         setLayer(UILayer.START);
     }
 
     private void initLayers(Container container) {
-        int i = 100;
         for (UILayer layer : UILayer.values()) {
             LayerPanel layerPanel = new LayerPanel();
             JPanel panel1 = layerPanel.getPanel();
-            panel1.setBackground(new Color(i, 0, 0));
-            i+=20;
             container.add(panel1, layer.toString());
             layers.put(layer, layerPanel);
         }
     }
 
-    public void setLayer(UILayer uiLayer) {
-        if (this.currentLayer != uiLayer) {
-            this.currentLayer = uiLayer;
-            cardLayout.show(layersPanel, uiLayer.toString());
+    public void setLayer(UILayer layer) {
+        if (this.currentLayer != layer) {
+            this.currentLayer = layer;
+            cardLayout.show(fullFramePanel, layer.toString());
+            statusPanel.setVisible(layer != UILayer.START);
         }
     }
 
@@ -89,4 +94,11 @@ public class MainForm extends JFrame implements UIKeyListener {
     public void onTypedKey(TypedKey key) {
         layers.get(currentLayer).onTypedKey(key);
     }
+
+    @Async
+    @EventListener
+    private void onPOSStatusEvent(POSStatusEvent event) {
+        statusPanel.setData(event);
+    }
+
 }
