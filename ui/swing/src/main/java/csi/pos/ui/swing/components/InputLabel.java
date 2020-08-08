@@ -1,4 +1,4 @@
-package csi.pos.ui.swing.csi.pos.ui.swing.components;
+package csi.pos.ui.swing.components;
 
 import ru.crystals.pos.hw.events.keys.ControlKey;
 import ru.crystals.pos.hw.events.keys.ControlKeyType;

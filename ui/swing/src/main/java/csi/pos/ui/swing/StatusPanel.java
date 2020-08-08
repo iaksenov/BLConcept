@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.util.Calendar;
 import java.util.concurrent.Executors;
 
@@ -21,6 +22,9 @@ public class StatusPanel extends JPanel {
         cashier = new JLabel();
         clock = new JLabel();
         clock.setMinimumSize(new Dimension(40, 0));
+        Font monospaced14 = new Font("Monospaced", Font.PLAIN, 14);
+        cashier.setFont(monospaced14);
+        clock.setFont(monospaced14);
         setBackground(Color.PINK);
         add(cashier, BorderLayout.CENTER);
         add(clock, BorderLayout.EAST);

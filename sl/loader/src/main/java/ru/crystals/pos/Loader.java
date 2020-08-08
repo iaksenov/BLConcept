@@ -39,7 +39,7 @@ public class Loader {
         LoadingFormModel loadingFormModel = new LoadingFormModel("Загрузка", "v0.0.1");
         ui.showForm(UILayer.START, loadingFormModel);
 
-        Thread.sleep(1500L); //
+        //Thread.sleep(1500L); //
 
         AnnotationConfigApplicationContext context2 = new AnnotationConfigApplicationContext();
         context2.scan("ru.crystals.pos");

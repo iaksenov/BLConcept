@@ -17,7 +17,7 @@ public class LayerPanel implements TypedKeyListener, ControlKeyListener {
 
     private JPanel jPanel;
 
-    private Form<?> currentForm;
+    protected Form<?> currentForm;
 
     public LayerPanel() {
         jPanel = new JPanel(new BorderLayout());

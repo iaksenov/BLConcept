@@ -1,13 +1,13 @@
 package csi.pos.ui.swing.forms;
 
-import csi.pos.ui.swing.components.PwdLabel;
+import csi.pos.ui.swing.components.InputLabel;
 import org.springframework.stereotype.Component;
 import ru.crystals.pos.hw.events.keys.ControlKey;
 import ru.crystals.pos.hw.events.keys.ControlKeyType;
 import ru.crystals.pos.hw.events.keys.TypedKey;
 import ru.crystals.pos.hw.events.listeners.ControlKeyListener;
 import ru.crystals.pos.hw.events.listeners.TypedKeyListener;
-import ru.crystals.pos.ui.forms.loading.LoginFormModel;
+import ru.crystals.pos.ui.forms.input.InputStringFormModel;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -15,53 +15,46 @@ import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.util.function.Consumer;
 
-/**
- * Форма логина
- */
 @Component
-public class LoginForm extends Form<LoginFormModel> implements ControlKeyListener, TypedKeyListener {
+public class InputStringForm extends Form<InputStringFormModel>  implements ControlKeyListener, TypedKeyListener {
 
     private JLabel title;
-    private JLabel info;
-    private JLabel error;
-    private PwdLabel input;
-    private Consumer<String> passwordCallback;
+    private JLabel hint;
+    private InputLabel input;
+    private Consumer<String> inputCallback;
 
     @Override
     public JPanel create() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(new EmptyBorder(10, 10, 10, 10));
         title = new JLabel();
-        info = new JLabel();
-        error = new JLabel();
-        input = new PwdLabel();
-        panel.add(title, BorderLayout.NORTH);
-        panel.add(info, BorderLayout.CENTER);
+        hint = new JLabel();
+        input = new InputLabel();
+        panel.add(title, BorderLayout.CENTER);
         JPanel downPanel = new JPanel(new BorderLayout());
         panel.add(downPanel, BorderLayout.SOUTH);
-        downPanel.add(error, BorderLayout.NORTH);
+        downPanel.add(hint, BorderLayout.NORTH);
         downPanel.add(input, BorderLayout.CENTER);
         input.setText(" ");
         return panel;
     }
 
     @Override
-    public Class<LoginFormModel> getModelClass() {
-        return LoginFormModel.class;
+    public Class<InputStringFormModel> getModelClass() {
+        return InputStringFormModel.class;
     }
 
     @Override
-    public void onModelChanged(LoginFormModel model) {
+    public void onModelChanged(InputStringFormModel model) {
         title.setText(model.getTitle());
-        info.setText(model.getInfoLabel() == null ? "" : model.getInfoLabel().getText());
-        error.setText(model.getLoginFailedText() == null ? "" : model.getLoginFailedText().getText());
-        passwordCallback = model.getPasswordCallback();
+        hint.setText(model.getHint());
+        inputCallback = model.getCallback();
     }
 
     @Override
     public void onControlKey(ControlKey controlKey) {
-        if (ControlKeyType.ENTER == controlKey.getControlKeyType() && passwordCallback != null) {
-            passwordCallback.accept(input.getPwd().trim());
+        if (ControlKeyType.ENTER == controlKey.getControlKeyType() && inputCallback != null) {
+            inputCallback.accept(input.getText().trim());
             input.setText("");
         } else {
             input.onControlKey(controlKey);
@@ -72,4 +65,5 @@ public class LoginForm extends Form<LoginFormModel> implements ControlKeyListene
     public void onTypedKey(TypedKey key) {
         input.onTypedKey(key);
     }
+
 }

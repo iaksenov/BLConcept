@@ -1,5 +1,6 @@
 package ru.crystals.pos.bl.sale;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.crystals.pos.bl.ScenarioManager;
 import ru.crystals.pos.bl.api.CompletedScenario;
@@ -9,6 +10,7 @@ import ru.crystals.pos.bl.api.sale.SaleAddItemsScenario;
 import ru.crystals.pos.bl.api.sale.SaleScenario;
 import ru.crystals.pos.hw.events.keys.FuncKey;
 import ru.crystals.pos.ui.UI;
+import ru.crystals.pos.ui.UILayer;
 
 /**
  * Класс сценария продажи.
@@ -20,12 +22,16 @@ public class SaleScenarioImpl implements SaleScenario {
     private final ScenarioManager scenarioManager;
 
     // stage 1
+    @Autowired
     private SaleAddItemsScenario addItemsScenario;
     // stage 2
+    //@Autowired
     private CalcDiscountScenario calcDiscount;
     // stage 3
+    ///@Autowired
     private AddPaymentsScenario addPayments;
     // stage 4
+    //@Autowired
     private CompletedScenario registration;
 
     public SaleScenarioImpl(UI ui, ScenarioManager scenarioManager) {
@@ -91,6 +97,7 @@ public class SaleScenarioImpl implements SaleScenario {
     @Override
     public void start() {
         // Тут в зависимости от состояния чека запускается нужный сценарий
+        ui.setLayer(UILayer.SALE);
         addItems();
     }
 

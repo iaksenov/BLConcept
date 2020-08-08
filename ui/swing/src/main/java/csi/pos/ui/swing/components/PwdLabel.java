@@ -1,4 +1,4 @@
-package csi.pos.ui.swing.csi.pos.ui.swing.components;
+package csi.pos.ui.swing.components;
 
 import java.util.Collections;
 

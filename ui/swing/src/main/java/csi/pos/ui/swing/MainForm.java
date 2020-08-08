@@ -1,6 +1,7 @@
 package csi.pos.ui.swing;
 
 import csi.pos.ui.swing.forms.Form;
+import csi.pos.ui.swing.sale.SalePanel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -19,6 +20,8 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Container;
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Основная UI форма и получатель клавиатурных событий.
@@ -36,8 +39,12 @@ public class MainForm extends JFrame implements UIKeyListener {
 
     private final FormsCatalog formsCatalog;
 
+    private final Map<UILayer, LayerPanel> layerPanel;
+
     public MainForm(@Autowired FormsCatalog formsCatalog) {
         this.formsCatalog = formsCatalog;
+        layerPanel = new HashMap<>();
+        layerPanel.put(UILayer.SALE, new SalePanel());
     }
 
     @PostConstruct
@@ -59,7 +66,7 @@ public class MainForm extends JFrame implements UIKeyListener {
 
     private void initLayers(Container container) {
         for (UILayer layer : UILayer.values()) {
-            LayerPanel layerPanel = new LayerPanel();
+            LayerPanel layerPanel = this.layerPanel.getOrDefault(layer, new LayerPanel());
             JPanel panel1 = layerPanel.getPanel();
             container.add(panel1, layer.toString());
             layers.put(layer, layerPanel);
