@@ -5,6 +5,7 @@ import ru.crystals.pos.hw.events.keys.ControlKey;
 import ru.crystals.pos.hw.events.keys.TypedKey;
 import ru.crystals.pos.hw.events.listeners.ControlKeyListener;
 import ru.crystals.pos.hw.events.listeners.TypedKeyListener;
+import ru.crystals.pos.ui.forms.UIFormModel;
 
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
@@ -48,5 +49,14 @@ public class LayerPanel implements TypedKeyListener, ControlKeyListener {
         if (currentForm != null && currentForm instanceof TypedKeyListener) {
             ((TypedKeyListener)currentForm).onTypedKey(key);
         }
+    }
+
+    /**
+     * Установка модели для слоя.
+     * @param uiFormModel модель
+     * @return true - установлено, false - нет (слой эту модель не поддерживает)
+     */
+    public boolean setModel(UIFormModel uiFormModel) {
+        return false;
     }
 }

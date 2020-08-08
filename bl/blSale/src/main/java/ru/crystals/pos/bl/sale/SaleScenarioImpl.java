@@ -11,6 +11,9 @@ import ru.crystals.pos.bl.api.sale.SaleScenario;
 import ru.crystals.pos.hw.events.keys.FuncKey;
 import ru.crystals.pos.ui.UI;
 import ru.crystals.pos.ui.UILayer;
+import ru.crystals.pos.ui.forms.sale.PlitkiFormModel;
+
+import java.util.ArrayList;
 
 /**
  * Класс сценария продажи.
@@ -34,9 +37,16 @@ public class SaleScenarioImpl implements SaleScenario {
     //@Autowired
     private CompletedScenario registration;
 
+    private final PlitkiFormModel plitkiModel;
+
     public SaleScenarioImpl(UI ui, ScenarioManager scenarioManager) {
         this.ui = ui;
         this.scenarioManager = scenarioManager;
+        this.plitkiModel = new PlitkiFormModel(new ArrayList<>(), this::onPLitkaClick);
+    }
+
+    private void onPLitkaClick(String s) {
+        System.out.println("Plitka clicked " + s);
     }
 
     /**
@@ -98,6 +108,14 @@ public class SaleScenarioImpl implements SaleScenario {
     public void start() {
         // Тут в зависимости от состояния чека запускается нужный сценарий
         ui.setLayer(UILayer.SALE);
+        ui.setLayerModels(UILayer.SALE, plitkiModel);
+        plitkiModel.getPlitki().add("Пакет");
+        plitkiModel.getPlitki().add("Батон");
+        plitkiModel.getPlitki().add("Хлеб");
+        plitkiModel.getPlitki().add("Стакан");
+        plitkiModel.getPlitki().add("Туалет платный");
+        plitkiModel.getPlitki().add("Капучино");
+        plitkiModel.modelChanged();
         addItems();
     }
 

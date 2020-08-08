@@ -28,8 +28,18 @@ public class SwingUI implements UI {
     }
 
     @Override
+    public UILayer getCurrentLayer() {
+        return mainForm.getCurrentLayer();
+    }
+
+    @Override
     public void showForm(UIFormModel uiFormModel) {
         mainForm.showForm(uiFormModel);
+    }
+
+    @Override
+    public void setLayerModels(UILayer uiLayer, UIFormModel... models) {
+        mainForm.setLayerModels(uiLayer, models);
     }
 
     @Override

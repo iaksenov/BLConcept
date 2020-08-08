@@ -8,18 +8,31 @@ public interface UI {
 
     /**
      * Установить текущий слой
-     * @param uiLayer
+     * @param uiLayer слой
      */
     void setLayer(UILayer uiLayer);
 
     /**
-     * Показать форму в текущем слое.
+     * Получить текущий слой
+     * @return слой
+     */
+    UILayer getCurrentLayer();
+
+    /**
+     * Показать форму в текущем слое
      * @param uiForm модель формы
      */
     void showForm(UIFormModel uiForm);
 
     /**
-     * Показать форму в указанном слое.
+     * Передать модели для слоя
+     * @param uiLayer слой
+     * @param models модели
+     */
+    void setLayerModels(UILayer uiLayer, UIFormModel... models);
+
+    /**
+     * Показать форму в указанном слое
      * Слой будет сменен на указанный, если он еще не активен.
      * @param uiLayer слой
      * @param uiForm модель формы

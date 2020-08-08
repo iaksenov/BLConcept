@@ -72,4 +72,5 @@ public class LoginForm extends Form<LoginFormModel> implements ControlKeyListene
     public void onTypedKey(TypedKey key) {
         input.onTypedKey(key);
     }
+
 }

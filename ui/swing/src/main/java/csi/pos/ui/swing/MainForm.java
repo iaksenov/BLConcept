@@ -81,6 +81,10 @@ public class MainForm extends JFrame implements UIKeyListener {
         }
     }
 
+    public UILayer getCurrentLayer() {
+        return this.currentLayer;
+    }
+
     public void showForm(UIFormModel uiFormModel) {
         Form<UIFormModel> form = formsCatalog.get(uiFormModel);
         if (form != null) {
@@ -89,6 +93,18 @@ public class MainForm extends JFrame implements UIKeyListener {
             uiFormModel.setListener(form);
         } else {
             System.out.println("Form for model not implemented: " + uiFormModel.getClass());
+        }
+    }
+
+    public void setLayerModels(UILayer uiLayer, UIFormModel... models) {
+        if (models == null) {
+            return;
+        }
+        LayerPanel layerPanel = layers.get(uiLayer);
+        if (layerPanel != null) {
+            for (UIFormModel model : models) {
+                layerPanel.setModel(model);
+            }
         }
     }
 
