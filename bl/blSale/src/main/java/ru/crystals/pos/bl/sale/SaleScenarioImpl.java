@@ -2,9 +2,9 @@ package ru.crystals.pos.bl.sale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.crystals.pos.bl.LayersManager;
 import ru.crystals.pos.bl.ScenarioManager;
 import ru.crystals.pos.bl.api.CompletedScenario;
-import ru.crystals.pos.bl.api.login.LoginScenario;
 import ru.crystals.pos.bl.api.sale.AddPaymentsScenario;
 import ru.crystals.pos.bl.api.sale.CalcDiscountScenario;
 import ru.crystals.pos.bl.api.sale.SaleAddItemsScenario;
@@ -24,6 +24,7 @@ public class SaleScenarioImpl implements SaleScenario {
 
     private final UI ui;
     private final ScenarioManager scenarioManager;
+    private final LayersManager layersManager;
 
     // stage 1
     @Autowired
@@ -40,16 +41,17 @@ public class SaleScenarioImpl implements SaleScenario {
 
     private final PlitkiFormModel plitkiModel;
 
-    public SaleScenarioImpl(UI ui, ScenarioManager scenarioManager) {
+    public SaleScenarioImpl(UI ui, ScenarioManager scenarioManager, LayersManager layersManager) {
         this.ui = ui;
         this.scenarioManager = scenarioManager;
+        this.layersManager = layersManager;
         this.plitkiModel = new PlitkiFormModel(new ArrayList<>(), this::onPlitkaClick);
     }
 
     private void onPlitkaClick(String s) {
         System.out.println("Plitka clicked " + s);
         if (s.contains("EXIT")) {
-            scenarioManager.startScenario(LoginScenario.class);
+            layersManager.setLayer(UILayer.LOGIN);
         }
     }
 
@@ -57,14 +59,14 @@ public class SaleScenarioImpl implements SaleScenario {
      * Добавление позиций
      */
     private void addItems() {
-        scenarioManager.startSubScenario(this, addItemsScenario, this::calcDiscount, () -> {});
+        scenarioManager.startSubScenario(addItemsScenario, this::calcDiscount, () -> {});
     }
 
     /**
      * Расчет скидок
      */
     private void calcDiscount() {
-        scenarioManager.startSubScenario(this, calcDiscount, this::addPayments, this::onCancelDiscount);
+        scenarioManager.startSubScenario(calcDiscount, this::addPayments, this::onCancelDiscount);
     }
 
     private void onCancelDiscount() {
@@ -76,14 +78,14 @@ public class SaleScenarioImpl implements SaleScenario {
      * Добавление оплат
      */
     private void addPayments() {
-        scenarioManager.startSubScenario(this, addPayments, this::registerPurchase, this::calcDiscount);
+        scenarioManager.startSubScenario(addPayments, this::registerPurchase, this::calcDiscount);
     }
 
     /**
      * Регистрация чека
      */
     private void registerPurchase() {
-        scenarioManager.startSubScenario(this, registration, this::addItems, () -> {});
+        scenarioManager.startSubScenario(registration, this::addItems, () -> {});
     }
 
 
@@ -111,7 +113,6 @@ public class SaleScenarioImpl implements SaleScenario {
     @Override
     public void start() {
         // Тут в зависимости от состояния чека запускается нужный сценарий
-        ui.setLayer(UILayer.SALE);
         ui.setLayerModels(UILayer.SALE, plitkiModel);
         plitkiModel.getPlitki().clear();
         plitkiModel.getPlitki().add("-= EXIT =- ");
@@ -125,5 +126,10 @@ public class SaleScenarioImpl implements SaleScenario {
         addItems();
     }
 
+
+    @Override
+    public void onActivate() {
+
+    }
 
 }

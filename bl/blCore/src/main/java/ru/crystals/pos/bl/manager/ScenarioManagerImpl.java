@@ -6,9 +6,12 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 import ru.crystals.pos.bl.ScenarioManager;
 import ru.crystals.pos.bl.api.CompletedScenario;
+import ru.crystals.pos.bl.api.LayerScenario;
 import ru.crystals.pos.bl.api.Scenario;
 import ru.crystals.pos.bl.api.SimpleScenario;
 import ru.crystals.pos.bl.api.VoidListener;
+import ru.crystals.pos.ui.UI;
+import ru.crystals.pos.ui.UILayer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,14 +20,27 @@ import java.util.function.Consumer;
 @Component
 public final class ScenarioManagerImpl implements ScenarioManager, ApplicationContextAware {
 
-    private Scenario currentScenario;
-
-    // Map <child, parent>
-    private final Map<Scenario, Scenario> subScenarios = new HashMap<>();
-    // Map <parent, child>
-    private final Map<Scenario, Scenario> parentScenarios = new HashMap<>();
-
     private ApplicationContext applicationContext;
+
+    private final UI ui;
+
+    private UILayer currentLayer;
+
+    private final Map<UILayer, ScenariosTree> layersTrees = new HashMap<>();
+
+    public ScenarioManagerImpl(UI ui) {
+        this.ui = ui;
+    }
+
+    UILayer getCurrentLayer() {
+        return currentLayer;
+    }
+
+    void setCurrentLayer(UILayer currentLayer, LayerScenario layerScenario) {
+        this.currentLayer = currentLayer;
+        ui.setLayer(currentLayer);
+        layersTrees.putIfAbsent(currentLayer, new ScenariosTree(layerScenario));
+    }
 
     @Override
     public <T extends SimpleScenario> void startScenario(Class<T> scenarioClass) {
@@ -36,20 +52,26 @@ public final class ScenarioManagerImpl implements ScenarioManager, ApplicationCo
         }
     }
 
+    private ScenariosTree getTree() {
+        return layersTrees.get(currentLayer);
+    }
+
     @Override
     public void startScenario(SimpleScenario scenario) {
-        if (currentScenario != scenario && scenario != null) {
-            this.currentScenario = scenario;
-            scenario.start();
+        if (scenario == null) {
+            return;
         }
+        getTree().replaceCurrent(scenario);
+        scenario.start();
     }
 
     @Override
     public <T> void startScenario(CompletedScenario<T> scenario, Consumer<T> onComplete, VoidListener onCancel) {
-        if (currentScenario != scenario && scenario != null) {
-            this.currentScenario = scenario;
-            scenario.start(onComplete, onCancel);
+        if (scenario == null) {
+            return;
         }
+        getTree().replaceCurrent(scenario);
+        scenario.start(onComplete, onCancel);
     }
 
     @Override
@@ -58,31 +80,29 @@ public final class ScenarioManagerImpl implements ScenarioManager, ApplicationCo
     }
 
     @Override
-    public  <T> void startSubScenario(Scenario parent, CompletedScenario<T> subScenario, VoidListener onComplete, VoidListener onCancel) {
-        subScenarios.put(subScenario, parent);
-        parentScenarios.put(parent, subScenario);
-        startScenario(subScenario, c -> onSubScenarioFinish(parent, subScenario, onComplete), () -> onSubScenarioFinish(parent, subScenario, onCancel));
+    public  <T> void startSubScenario(CompletedScenario<T> subScenario, VoidListener onComplete, VoidListener onCancel) {
+        getTree().addChild(subScenario);
+        startScenario(subScenario, c -> onSubScenarioFinish(subScenario, onComplete), () -> onSubScenarioFinish(subScenario, onCancel));
     }
 
-    private void onSubScenarioFinish(Scenario parent, Scenario subScenario, VoidListener listener) {
-        subScenarios.remove(subScenario);
-        parentScenarios.remove(parent);
+    private void onSubScenarioFinish(Scenario subScenario, VoidListener listener) {
+        getTree().remove(subScenario);
         listener.call();
     }
 
     @Override
     public Scenario getCurrentScenario() {
-        return currentScenario;
+        return getTree().getCurrentScenario();
     }
 
     @Override
     public Scenario getParentScenario(Scenario subScenario) {
-        return subScenarios.get(subScenario);
+        return getTree().getParent(subScenario);
     }
 
     @Override
     public Scenario getSubScenario(Scenario parent) {
-        return parentScenarios.get(parent);
+        return getTree().getChild(parent);
     }
 
     @Override

@@ -4,8 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import ru.crystals.pos.bl.ScenarioManager;
-import ru.crystals.pos.bl.api.login.LoginScenario;
+import ru.crystals.pos.bl.LayersManager;
 import ru.crystals.pos.ui.UI;
 import ru.crystals.pos.ui.UILayer;
 import ru.crystals.pos.ui.forms.loading.LoadingFormModel;
@@ -53,9 +52,8 @@ public class Loader {
      * @param ctx spring контекст
      */
     public void startBL(AnnotationConfigApplicationContext ctx) {
-        ScenarioManager scenarioManager = ctx.getBean(ScenarioManager.class);
-        LoginScenario loginScenario = ctx.getBean(LoginScenario.class);
-        scenarioManager.startScenario(loginScenario);
+        LayersManager layersManager = ctx.getBean(LayersManager.class);
+        layersManager.setLayer(UILayer.LOGIN);
     }
 
 }

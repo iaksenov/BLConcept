@@ -46,7 +46,7 @@ public class HWEventListener {
                 processor.processEvent(event.getPayload());
             } catch (InterruptedException e) {
                 break;
-            }catch (Exception th){
+            } catch (Exception th){
                 th.printStackTrace();
             }
         }

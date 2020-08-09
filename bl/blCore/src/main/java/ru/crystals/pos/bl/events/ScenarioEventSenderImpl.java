@@ -12,16 +12,19 @@ import ru.crystals.pos.hw.events.listeners.MSRTracks;
 @Service
 public class ScenarioEventSenderImpl implements ScenarioEventSender {
 
-    private ScenarioManager scenarioManager;
+    private final ScenarioManager scenarioManager;
+    private final EventPreProcessor preProcessor;
 
-    public ScenarioEventSenderImpl(ScenarioManager scenarioManager) {
+    public ScenarioEventSenderImpl(ScenarioManager scenarioManager, EventPreProcessor preProcessor) {
         this.scenarioManager = scenarioManager;
+        this.preProcessor = preProcessor;
     }
 
     @Override
     public void onBarcode(String code) {
-        // preProcessor
-        processBarcode(code, scenarioManager.getCurrentScenario());
+        if (!preProcessor.preProcessBarcode(code)) {
+            processBarcode(code, scenarioManager.getCurrentScenario());
+        }
     }
 
     private void processBarcode(String code, Scenario scenario) {

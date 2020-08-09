@@ -25,7 +25,7 @@ public interface ScenarioManager {
 
     <T> void startScenario(CompletedScenario<T> scenario, VoidListener onComplete, VoidListener onCancel);
 
-    <T> void startSubScenario(Scenario parent, CompletedScenario<T> subScenario, VoidListener onComplete, VoidListener onCancel);
+    <T> void startSubScenario(CompletedScenario<T> subScenario, VoidListener onComplete, VoidListener onCancel);
 
     Scenario getCurrentScenario();
 

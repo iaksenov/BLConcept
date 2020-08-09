@@ -14,6 +14,7 @@ public class UserModuleImpl implements UserModule {
 
     private final UserDAO dao;
     private final ApplicationEventPublisher publisher;
+    private DBUser user;
 
     public UserModuleImpl(UserDAO dao, ApplicationEventPublisher publisher) {
         this.dao = dao;
@@ -41,8 +42,14 @@ public class UserModuleImpl implements UserModule {
         return user.orElseThrow(() -> new LoginFailedException("Пользователь не найден"));
     }
 
+    @Override
+    public boolean isCurrentUserBarcode(String barcode) {
+        return user != null && user.getBarcode().equals(barcode);
+    }
+
     private void dispatchEvent(Optional<DBUser> user) {
         if (user.isPresent()) {
+            this.user = user.get();
             publisher.publishEvent(new UserAuthorisedEvent(this, user.get()));
         }
     }

@@ -1,11 +1,13 @@
 package ru.crystals.pos.bl;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import ru.crystals.pos.bl.api.login.LoginScenario;
-import ru.crystals.pos.bl.api.sale.SaleScenario;
 import ru.crystals.pos.hw.events.listeners.MSRTracks;
 import ru.crystals.pos.ui.UI;
 import ru.crystals.pos.ui.UILayer;
+import ru.crystals.pos.ui.events.POSStatusEvent;
 import ru.crystals.pos.ui.forms.loading.LoginFormModel;
 import ru.crystals.pos.ui.label.Label;
 import ru.crystals.pos.user.LoginFailedException;
@@ -17,20 +19,18 @@ import ru.crystals.pos.user.UserRight;
 public class LoginScenarioImpl implements LoginScenario {
 
     private final UI ui;
-    private final ScenarioManager scenarioManager;
+    private final LayersManager layersManager;
     private final UserModule userModule;
+
+    @Autowired
+    private ApplicationEventPublisher publisher;
 
     private LoginFormModel model;
 
-    public LoginScenarioImpl(UI ui, ScenarioManager scenarioManager, UserModule userModule) {
+    public LoginScenarioImpl(UI ui, LayersManager layersManager, UserModule userModule) {
         this.ui = ui;
-        this.scenarioManager = scenarioManager;
+        this.layersManager = layersManager;
         this.userModule = userModule;
-    }
-
-    @Override
-    public void start() {
-        this.model = showLoginForm("");
     }
 
     private LoginFormModel showLoginForm(String errorText) {
@@ -38,7 +38,7 @@ public class LoginScenarioImpl implements LoginScenario {
             getInfoText(),
             Label.error(errorText),
             this::onPasswordEntered);
-        ui.showForm(UILayer.LOGIN, model);
+        ui.showForm(model);
         return model;
     }
 
@@ -79,7 +79,7 @@ public class LoginScenarioImpl implements LoginScenario {
     private void startNextScenario(User user) {
         showLoginForm(user.getFirstName() + " ");
         if (user.hasRight(UserRight.SALE)) {
-            scenarioManager.startScenario(SaleScenario.class);
+            layersManager.setLayer(UILayer.SALE);
         } else if (user.hasRight(UserRight.SHIFT)) {
             showLoginForm(user.getFirstName() + " еще не реализовано");
         } else if (user.hasRight(UserRight.CONFIGURATION)) {
@@ -93,6 +93,19 @@ public class LoginScenarioImpl implements LoginScenario {
 
     private String getShiftText() {
         return "Открыта смена №00";
+    }
+
+    @Override
+    public void onActivate() {
+        start();
+    }
+
+    @Override
+    public void start() {
+        this.model = showLoginForm("");
+        POSStatusEvent event = new POSStatusEvent();
+        event.setCurrentCashierFIO("нет кассира");
+        publisher.publishEvent(event);
     }
 
 }

@@ -1,9 +1,15 @@
 package ru.crystals.pos.bl.api.login;
 
-import ru.crystals.pos.bl.api.SimpleScenario;
+import ru.crystals.pos.bl.api.LayerScenario;
 import ru.crystals.pos.hw.events.listeners.BarcodeListener;
 import ru.crystals.pos.hw.events.listeners.MSRListener;
+import ru.crystals.pos.ui.UILayer;
 
-public interface LoginScenario extends SimpleScenario, BarcodeListener, MSRListener {
+public interface LoginScenario extends BarcodeListener, MSRListener, LayerScenario {
+
+    @Override
+    default UILayer getLayer() {
+        return UILayer.LOGIN;
+    }
 
 }
