@@ -12,6 +12,11 @@ import java.util.function.Consumer;
  */
 public interface ScenarioManager {
 
+    /**
+     * Запуск сценария по классу. Выполняется поиск единственной реализации в контексте.
+     * @param scenarioClass класс сценария
+     * @param <T>
+     */
     <T extends SimpleScenario> void startScenario(Class<T> scenarioClass);
 
     void startScenario(SimpleScenario scenario);

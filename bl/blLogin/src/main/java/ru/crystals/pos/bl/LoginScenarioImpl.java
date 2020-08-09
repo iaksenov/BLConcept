@@ -19,16 +19,13 @@ public class LoginScenarioImpl implements LoginScenario {
     private final UI ui;
     private final ScenarioManager scenarioManager;
     private final UserModule userModule;
-    private final SaleScenario saleScenario;
 
     private LoginFormModel model;
 
-    public LoginScenarioImpl(UI ui, ScenarioManager scenarioManager,
-                             UserModule userModule, SaleScenario saleScenario) {
+    public LoginScenarioImpl(UI ui, ScenarioManager scenarioManager, UserModule userModule) {
         this.ui = ui;
         this.scenarioManager = scenarioManager;
         this.userModule = userModule;
-        this.saleScenario = saleScenario;
     }
 
     @Override
@@ -82,7 +79,7 @@ public class LoginScenarioImpl implements LoginScenario {
     private void startNextScenario(User user) {
         showLoginForm(user.getFirstName() + " ");
         if (user.hasRight(UserRight.SALE)) {
-            scenarioManager.startScenario(saleScenario);
+            scenarioManager.startScenario(SaleScenario.class);
         } else if (user.hasRight(UserRight.SHIFT)) {
             showLoginForm(user.getFirstName() + " еще не реализовано");
         } else if (user.hasRight(UserRight.CONFIGURATION)) {
