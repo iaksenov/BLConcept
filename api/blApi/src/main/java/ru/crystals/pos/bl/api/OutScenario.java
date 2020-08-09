@@ -4,10 +4,10 @@ import java.util.function.Consumer;
 
 /**
  * Интерфейс сценария с двумя исходами: результат и отмена
- * @param <Result> тип результата
+ * @param <R> тип результата
  */
-public interface CompletedScenario<Result> extends Scenario {
+public interface OutScenario<R> extends Scenario {
 
-    void start(Consumer<Result> onComplete, VoidListener onCancel);
+    void start(Consumer<R> onComplete, VoidListener onCancel);
 
 }

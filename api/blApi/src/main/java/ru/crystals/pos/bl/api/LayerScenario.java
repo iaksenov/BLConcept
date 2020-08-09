@@ -4,6 +4,10 @@ import ru.crystals.pos.ui.UILayer;
 
 public interface LayerScenario extends Scenario {
 
+    /**
+     * Слой сцнария
+     * @return слой
+     */
     UILayer getLayer();
 
     /**
@@ -19,6 +23,6 @@ public interface LayerScenario extends Scenario {
     /**
      * при возобновлении
      */
-    void onActivate();
+    void onResume();
 
 }

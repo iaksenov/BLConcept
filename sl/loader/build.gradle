@@ -11,6 +11,7 @@ dependencies {
         project(':bl:blCore'),
         project(':bl:blLogin'),
         project(':bl:blSale'),
+        project(':bl:blGoodsPlugins'),
 
         project(':il:db:userApi'),
         project(':il:db:user'),

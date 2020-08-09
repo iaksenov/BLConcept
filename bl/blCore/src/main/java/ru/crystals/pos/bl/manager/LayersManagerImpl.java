@@ -44,7 +44,7 @@ public class LayersManagerImpl implements LayersManager {
         setCurrentLayer(layer, layerScenario);
         if (isSuspended(layerScenario)) {
             suspended.remove(layerScenario);
-            layerScenario.onActivate();
+            layerScenario.onResume();
         } else {
             layerScenario.start();
         }

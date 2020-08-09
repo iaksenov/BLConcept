@@ -5,8 +5,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 import ru.crystals.pos.bl.ScenarioManager;
-import ru.crystals.pos.bl.api.CompletedScenario;
+import ru.crystals.pos.bl.api.InOutScenario;
 import ru.crystals.pos.bl.api.LayerScenario;
+import ru.crystals.pos.bl.api.OutScenario;
 import ru.crystals.pos.bl.api.Scenario;
 import ru.crystals.pos.bl.api.SimpleScenario;
 import ru.crystals.pos.bl.api.VoidListener;
@@ -66,27 +67,42 @@ public final class ScenarioManagerImpl implements ScenarioManager, ApplicationCo
     }
 
     @Override
-    public <T> void startScenario(CompletedScenario<T> scenario, Consumer<T> onComplete, VoidListener onCancel) {
+    public <O> void startScenario(OutScenario<O> scenario, Consumer<O> onComplete, VoidListener onCancel) {
         if (scenario == null) {
             return;
         }
         getTree().replaceCurrent(scenario);
-        scenario.start(onComplete, onCancel);
+        scenario.start(o -> onScenarioComplete(scenario, onComplete, o), () -> onScenarioCancel(scenario, onCancel));
     }
 
     @Override
-    public <T> void startScenario(CompletedScenario<T> scenario, VoidListener onComplete, VoidListener onCancel) {
-        startScenario(scenario, c -> onComplete.call(), onCancel);
-    }
-
-    @Override
-    public  <T> void startSubScenario(CompletedScenario<T> subScenario, VoidListener onComplete, VoidListener onCancel) {
+    public <O> void startSubScenario(OutScenario<O> subScenario, Consumer<O> onComplete, VoidListener onCancel) {
         getTree().addChild(subScenario);
-        startScenario(subScenario, c -> onSubScenarioFinish(subScenario, onComplete), () -> onSubScenarioFinish(subScenario, onCancel));
+        startScenario(subScenario, c -> onScenarioComplete(subScenario, onComplete, c), () -> onScenarioCancel(subScenario, onCancel));
     }
 
-    private void onSubScenarioFinish(Scenario subScenario, VoidListener listener) {
-        getTree().remove(subScenario);
+    @Override
+    public <O> void startSubScenario(OutScenario<O> subScenario, VoidListener onComplete, VoidListener onCancel) {
+        getTree().addChild(subScenario);
+        startScenario(subScenario, c -> onScenarioCancel(subScenario, onComplete), () -> onScenarioCancel(subScenario, onCancel));
+    }
+
+    @Override
+    public <I, O> void startSubScenario(InOutScenario<I, O> subScenario, I arg, Consumer<O> onComplete, VoidListener onCancel) {
+        if (subScenario == null) {
+            return;
+        }
+        getTree().addChild(subScenario);
+        subScenario.start(arg, o -> onScenarioComplete(subScenario, onComplete, o), () -> onScenarioCancel(subScenario, onCancel));
+    }
+
+    private <O> void onScenarioComplete(Scenario scenario, Consumer<O> onComplete, O o) {
+        getTree().remove(scenario);
+        onComplete.accept(o);
+    }
+
+    private void onScenarioCancel(Scenario scenario, VoidListener listener) {
+        getTree().remove(scenario);
         listener.call();
     }
 

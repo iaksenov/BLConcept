@@ -1,8 +1,8 @@
 package ru.crystals.pos.bl.api.sale;
 
-import ru.crystals.pos.bl.api.CompletedScenario;
+import ru.crystals.pos.bl.api.OutScenario;
 
-public interface AddPaymentsScenario extends CompletedScenario<Void> {
+public interface AddPaymentsScenario extends OutScenario<Void> {
 
     void setPreferredPayment(String paymentName);
 

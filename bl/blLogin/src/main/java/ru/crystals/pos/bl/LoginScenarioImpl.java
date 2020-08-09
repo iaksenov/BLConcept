@@ -96,7 +96,7 @@ public class LoginScenarioImpl implements LoginScenario {
     }
 
     @Override
-    public void onActivate() {
+    public void onResume() {
         start();
     }
 

@@ -1,6 +1,7 @@
 package ru.crystals.pos.bl;
 
-import ru.crystals.pos.bl.api.CompletedScenario;
+import ru.crystals.pos.bl.api.InOutScenario;
+import ru.crystals.pos.bl.api.OutScenario;
 import ru.crystals.pos.bl.api.Scenario;
 import ru.crystals.pos.bl.api.SimpleScenario;
 import ru.crystals.pos.bl.api.VoidListener;
@@ -21,11 +22,13 @@ public interface ScenarioManager {
 
     void startScenario(SimpleScenario scenario);
 
-    <T> void startScenario(CompletedScenario<T> scenario, Consumer<T> onComplete, VoidListener onCancel);
+    <O> void startScenario(OutScenario<O> scenario, Consumer<O> onComplete, VoidListener onCancel);
 
-    <T> void startScenario(CompletedScenario<T> scenario, VoidListener onComplete, VoidListener onCancel);
+    <O> void startSubScenario(OutScenario<O> subScenario, Consumer<O> onComplete, VoidListener onCancel);
 
-    <T> void startSubScenario(CompletedScenario<T> subScenario, VoidListener onComplete, VoidListener onCancel);
+    <O> void startSubScenario(OutScenario<O> subScenario, VoidListener onComplete, VoidListener onCancel);
+
+    <I, O> void startSubScenario(InOutScenario<I, O> subScenario, I arg, Consumer<O> onComplete, VoidListener onCancel);
 
     Scenario getCurrentScenario();
 

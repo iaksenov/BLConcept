@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.crystals.pos.bl.LayersManager;
 import ru.crystals.pos.bl.ScenarioManager;
-import ru.crystals.pos.bl.api.CompletedScenario;
+import ru.crystals.pos.bl.api.OutScenario;
 import ru.crystals.pos.bl.api.sale.AddPaymentsScenario;
 import ru.crystals.pos.bl.api.sale.CalcDiscountScenario;
 import ru.crystals.pos.bl.api.sale.SaleAddItemsScenario;
@@ -37,7 +37,7 @@ public class SaleScenarioImpl implements SaleScenario {
     private AddPaymentsScenario addPayments;
     // stage 4
     //@Autowired
-    private CompletedScenario registration;
+    private OutScenario registration;
 
     private final PlitkiFormModel plitkiModel;
 
@@ -52,6 +52,10 @@ public class SaleScenarioImpl implements SaleScenario {
         System.out.println("Plitka clicked " + s);
         if (s.contains("EXIT")) {
             layersManager.setLayer(UILayer.LOGIN);
+        } else {
+            if (scenarioManager.getSubScenario(this) == addItemsScenario) {
+                addItemsScenario.showProductPlugin(s);
+            }
         }
     }
 
@@ -116,11 +120,11 @@ public class SaleScenarioImpl implements SaleScenario {
         ui.setLayerModels(UILayer.SALE, plitkiModel);
         plitkiModel.getPlitki().clear();
         plitkiModel.getPlitki().add("-= EXIT =- ");
-        plitkiModel.getPlitki().add("Пакет");
-        plitkiModel.getPlitki().add("Батон");
-        plitkiModel.getPlitki().add("Хлеб");
-        plitkiModel.getPlitki().add("Стакан");
-        plitkiModel.getPlitki().add("Туалет платный");
+        plitkiModel.getPlitki().add("Кефир");
+        plitkiModel.getPlitki().add("Полбатона");
+        plitkiModel.getPlitki().add("Вода");
+        plitkiModel.getPlitki().add("Спички");
+        plitkiModel.getPlitki().add("Туалет");
         plitkiModel.getPlitki().add("Капучино");
         plitkiModel.modelChanged();
         addItems();
@@ -128,7 +132,7 @@ public class SaleScenarioImpl implements SaleScenario {
 
 
     @Override
-    public void onActivate() {
+    public void onResume() {
 
     }
 
