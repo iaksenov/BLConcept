@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.crystals.pos.bl.ScenarioManager;
 import ru.crystals.pos.bl.api.CompletedScenario;
+import ru.crystals.pos.bl.api.login.LoginScenario;
 import ru.crystals.pos.bl.api.sale.AddPaymentsScenario;
 import ru.crystals.pos.bl.api.sale.CalcDiscountScenario;
 import ru.crystals.pos.bl.api.sale.SaleAddItemsScenario;
@@ -42,11 +43,14 @@ public class SaleScenarioImpl implements SaleScenario {
     public SaleScenarioImpl(UI ui, ScenarioManager scenarioManager) {
         this.ui = ui;
         this.scenarioManager = scenarioManager;
-        this.plitkiModel = new PlitkiFormModel(new ArrayList<>(), this::onPLitkaClick);
+        this.plitkiModel = new PlitkiFormModel(new ArrayList<>(), this::onPlitkaClick);
     }
 
-    private void onPLitkaClick(String s) {
+    private void onPlitkaClick(String s) {
         System.out.println("Plitka clicked " + s);
+        if (s.contains("EXIT")) {
+            scenarioManager.startScenario(LoginScenario.class);
+        }
     }
 
     /**
@@ -109,6 +113,8 @@ public class SaleScenarioImpl implements SaleScenario {
         // Тут в зависимости от состояния чека запускается нужный сценарий
         ui.setLayer(UILayer.SALE);
         ui.setLayerModels(UILayer.SALE, plitkiModel);
+        plitkiModel.getPlitki().clear();
+        plitkiModel.getPlitki().add("-= EXIT =- ");
         plitkiModel.getPlitki().add("Пакет");
         plitkiModel.getPlitki().add("Батон");
         plitkiModel.getPlitki().add("Хлеб");

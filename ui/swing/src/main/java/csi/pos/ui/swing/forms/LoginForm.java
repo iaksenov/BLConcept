@@ -55,7 +55,7 @@ public class LoginForm extends Form<LoginFormModel> implements ControlKeyListene
         title.setText(model.getTitle());
         info.setText(model.getInfoLabel() == null ? "" : model.getInfoLabel().getText());
         error.setText(model.getLoginFailedText() == null ? "" : model.getLoginFailedText().getText());
-        passwordCallback = model.getPasswordCallback();
+        passwordCallback = model.getCallback();
     }
 
     @Override

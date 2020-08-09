@@ -12,6 +12,8 @@ import java.util.function.Consumer;
  */
 public interface ScenarioManager {
 
+    <T extends SimpleScenario> void startScenario(Class<T> scenarioClass);
+
     void startScenario(SimpleScenario scenario);
 
     <T> void startScenario(CompletedScenario<T> scenario, Consumer<T> onComplete, VoidListener onCancel);

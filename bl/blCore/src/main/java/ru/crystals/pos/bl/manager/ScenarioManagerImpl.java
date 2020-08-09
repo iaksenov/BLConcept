@@ -1,5 +1,8 @@
 package ru.crystals.pos.bl.manager;
 
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 import ru.crystals.pos.bl.ScenarioManager;
 import ru.crystals.pos.bl.api.CompletedScenario;
@@ -12,7 +15,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 @Component
-public final class ScenarioManagerImpl implements ScenarioManager {
+public final class ScenarioManagerImpl implements ScenarioManager, ApplicationContextAware {
 
     private Scenario currentScenario;
 
@@ -20,6 +23,18 @@ public final class ScenarioManagerImpl implements ScenarioManager {
     private final Map<Scenario, Scenario> subScenarios = new HashMap<>();
     // Map <parent, child>
     private final Map<Scenario, Scenario> parentScenarios = new HashMap<>();
+
+    private ApplicationContext applicationContext;
+
+    @Override
+    public <T extends SimpleScenario> void startScenario(Class<T> scenarioClass) {
+        try {
+            T bean = applicationContext.getBean(scenarioClass);
+            startScenario(bean);
+        } catch (BeansException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void startScenario(SimpleScenario scenario) {
@@ -70,4 +85,8 @@ public final class ScenarioManagerImpl implements ScenarioManager {
         return parentScenarios.get(parent);
     }
 
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 }
