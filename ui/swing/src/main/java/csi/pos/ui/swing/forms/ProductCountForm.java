@@ -7,13 +7,14 @@ import ru.crystals.pos.hw.events.keys.ControlKeyType;
 import ru.crystals.pos.hw.events.keys.TypedKey;
 import ru.crystals.pos.hw.events.listeners.ControlKeyListener;
 import ru.crystals.pos.hw.events.listeners.TypedKeyListener;
-import ru.crystals.pos.ui.callback.ResultOrCancelCallback;
 import ru.crystals.pos.ui.forms.sale.ProductCountModel;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 @Component
 public class ProductCountForm  extends Form<ProductCountModel>  implements ControlKeyListener, TypedKeyListener {
@@ -21,7 +22,7 @@ public class ProductCountForm  extends Form<ProductCountModel>  implements Contr
     private JLabel productName;
     private JLabel countHint;
     private InputLabel input;
-    private ResultOrCancelCallback<Integer> inputCallback;
+    private Consumer<Optional<Integer>> inputCallback;
 
     @Override
     public JPanel create() {
@@ -48,10 +49,10 @@ public class ProductCountForm  extends Form<ProductCountModel>  implements Contr
     @Override
     public void onControlKey(ControlKey controlKey) {
         if (ControlKeyType.ENTER == controlKey.getControlKeyType() && inputCallback != null) {
-            inputCallback.onEntered(Integer.valueOf(input.getText().trim()));
+            inputCallback.accept(Optional.of(Integer.valueOf(input.getText().trim())));
             input.setText("");
         } else if (ControlKeyType.ESC == controlKey.getControlKeyType() && input.getText().trim().length() == 0) {
-            inputCallback.onCancel();
+            inputCallback.accept(Optional.empty());
         } else {
             input.onControlKey(controlKey);
         }

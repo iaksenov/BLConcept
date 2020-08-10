@@ -9,6 +9,7 @@ dependencies {
         project(':api:blApi'),
 
         project(':bl:blCore'),
+        project(':bl:blCommon'),
         project(':bl:blLogin'),
         project(':bl:blSale'),
         project(':bl:blGoodsPlugins'),

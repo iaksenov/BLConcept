@@ -1,12 +1,12 @@
 package ru.crystals.pos.bl.api.sale;
 
-import ru.crystals.pos.bl.api.OutScenario;
+import ru.crystals.pos.bl.api.CompleteScenario;
 import ru.crystals.pos.hw.events.listeners.BarcodeListener;
 import ru.crystals.pos.hw.events.listeners.MSRListener;
 
-public interface SaleAddItemsScenario extends OutScenario<Void>, BarcodeListener, MSRListener {
+public interface SaleAddItemsScenario extends CompleteScenario, BarcodeListener, MSRListener {
 
-    void showProductPlugin(String s);
+    void searchProduct(String searchString);
 
     /**
      * Если можно завершиться, то выполнить необходимое и вызвать onComplete

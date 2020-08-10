@@ -1,9 +1,10 @@
 package ru.crystals.pos.bl.api.sale;
 
-import ru.crystals.pos.bl.api.OutScenario;
+import ru.crystals.pos.bl.api.InCompleteCancelScenario;
+import ru.crystals.pos.bl.api.listener.VoidListener;
 
-public interface AddPaymentsScenario extends OutScenario<Void> {
+public interface AddPaymentsScenario extends InCompleteCancelScenario<String> {
 
-    void setPreferredPayment(String paymentName);
+    void start(String prefferedPaymentType, VoidListener onComplete, VoidListener onCancel);
 
 }

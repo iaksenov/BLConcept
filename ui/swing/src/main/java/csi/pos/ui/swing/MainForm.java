@@ -92,7 +92,7 @@ public class MainForm extends JFrame implements UIKeyListener {
             form.onModelChanged(uiFormModel);
             uiFormModel.setListener(form);
         } else {
-            System.out.println("Form for model not implemented: " + uiFormModel.getClass());
+            System.err.println("Form for model not implemented: " + uiFormModel.getClass());
         }
     }
 

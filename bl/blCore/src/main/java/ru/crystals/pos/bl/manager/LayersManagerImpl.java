@@ -3,7 +3,7 @@ package ru.crystals.pos.bl.manager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.crystals.pos.bl.LayersManager;
-import ru.crystals.pos.bl.api.LayerScenario;
+import ru.crystals.pos.bl.api.layer.LayerScenario;
 import ru.crystals.pos.ui.UI;
 import ru.crystals.pos.ui.UILayer;
 

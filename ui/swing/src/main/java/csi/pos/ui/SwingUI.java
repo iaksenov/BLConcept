@@ -42,10 +42,4 @@ public class SwingUI implements UI {
         mainForm.setLayerModels(uiLayer, models);
     }
 
-    @Override
-    public void showForm(UILayer uiLayer, UIFormModel uiFormModel) {
-        mainForm.setLayer(uiLayer);
-        mainForm.showForm(uiFormModel);
-    }
-
 }

@@ -102,7 +102,7 @@ public class SalePanel extends LayerPanel {
                 break;
             }
         }
-        this.plitkaConsumer = model.getSelected();
+        this.plitkaConsumer = model.getCallback();
     }
 
 }

@@ -36,7 +36,8 @@ public class Loader {
 
         UI ui = context1.getBean(UI.class);
         LoadingFormModel loadingFormModel = new LoadingFormModel("Загрузка", "v0.0.1");
-        ui.showForm(UILayer.START, loadingFormModel);
+        ui.setLayer(UILayer.START);
+        ui.showForm(loadingFormModel);
 
         //Thread.sleep(1500L); //
 

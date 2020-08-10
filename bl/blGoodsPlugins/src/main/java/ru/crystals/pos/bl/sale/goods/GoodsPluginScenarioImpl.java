@@ -1,15 +1,15 @@
 package ru.crystals.pos.bl.sale.goods;
 
 import org.springframework.stereotype.Component;
-import ru.crystals.pos.bl.api.VoidListener;
+import ru.crystals.pos.bl.api.listener.VoidListener;
 import ru.crystals.pos.bl.api.sale.goods.GoodsPluginScenario;
 import ru.crystals.pos.bl.api.sale.goods.Position;
 import ru.crystals.pos.bl.api.sale.goods.Product;
 import ru.crystals.pos.ui.UI;
-import ru.crystals.pos.ui.callback.ResultOrCancelCallback;
 import ru.crystals.pos.ui.forms.sale.ProductCountModel;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 @Component
@@ -30,18 +30,16 @@ public class GoodsPluginScenarioImpl implements GoodsPluginScenario {
         this.product = product;
         this.onComplete = onComplete;
         this.onCancel = onCancel;
-        model = new ProductCountModel(product.getProductName(), "введите кол-во", new ResultOrCancelCallback<Integer>() {
-            @Override
-            public void onEntered(Integer result) {
-                onCountEntered(result);
-            }
-
-            @Override
-            public void onCancel() {
-                onCancel.call();
-            }
-        });
+        model = new ProductCountModel(product.getProductName(), "введите кол-во", this::onResult);
         ui.showForm(model);
+    }
+
+    private void onResult(Optional<Integer> result) {
+        if (result.isPresent()) {
+            onCountEntered(result.get());
+        } else {
+            onCancel.call();
+        }
     }
 
     private void onCountEntered(Integer integer) {

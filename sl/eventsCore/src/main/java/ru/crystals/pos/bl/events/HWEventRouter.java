@@ -37,9 +37,13 @@ public class HWEventRouter {
     }
 
     public <T extends HWEventPayload> void processEvent(T event) {
-        Class<? extends HWEventPayload> aClass = event.getClass();
-        Consumer<T> consumer = (Consumer<T>) consumers.get(aClass);
-        consumer.accept(event);
+        if (scenarioEventSender.isIgnoreCurrentEvents()) {
+            System.out.println("Ignore event " + event);
+        } else {
+            Class<? extends HWEventPayload> aClass = event.getClass();
+            Consumer<T> consumer = (Consumer<T>) consumers.get(aClass);
+            consumer.accept(event);
+        }
     }
 
     // send to UI

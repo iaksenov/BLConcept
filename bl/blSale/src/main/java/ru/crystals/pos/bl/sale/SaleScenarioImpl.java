@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.crystals.pos.bl.LayersManager;
 import ru.crystals.pos.bl.ScenarioManager;
-import ru.crystals.pos.bl.api.OutScenario;
 import ru.crystals.pos.bl.api.sale.AddPaymentsScenario;
 import ru.crystals.pos.bl.api.sale.CalcDiscountScenario;
+import ru.crystals.pos.bl.api.sale.RegisterPurchaseScenario;
 import ru.crystals.pos.bl.api.sale.SaleAddItemsScenario;
 import ru.crystals.pos.bl.api.sale.SaleScenario;
 import ru.crystals.pos.hw.events.keys.FuncKey;
@@ -37,7 +37,7 @@ public class SaleScenarioImpl implements SaleScenario {
     private AddPaymentsScenario addPayments;
     // stage 4
     //@Autowired
-    private OutScenario registration;
+    private RegisterPurchaseScenario registerPurchase;
 
     private final PlitkiFormModel plitkiModel;
 
@@ -53,8 +53,8 @@ public class SaleScenarioImpl implements SaleScenario {
         if (s.contains("EXIT")) {
             layersManager.setLayer(UILayer.LOGIN);
         } else {
-            if (scenarioManager.getSubScenario(this) == addItemsScenario) {
-                addItemsScenario.showProductPlugin(s);
+            if (scenarioManager.getChildScenario(this) == addItemsScenario) {
+                addItemsScenario.searchProduct(s);
             }
         }
     }
@@ -63,18 +63,17 @@ public class SaleScenarioImpl implements SaleScenario {
      * Добавление позиций
      */
     private void addItems() {
-        scenarioManager.startSubScenario(addItemsScenario, this::calcDiscount, () -> {});
+        scenarioManager.startChild(addItemsScenario, this::calcDiscount);
     }
 
     /**
      * Расчет скидок
      */
     private void calcDiscount() {
-        scenarioManager.startSubScenario(calcDiscount, this::addPayments, this::onCancelDiscount);
+        scenarioManager.startChild(calcDiscount, this::addPayments, this::onCancelDiscount);
     }
 
     private void onCancelDiscount() {
-        addPayments.setPreferredPayment(null);
         addItems();
     }
 
@@ -82,14 +81,14 @@ public class SaleScenarioImpl implements SaleScenario {
      * Добавление оплат
      */
     private void addPayments() {
-        scenarioManager.startSubScenario(addPayments, this::registerPurchase, this::calcDiscount);
+        scenarioManager.startChild(addPayments, null, this::registerPurchase, this::calcDiscount);
     }
 
     /**
      * Регистрация чека
      */
     private void registerPurchase() {
-        scenarioManager.startSubScenario(registration, this::addItems, () -> {});
+        scenarioManager.startChild(registerPurchase, this::addItems);
     }
 
 
@@ -104,12 +103,11 @@ public class SaleScenarioImpl implements SaleScenario {
     }
 
     private void doPayment(String paymentName) {
-        addPayments.setPreferredPayment(paymentName);
         doSubtotal();
     }
 
     private void doSubtotal() {
-        if (scenarioManager.getSubScenario(this) == addItemsScenario) {
+        if (scenarioManager.getChildScenario(this) == addItemsScenario) {
             addItemsScenario.doFinish();
         }
     }

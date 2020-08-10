@@ -1,4 +1,4 @@
-package ru.crystals.pos.bl.api;
+package ru.crystals.pos.bl.api.listener;
 
 @FunctionalInterface
 public interface VoidListener {

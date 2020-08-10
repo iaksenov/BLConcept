@@ -3,11 +3,13 @@ package ru.crystals.pos.bl.events;
 import org.springframework.stereotype.Service;
 import ru.crystals.pos.bl.ScenarioManager;
 import ru.crystals.pos.bl.api.Scenario;
+import ru.crystals.pos.bl.api.marker.IgnoreAllEvents;
 import ru.crystals.pos.hw.events.keys.FuncKey;
 import ru.crystals.pos.hw.events.listeners.BarcodeListener;
 import ru.crystals.pos.hw.events.listeners.FuncKeyListener;
 import ru.crystals.pos.hw.events.listeners.MSRListener;
 import ru.crystals.pos.hw.events.listeners.MSRTracks;
+import ru.crystals.pos.hw.events.ru.crystals.pos.hw.interceptor.CallbackInterceptor;
 
 @Service
 public class ScenarioEventSenderImpl implements ScenarioEventSender {
@@ -18,6 +20,7 @@ public class ScenarioEventSenderImpl implements ScenarioEventSender {
     public ScenarioEventSenderImpl(ScenarioManager scenarioManager, EventPreProcessor preProcessor) {
         this.scenarioManager = scenarioManager;
         this.preProcessor = preProcessor;
+        CallbackInterceptor.setCheckIgnore(this::isIgnoreCurrentEvents);
     }
 
     @Override
@@ -53,6 +56,11 @@ public class ScenarioEventSenderImpl implements ScenarioEventSender {
     public void onMSR(MSRTracks msrTracks) {
         // preProcessor
         processMSR(msrTracks, scenarioManager.getCurrentScenario());
+    }
+
+    @Override
+    public boolean isIgnoreCurrentEvents() {
+        return scenarioManager.getCurrentScenario() instanceof IgnoreAllEvents;
     }
 
     private void processMSR(MSRTracks msrTracks, Scenario scenario) {

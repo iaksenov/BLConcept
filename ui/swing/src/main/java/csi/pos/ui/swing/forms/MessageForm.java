@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 import ru.crystals.pos.hw.events.keys.ControlKey;
 import ru.crystals.pos.hw.events.keys.ControlKeyType;
 import ru.crystals.pos.hw.events.listeners.ControlKeyListener;
-import ru.crystals.pos.ui.callback.ConfirmCallback;
 import ru.crystals.pos.ui.forms.message.MessageFormModel;
 
 import javax.swing.JComponent;
@@ -18,11 +17,11 @@ import java.awt.Font;
 public class MessageForm extends Form<MessageFormModel> implements ControlKeyListener {
 
     private JLabel messageLabel;
-    private ConfirmCallback confirm;
+    private Runnable callback;
 
     @Override
     public JComponent create() {
-        JPanel panel = new JPanel();
+        JPanel panel = new JPanel(new BorderLayout(10,10));
         messageLabel = new JLabel();
         messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         messageLabel.setVerticalAlignment(SwingConstants.CENTER);
@@ -39,14 +38,14 @@ public class MessageForm extends Form<MessageFormModel> implements ControlKeyLis
     @Override
     public void onModelChanged(MessageFormModel model) {
         messageLabel.setText(model.getMessage());
-        confirm = model.getConfirm();
+        callback = model.getCallback();
     }
 
 
     @Override
     public void onControlKey(ControlKey controlKey) {
         if (ControlKeyType.ENTER == controlKey.getControlKeyType() || ControlKeyType.ESC == controlKey.getControlKeyType()) {
-            confirm.confirm();
+            callback.run();
         }
     }
 

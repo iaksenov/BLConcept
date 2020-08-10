@@ -1,7 +1,7 @@
 package ru.crystals.pos.bl.manager;
 
-import ru.crystals.pos.bl.api.LayerScenario;
 import ru.crystals.pos.bl.api.Scenario;
+import ru.crystals.pos.bl.api.layer.LayerScenario;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ public class ScenariosTree {
         this.layerScenario = layerScenario;
     }
 
-    public Scenario getCurrentScenario() {
+    public Scenario getLast() {
         return scenarioList.isEmpty() ? layerScenario : scenarioList.get(scenarioList.size() - 1);
     }
 
@@ -25,7 +25,7 @@ public class ScenariosTree {
         log();
     }
 
-    public void replaceCurrent(Scenario scenario) {
+    public void replaceLast(Scenario scenario) {
         try {
             if (scenarioList.isEmpty()) {
                 scenarioList.add(scenario);
@@ -38,7 +38,12 @@ public class ScenariosTree {
     }
 
     public void remove(Scenario scenario) {
-        scenarioList.remove(scenario);
+        int i = scenarioList.indexOf(scenario);
+        if (i >= 0) {
+            while (scenarioList.size() > i) {
+                scenarioList.remove(scenarioList.size() - 1);
+            }
+        }
         log();
     }
 

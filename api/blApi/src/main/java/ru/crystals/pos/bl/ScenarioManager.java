@@ -1,10 +1,15 @@
 package ru.crystals.pos.bl;
 
+import ru.crystals.pos.bl.api.CompleteCancelScenario;
+import ru.crystals.pos.bl.api.CompleteScenario;
+import ru.crystals.pos.bl.api.InCompleteCancelScenario;
+import ru.crystals.pos.bl.api.InOutCancelScenario;
 import ru.crystals.pos.bl.api.InOutScenario;
+import ru.crystals.pos.bl.api.InScenario;
+import ru.crystals.pos.bl.api.OutCancelScenario;
 import ru.crystals.pos.bl.api.OutScenario;
 import ru.crystals.pos.bl.api.Scenario;
-import ru.crystals.pos.bl.api.SimpleScenario;
-import ru.crystals.pos.bl.api.VoidListener;
+import ru.crystals.pos.bl.api.listener.VoidListener;
 
 import java.util.function.Consumer;
 
@@ -13,26 +18,39 @@ import java.util.function.Consumer;
  */
 public interface ScenarioManager {
 
-    /**
-     * Запуск сценария по классу. Выполняется поиск единственной реализации в контексте.
-     * @param scenarioClass класс сценария
-     * @param <T>
-     */
-    <T extends SimpleScenario> void startScenario(Class<T> scenarioClass);
+    <I> void start(InScenario<I> scenario, I arg);
 
-    void startScenario(SimpleScenario scenario);
+    <O> void start(OutScenario<O> scenario, Consumer<O> onComplete);
 
-    <O> void startScenario(OutScenario<O> scenario, Consumer<O> onComplete, VoidListener onCancel);
+    <I, O> void start(InOutScenario<I, O> scenario, I arg, Consumer<O> onComplete) throws Exception;
 
-    <O> void startSubScenario(OutScenario<O> subScenario, Consumer<O> onComplete, VoidListener onCancel);
+    <O> void start(OutCancelScenario<O> scenario, Consumer<O> onComplete, VoidListener onCancel);
 
-    <O> void startSubScenario(OutScenario<O> subScenario, VoidListener onComplete, VoidListener onCancel);
+    <I, O> void start(InOutCancelScenario<I, O> scenario, I arg, Consumer<O> onComplete, VoidListener onCancel);
 
-    <I, O> void startSubScenario(InOutScenario<I, O> subScenario, I arg, Consumer<O> onComplete, VoidListener onCancel);
+    /// child
+
+    void startChild(CompleteScenario scenario, VoidListener onComplete);
+
+    void startChild(CompleteCancelScenario scenario, VoidListener onComplete,  VoidListener onCancel);
+
+    <I> void startChild(InCompleteCancelScenario<I> scenario, I arg, VoidListener onComplete, VoidListener onCancel);
+
+    <O> void startChild(OutScenario<O> scenario, Consumer<O> onComplete);
+
+    <I, O> void startChild(InOutScenario<I, O> scenario, I arg, Consumer<O> onComplete) throws Exception;
+
+    <I, O> void startChildAsync(InOutScenario<I, O> scenario, I arg, Consumer<O> onComplete, Consumer<Exception> onError);
+
+    <O> void startChild(OutCancelScenario<O> scenario, Consumer<O> onComplete, VoidListener onCancel);
+
+    <I, O> void startChild(InOutCancelScenario<I, O> scenario, I arg, Consumer<O> onComplete, VoidListener onCancel);
+
+    /// other
 
     Scenario getCurrentScenario();
 
     Scenario getParentScenario(Scenario scenario);
 
-    Scenario getSubScenario(Scenario parent);
+    Scenario getChildScenario(Scenario parent);
 }

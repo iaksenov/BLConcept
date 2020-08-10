@@ -10,4 +10,6 @@ public interface ScenarioEventSender {
     void onFunctionalKey(FuncKey funcKey);
 
     void onMSR(MSRTracks msrTracks);
+
+    boolean isIgnoreCurrentEvents();
 }

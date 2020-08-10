@@ -1,16 +1,14 @@
 package ru.crystals.pos.ui.forms.message;
 
-import ru.crystals.pos.ui.callback.ConfirmCallback;
-import ru.crystals.pos.ui.forms.UIFormModel;
+import ru.crystals.pos.ui.forms.UIFormVoidCallbackModel;
 
-public class MessageFormModel extends UIFormModel {
+public class MessageFormModel extends UIFormVoidCallbackModel {
 
     private String message;
-    private ConfirmCallback confirm;
 
-    public MessageFormModel(String message, ConfirmCallback confirm) {
+    public MessageFormModel(String message, Runnable callback) {
+        super(callback);
         this.message = message;
-        this.confirm = confirm;
     }
 
     public String getMessage() {
@@ -21,11 +19,4 @@ public class MessageFormModel extends UIFormModel {
         this.message = message;
     }
 
-    public ConfirmCallback getConfirm() {
-        return confirm;
-    }
-
-    public void setConfirm(ConfirmCallback confirm) {
-        this.confirm = confirm;
-    }
 }

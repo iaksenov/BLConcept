@@ -1,5 +1,6 @@
 package csi.pos.ui.swing.forms;
 
+import org.springframework.stereotype.Component;
 import ru.crystals.pos.ui.forms.UIFormModel;
 import ru.crystals.pos.ui.forms.UIModelListener;
 
@@ -14,6 +15,7 @@ import javax.swing.JComponent;
  * 2. onModelChanged(model)
  * @param <T>
  */
+@Component
 public abstract class Form<T extends UIFormModel> implements UIModelListener<T> {
 
     /**
