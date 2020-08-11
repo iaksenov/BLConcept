@@ -1,8 +1,10 @@
 package ru.crystals.pos.hw.events.keys;
 
-import ru.crystals.pos.hw.events.HWEventPayload;
+import ru.crystals.pos.hw.events.HWHumanEvent;
 
-public class FuncKey  implements HWEventPayload {
+import java.util.StringJoiner;
+
+public class FuncKey  implements HWHumanEvent {
 
     private final FuncKeyType funcKeyType;
 
@@ -21,4 +23,11 @@ public class FuncKey  implements HWEventPayload {
         return payload;
     }
 
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", FuncKey.class.getSimpleName() + "[", "]")
+            .add("funcKeyType=" + funcKeyType)
+            .add("payload='" + payload + "'")
+            .toString();
+    }
 }

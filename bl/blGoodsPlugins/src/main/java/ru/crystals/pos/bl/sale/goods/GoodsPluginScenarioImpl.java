@@ -49,4 +49,8 @@ public class GoodsPluginScenarioImpl implements GoodsPluginScenario {
         }
     }
 
+    @Override
+    public boolean forceComplete() {
+        return false;
+    }
 }

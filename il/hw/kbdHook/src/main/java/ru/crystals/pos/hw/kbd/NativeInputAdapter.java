@@ -8,8 +8,7 @@ import org.jnativehook.keyboard.NativeKeyListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import ru.crystals.pos.hw.events.HWEvent;
-import ru.crystals.pos.hw.events.HWEventPayload;
+import ru.crystals.pos.hw.events.HWHumanEvent;
 import ru.crystals.pos.hw.events.keys.ControlKey;
 import ru.crystals.pos.hw.events.keys.ControlKeyType;
 import ru.crystals.pos.hw.events.keys.TypedKey;
@@ -32,7 +31,7 @@ public class NativeInputAdapter implements NativeKeyListener {
 
     private final CopyOnWriteArrayList<NativeKeyEvent> listeners;
 
-    private Map<String, HWEventPayload> keysMap = new HashMap<>();
+    private Map<String, HWHumanEvent> keysMap = new HashMap<>();
 
     @Autowired
     private ApplicationEventPublisher eventPublisher;
@@ -63,9 +62,9 @@ public class NativeInputAdapter implements NativeKeyListener {
             return;
         }
         String keyText = nativeKeyEvent.getKeyText(nativeKeyEvent.getKeyCode());
-        HWEventPayload hwEventPayload = keysMap.get(keyText);
-        if (hwEventPayload != null) {
-            eventPublisher.publishEvent(new HWEvent(this, hwEventPayload));
+        HWHumanEvent hwEvent = keysMap.get(keyText);
+        if (hwEvent != null) {
+            eventPublisher.publishEvent(hwEvent);
         }
     }
 
@@ -82,7 +81,7 @@ public class NativeInputAdapter implements NativeKeyListener {
         if (isExcludedWithCtrl(nativeKeyEvent)) {
             return;
         }
-        eventPublisher.publishEvent(new HWEvent(this, new TypedKey(nativeKeyEvent.getKeyChar())));
+        eventPublisher.publishEvent(new TypedKey(nativeKeyEvent.getKeyChar()));
     }
 
     private static boolean isExcludedWithCtrl(NativeKeyEvent nativeKeyEvent) {

@@ -1,8 +1,10 @@
 package ru.crystals.pos.hw.events.listeners;
 
-import ru.crystals.pos.hw.events.HWEventPayload;
+import ru.crystals.pos.hw.events.HWHumanEvent;
 
-public class MSRTracks implements HWEventPayload {
+import java.util.StringJoiner;
+
+public class MSRTracks implements HWHumanEvent {
 
     private final String track1;
     private final String track2;
@@ -32,4 +34,13 @@ public class MSRTracks implements HWEventPayload {
         return track4;
     }
 
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", MSRTracks.class.getSimpleName() + "[", "]")
+            .add("track1='" + track1 + "'")
+            .add("track2='" + track2 + "'")
+            .add("track3='" + track3 + "'")
+            .add("track4='" + track4 + "'")
+            .toString();
+    }
 }

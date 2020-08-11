@@ -1,7 +1,7 @@
 package ru.crystals.pos.bl.events;
 
 import org.springframework.stereotype.Component;
-import ru.crystals.pos.hw.events.HWEventPayload;
+import ru.crystals.pos.hw.events.HWHumanEvent;
 import ru.crystals.pos.hw.events.keys.ControlKey;
 import ru.crystals.pos.hw.events.keys.FuncKey;
 import ru.crystals.pos.hw.events.keys.TypedKey;
@@ -23,7 +23,7 @@ public class HWEventRouter {
 
     private final UIKeyListener uiKeyListener;
 
-    private final Map<Class<? extends HWEventPayload>, Consumer<? extends HWEventPayload>> consumers;
+    private final Map<Class<? extends HWHumanEvent>, Consumer<? extends HWHumanEvent>> consumers;
 
     public HWEventRouter(ScenarioEventSender scenarioEventSender, UIKeyListener uiKeyListener) {
         this.scenarioEventSender = scenarioEventSender;
@@ -36,11 +36,11 @@ public class HWEventRouter {
         putClassConsumer(ControlKey.class, this::processControlKey);
     }
 
-    public <T extends HWEventPayload> void processEvent(T event) {
+    public <T extends HWHumanEvent> void processEvent(T event) {
         if (scenarioEventSender.isIgnoreCurrentEvents()) {
-            System.out.println("Ignore event " + event);
+            System.out.println("BL locked. Event " + event + " ignored");
         } else {
-            Class<? extends HWEventPayload> aClass = event.getClass();
+            Class<? extends HWHumanEvent> aClass = event.getClass();
             Consumer<T> consumer = (Consumer<T>) consumers.get(aClass);
             consumer.accept(event);
         }
@@ -72,7 +72,7 @@ public class HWEventRouter {
 
     ///
 
-    private <T extends HWEventPayload> void putClassConsumer(Class<T> tClass, Consumer<T> consumer) {
+    private <T extends HWHumanEvent> void putClassConsumer(Class<T> tClass, Consumer<T> consumer) {
         consumers.put(tClass, consumer);
     }
 

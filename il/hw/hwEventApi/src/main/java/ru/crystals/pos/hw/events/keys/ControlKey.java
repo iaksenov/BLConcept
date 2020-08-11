@@ -1,8 +1,10 @@
 package ru.crystals.pos.hw.events.keys;
 
-import ru.crystals.pos.hw.events.HWEventPayload;
+import ru.crystals.pos.hw.events.HWHumanEvent;
 
-public class ControlKey implements HWEventPayload {
+import java.util.StringJoiner;
+
+public class ControlKey implements HWHumanEvent {
 
     private final ControlKeyType controlKeyType;
 
@@ -12,5 +14,12 @@ public class ControlKey implements HWEventPayload {
 
     public ControlKeyType getControlKeyType() {
         return controlKeyType;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", ControlKey.class.getSimpleName() + "[", "]")
+            .add("controlKeyType=" + controlKeyType)
+            .toString();
     }
 }

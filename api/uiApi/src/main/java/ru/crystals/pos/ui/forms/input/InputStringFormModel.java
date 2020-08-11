@@ -1,19 +1,18 @@
 package ru.crystals.pos.ui.forms.input;
 
-import ru.crystals.pos.ui.forms.UIFormModel;
+import ru.crystals.pos.ui.forms.UIFormCallbackModel;
 
 import java.util.function.Consumer;
 
-public class InputStringFormModel extends UIFormModel {
+public class InputStringFormModel extends UIFormCallbackModel<String> {
 
     private String title;
     private String hint;
-    private Consumer<String> callback;
 
     public InputStringFormModel(String title, String hint, Consumer<String> callback) {
+        super(callback);
         this.title = title;
         this.hint = hint;
-        this.callback = callback;
     }
 
     public String getTitle() {
@@ -22,10 +21,6 @@ public class InputStringFormModel extends UIFormModel {
 
     public String getHint() {
         return hint;
-    }
-
-    public Consumer<String> getCallback() {
-        return callback;
     }
 
 }

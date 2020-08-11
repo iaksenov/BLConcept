@@ -1,6 +1,6 @@
 package ru.crystals.pos.ui.forms;
 
-import ru.crystals.pos.hw.events.ru.crystals.pos.hw.interceptor.CallbackInterceptor;
+import ru.crystals.pos.hw.events.interceptor.CallbackInterceptor;
 
 public class UIFormVoidCallbackModel extends UIFormModel {
 
@@ -11,7 +11,7 @@ public class UIFormVoidCallbackModel extends UIFormModel {
     }
 
     public Runnable getCallback() {
-        return () -> CallbackInterceptor.getRunnable(callback);
+        return () -> CallbackInterceptor.publichCallback(callback);
     }
 
 

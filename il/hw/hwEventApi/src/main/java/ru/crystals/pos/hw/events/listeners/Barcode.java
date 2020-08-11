@@ -1,8 +1,10 @@
 package ru.crystals.pos.hw.events.listeners;
 
-import ru.crystals.pos.hw.events.HWEventPayload;
+import ru.crystals.pos.hw.events.HWHumanEvent;
 
-public class Barcode implements HWEventPayload {
+import java.util.StringJoiner;
+
+public class Barcode implements HWHumanEvent {
 
     private final String code;
 
@@ -12,5 +14,12 @@ public class Barcode implements HWEventPayload {
 
     public String getCode() {
         return code;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", Barcode.class.getSimpleName() + "[", "]")
+            .add("code='" + code + "'")
+            .toString();
     }
 }

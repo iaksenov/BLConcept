@@ -3,5 +3,5 @@ package ru.crystals.pos.hw.events;
 /**
  * Базовый интерфейс тела сообщения POS hardware
  */
-public interface HWEventPayload {
+public interface HWHumanEvent extends HumanEvent {
 }

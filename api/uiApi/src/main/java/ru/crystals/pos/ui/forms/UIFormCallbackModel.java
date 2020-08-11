@@ -1,6 +1,6 @@
 package ru.crystals.pos.ui.forms;
 
-import ru.crystals.pos.hw.events.ru.crystals.pos.hw.interceptor.CallbackInterceptor;
+import ru.crystals.pos.hw.events.interceptor.CallbackInterceptor;
 
 import java.util.function.Consumer;
 
@@ -13,7 +13,7 @@ public abstract class UIFormCallbackModel<C> extends UIFormModel {
     }
 
     public Consumer<C> getCallback() {
-        return c -> CallbackInterceptor.getConsumer(callback, c);
+        return c -> CallbackInterceptor.publishCallback(callback, c);
     }
 
 }

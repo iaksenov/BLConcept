@@ -4,12 +4,12 @@ import org.springframework.stereotype.Service;
 import ru.crystals.pos.bl.ScenarioManager;
 import ru.crystals.pos.bl.api.Scenario;
 import ru.crystals.pos.bl.api.marker.IgnoreAllEvents;
+import ru.crystals.pos.hw.events.interceptor.CallbackInterceptor;
 import ru.crystals.pos.hw.events.keys.FuncKey;
 import ru.crystals.pos.hw.events.listeners.BarcodeListener;
 import ru.crystals.pos.hw.events.listeners.FuncKeyListener;
 import ru.crystals.pos.hw.events.listeners.MSRListener;
 import ru.crystals.pos.hw.events.listeners.MSRTracks;
-import ru.crystals.pos.hw.events.ru.crystals.pos.hw.interceptor.CallbackInterceptor;
 
 @Service
 public class ScenarioEventSenderImpl implements ScenarioEventSender {
@@ -20,7 +20,7 @@ public class ScenarioEventSenderImpl implements ScenarioEventSender {
     public ScenarioEventSenderImpl(ScenarioManager scenarioManager, EventPreProcessor preProcessor) {
         this.scenarioManager = scenarioManager;
         this.preProcessor = preProcessor;
-        CallbackInterceptor.setCheckIgnore(this::isIgnoreCurrentEvents);
+        CallbackInterceptor.setLockedFunc(this::isIgnoreCurrentEvents);
     }
 
     @Override
