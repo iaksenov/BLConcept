@@ -3,6 +3,7 @@ package ru.crystals.pos.bl.sale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.crystals.pos.bl.ScenarioManager;
+import ru.crystals.pos.bl.api.Scenario;
 import ru.crystals.pos.bl.api.listener.VoidListener;
 import ru.crystals.pos.bl.api.sale.SaleAddItemsScenario;
 import ru.crystals.pos.bl.api.sale.goods.GoodsPluginScenario;
@@ -41,8 +42,17 @@ public class AddItemsScenario implements SaleAddItemsScenario, BarcodeListener {
 
     @Override
     public void onBarcode(String code) {
-        System.out.println("AddItemsScenario received barcode " + code);
-        ui.showForm(new MessageFormModel("Товар по ШК не найден!", this::showSearchForm));
+        Scenario childScenario = scenarioManager.getChildScenario(this);
+        if (childScenario instanceof GoodsPluginScenario) {
+            if (((GoodsPluginScenario) childScenario).tryToComplete(this::addPositionToDB)) {
+                showProductPlugin(createFakeProduct(code));
+            } else {
+                System.out.println("Goods plugin cannot return position " + code);
+            };
+        } else {
+            searchProduct(code);
+        }
+//        ui.showForm(new MessageFormModel("Товар по ШК не найден!", this::showSearchForm));
         // поиск товара
     }
 
@@ -72,29 +82,37 @@ public class AddItemsScenario implements SaleAddItemsScenario, BarcodeListener {
     private Callable<Product> findProductCall(String searchString) {
         return () -> {
             try {
-                Thread.sleep(5000L);
+                Thread.sleep(500L);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             if (searchString == null || searchString.length() == 0) {
                 throw new Exception("Товар не найден");
             }
-            return new Product("Товар " + searchString);
+            return createFakeProduct(searchString);
         };
     }
 
-    private void showProductPlugin(Product product) {
-        scenarioManager.startChild(goodsPluginScenario, product, this::onPluginOk, () -> onPluginCancel(product.getProductName()));
+    private Product createFakeProduct(String searchString) {
+        return new Product("Товар " + searchString);
     }
 
-    private void onPluginCancel(String s) {
+    private void showProductPlugin(Product product) {
+        scenarioManager.startChild(goodsPluginScenario, product, this::onGoodsPluginFinish, () -> onGoodsPluginCancel(product.getProductName()));
+    }
+
+    private void onGoodsPluginCancel(String s) {
         System.out.println("Plugin canceled");
         ui.showForm(new MessageFormModel(s + " не был добавлен", this::showSearchForm));
     }
 
-    private void onPluginOk(Position position) {
-        System.out.println(position);
+    private void onGoodsPluginFinish(Position position) {
+        addPositionToDB(position);
         showSearchForm();
+    }
+
+    private void addPositionToDB(Position position) {
+        System.out.println(position);
     }
 
     @Override

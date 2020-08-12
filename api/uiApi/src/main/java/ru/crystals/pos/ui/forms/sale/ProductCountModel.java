@@ -1,16 +1,16 @@
 package ru.crystals.pos.ui.forms.sale;
 
+import ru.crystals.pos.ui.callback.InteractiveValueCancelledCallback;
 import ru.crystals.pos.ui.forms.UIFormCallbackModel;
 
-import java.util.Optional;
 import java.util.function.Consumer;
 
-public class ProductCountModel extends UIFormCallbackModel<Optional<Integer>> {
+public class ProductCountModel extends UIFormCallbackModel<InteractiveValueCancelledCallback<Integer>> {
 
     private final String productName;
     private final String countHint;
 
-    public ProductCountModel(String productName, String countHint, Consumer<Optional<Integer>> callback) {
+    public ProductCountModel(String productName, String countHint, Consumer<InteractiveValueCancelledCallback<Integer>> callback) {
         super(callback);
         this.productName = productName;
         this.countHint = countHint;

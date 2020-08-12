@@ -6,10 +6,10 @@ import ru.crystals.pos.bl.api.sale.goods.GoodsPluginScenario;
 import ru.crystals.pos.bl.api.sale.goods.Position;
 import ru.crystals.pos.bl.api.sale.goods.Product;
 import ru.crystals.pos.ui.UI;
+import ru.crystals.pos.ui.callback.InteractiveValueCancelledCallback;
 import ru.crystals.pos.ui.forms.sale.ProductCountModel;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 @Component
@@ -21,12 +21,15 @@ public class GoodsPluginScenarioImpl implements GoodsPluginScenario {
     private VoidListener onCancel;
     private ProductCountModel model;
 
+    private Integer count;
+
     public GoodsPluginScenarioImpl(UI ui) {
         this.ui = ui;
     }
 
     @Override
     public void start(Product product, Consumer<Position> onComplete, VoidListener onCancel) {
+        this.count = null;
         this.product = product;
         this.onComplete = onComplete;
         this.onCancel = onCancel;
@@ -34,23 +37,36 @@ public class GoodsPluginScenarioImpl implements GoodsPluginScenario {
         ui.showForm(model);
     }
 
-    private void onResult(Optional<Integer> result) {
-        if (result.isPresent()) {
-            onCountEntered(result.get());
-        } else {
-            onCancel.call();
+    private void onResult(InteractiveValueCancelledCallback<Integer> result) {
+        switch (result.getAction()) {
+            case CHANGED: this.count = result.getValue();
+            break;
+            case ENTERED: onCountEntered(result.getValue(), this.onComplete);
+            break;
+            case CANCELLED: onCancel.call();
         }
     }
 
-    private void onCountEntered(Integer integer) {
-        if (integer > 0) {
-            Position position = new Position(product.getProductName(), BigDecimal.valueOf(integer));
-            onComplete.accept(position);
+    private boolean onCountEntered(Integer value, Consumer<Position> consumer) {
+        if (checkValue(value)) {
+            Position position = createPosition(value);
+            consumer.accept(position);
+            return true;
+        } else {
+            return false;
         }
+    }
+
+    private boolean checkValue(Integer value) {
+        return value != null && value > 0;
+    }
+
+    private Position createPosition(Integer value) {
+        return new Position(product.getProductName(), BigDecimal.valueOf(value));
     }
 
     @Override
-    public boolean forceComplete() {
-        return false;
+    public boolean tryToComplete(Consumer<Position> consumer) {
+        return onCountEntered(this.count, consumer);
     }
 }
