@@ -17,24 +17,24 @@ public class CallbackInterceptor extends AbstractFactoryBean<CallbackInterceptor
 
     private static ApplicationEventPublisher publisher;
 
-    public static <C> void publishCallback(Consumer<C> callback, C c) {
-        if (!isLocked()) {
-            publisher.publishEvent(new UIHumanEvent<>(callback, c));
+    public static <V> void publishCallback(Consumer<V> callback, V value) {
+        if (isNotLocked()) {
+            publisher.publishEvent(new UIHumanEvent<>(callback, value));
         }
     }
 
-    public static void publichCallback(Runnable callback) {
-        if (!isLocked()) {
-            publisher.publishEvent(new UIHumanEvent<>(callback));
+    public static void publishCallback(Runnable runnable) {
+        if (isNotLocked()) {
+            publisher.publishEvent(new UIHumanEvent<>(runnable));
         }
     }
 
-    private static boolean isLocked() {
+    private static boolean isNotLocked() {
         boolean isLocked = isLockedFunc == null || isLockedFunc.get() || publisher == null;
         if (isLocked) {
             System.out.println("BL locked, event ignored");
         }
-        return isLocked;
+        return !isLocked;
     }
 
     public static void setLockedFunc(Supplier<Boolean> func) {

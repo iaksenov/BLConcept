@@ -16,7 +16,7 @@ public abstract class UIFormModel {
     /**
      * Уведомление UI об изменении модели
      */
-    public <T> void modelChanged() {
+    public void modelChanged() {
         if (modelListener != null) {
             modelListener.onModelChanged(this);
         }

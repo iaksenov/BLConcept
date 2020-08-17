@@ -62,6 +62,13 @@ public class NativeInputAdapter implements NativeKeyListener {
             return;
         }
         String keyText = nativeKeyEvent.getKeyText(nativeKeyEvent.getKeyCode());
+
+        if ("F8".equals(keyText)) {
+            eventPublisher.publishEvent(new TypedKey('8'));
+            eventPublisher.publishEvent(new Barcode("00000008"));
+            return;
+        }
+
         HWHumanEvent hwEvent = keysMap.get(keyText);
         if (hwEvent != null) {
             eventPublisher.publishEvent(hwEvent);

@@ -1,6 +1,7 @@
 package csi.pos.ui.swing;
 
 import csi.pos.ui.swing.forms.Form;
+import csi.pos.ui.swing.forms.ValueForm;
 import csi.pos.ui.swing.sale.SalePanel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -12,6 +13,7 @@ import ru.crystals.pos.ui.UIKeyListener;
 import ru.crystals.pos.ui.UILayer;
 import ru.crystals.pos.ui.events.POSStatusEvent;
 import ru.crystals.pos.ui.forms.UIFormModel;
+import ru.crystals.pos.ui.forms.UIValueFormModel;
 
 import javax.annotation.PostConstruct;
 import javax.swing.JFrame;
@@ -22,6 +24,7 @@ import java.awt.Container;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Основная UI форма и получатель клавиатурных событий.
@@ -85,7 +88,7 @@ public class MainForm extends JFrame implements UIKeyListener {
         return this.currentLayer;
     }
 
-    public void showForm(UIFormModel uiFormModel) {
+    public <V> void showForm(UIFormModel uiFormModel) {
         Form<UIFormModel> form = formsCatalog.get(uiFormModel);
         if (form != null) {
             layers.get(currentLayer).showForm(form);
@@ -124,4 +127,12 @@ public class MainForm extends JFrame implements UIKeyListener {
         statusPanel.setData(event);
     }
 
+    public <V> Optional<V> getFormValue(UIValueFormModel<V> model) {
+        Form<UIFormModel> form = formsCatalog.get(model);
+        if (form instanceof ValueForm) {
+            return ((ValueForm)form).getCurrentValue();
+        } else {
+            return Optional.empty();
+        }
+    }
 }

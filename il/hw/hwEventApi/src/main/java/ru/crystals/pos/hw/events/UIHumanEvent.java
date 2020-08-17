@@ -2,27 +2,27 @@ package ru.crystals.pos.hw.events;
 
 import java.util.function.Consumer;
 
-public class UIHumanEvent<O> implements HumanEvent {
+public class UIHumanEvent<V> implements HumanEvent {
 
-    private final Consumer<O> consumer;
-    private final O object;
+    private final Consumer<V> consumer;
+    private final V value;
     private final Runnable runnable;
 
     public UIHumanEvent(Runnable runnable) {
         this.consumer = null;
-        this.object = null;
+        this.value = null;
         this.runnable = runnable;
     }
 
-    public UIHumanEvent(Consumer<O> c, O o) {
-        this.consumer = c;
-        this.object = o;
+    public UIHumanEvent(Consumer<V> consumer, V value) {
+        this.consumer = consumer;
+        this.value = value;
         this.runnable = null;
     }
 
     public void accept() {
         if (consumer != null) {
-            consumer.accept(object);
+            consumer.accept(value);
         } else if (runnable != null) {
             runnable.run();
         }

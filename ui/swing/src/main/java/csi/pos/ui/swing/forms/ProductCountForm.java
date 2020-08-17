@@ -14,10 +14,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 @Component
-public class ProductCountForm  extends Form<ProductCountModel>  implements ControlKeyListener, TypedKeyListener {
+public class ProductCountForm extends ValueForm<ProductCountModel, Integer> implements ControlKeyListener, TypedKeyListener {
 
     private JLabel productName;
     private JLabel countHint;
@@ -47,9 +48,14 @@ public class ProductCountForm  extends Form<ProductCountModel>  implements Contr
     }
 
     @Override
+    public Optional<Integer> getCurrentValue() {
+        return Optional.ofNullable(getValue());
+    }
+
+    @Override
     public void onControlKey(ControlKey controlKey) {
         if (ControlKeyType.ENTER == controlKey.getControlKeyType() && inputCallback != null) {
-            inputCallback.accept(InteractiveValueCancelledCallback.entered(getCurrentValue()));
+            inputCallback.accept(InteractiveValueCancelledCallback.entered(this.getValue()));
             input.setText("");
         } else if (ControlKeyType.ESC == controlKey.getControlKeyType() && input.getText().trim().length() == 0) {
             inputCallback.accept(InteractiveValueCancelledCallback.cancelled());
@@ -58,7 +64,7 @@ public class ProductCountForm  extends Form<ProductCountModel>  implements Contr
         }
     }
 
-    private Integer getCurrentValue() {
+    private Integer getValue() {
         try {
             return Integer.valueOf(input.getText().trim());
         } catch (NumberFormatException e) {
@@ -70,7 +76,7 @@ public class ProductCountForm  extends Form<ProductCountModel>  implements Contr
     public void onTypedKey(TypedKey key) {
         if (key.getCharacter() >= '0' && key.getCharacter() <= '9') {
             input.onTypedKey(key);
-            inputCallback.accept(InteractiveValueCancelledCallback.changed(getCurrentValue()));
+            inputCallback.accept(InteractiveValueCancelledCallback.changed(this.getValue()));
         }
     }
 
@@ -80,4 +86,7 @@ public class ProductCountForm  extends Form<ProductCountModel>  implements Contr
         countHint.setText(model.getCountHint());
         inputCallback = model.getCallback();
     }
+
+
+
 }

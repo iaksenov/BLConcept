@@ -11,8 +11,7 @@ public class UIFormVoidCallbackModel extends UIFormModel {
     }
 
     public Runnable getCallback() {
-        return () -> CallbackInterceptor.publichCallback(callback);
+        return () -> CallbackInterceptor.publishCallback(callback);
     }
-
 
 }

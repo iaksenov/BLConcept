@@ -6,6 +6,9 @@ import ru.crystals.pos.ui.Locale;
 import ru.crystals.pos.ui.UI;
 import ru.crystals.pos.ui.UILayer;
 import ru.crystals.pos.ui.forms.UIFormModel;
+import ru.crystals.pos.ui.forms.UIValueFormModel;
+
+import java.util.Optional;
 
 /**
  * Реализация UI на Swnig
@@ -42,4 +45,8 @@ public class SwingUI implements UI {
         mainForm.setLayerModels(uiLayer, models);
     }
 
+    @Override
+    public <V> Optional<V> getFormValue(UIValueFormModel<V> model) {
+        return mainForm.getFormValue(model);
+    }
 }

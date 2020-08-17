@@ -67,6 +67,6 @@ public class GoodsPluginScenarioImpl implements GoodsPluginScenario {
 
     @Override
     public boolean tryToComplete(Consumer<Position> consumer) {
-        return onCountEntered(this.count, consumer);
+        return ui.getFormValue(model).filter(value -> onCountEntered(value, consumer)).isPresent();
     }
 }

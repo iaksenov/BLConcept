@@ -1,15 +1,13 @@
 package ru.crystals.pos.ui.callback;
 
-public class InteractiveValueCancelledCallback<T> {
+public class InteractiveValueCancelledCallback<T> extends ValueCallback<T> {
 
     public enum Action {CHANGED, ENTERED, CANCELLED};
-
-    private final T value;
 
     private final Action action;
 
     public InteractiveValueCancelledCallback(T value, Action action) {
-        this.value = value;
+        super(value);
         this.action = action;
     }
 
@@ -23,10 +21,6 @@ public class InteractiveValueCancelledCallback<T> {
 
     public static <T> InteractiveValueCancelledCallback<T> cancelled() {
         return new InteractiveValueCancelledCallback<>(null, Action.CANCELLED);
-    }
-
-    public T getValue() {
-        return value;
     }
 
     public Action getAction() {
