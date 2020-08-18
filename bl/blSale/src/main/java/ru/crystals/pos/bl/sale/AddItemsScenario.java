@@ -4,13 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.crystals.pos.bl.ScenarioManager;
 import ru.crystals.pos.bl.api.Scenario;
+import ru.crystals.pos.bl.api.goods.GoodsPluginScenario;
+import ru.crystals.pos.bl.api.goods.Product;
 import ru.crystals.pos.bl.api.listener.VoidListener;
 import ru.crystals.pos.bl.api.sale.SaleAddItemsScenario;
-import ru.crystals.pos.bl.api.sale.goods.GoodsPluginScenario;
-import ru.crystals.pos.bl.api.sale.goods.Position;
-import ru.crystals.pos.bl.api.sale.goods.Product;
 import ru.crystals.pos.bl.api.spinner.CallableSpinnerArg;
 import ru.crystals.pos.bl.common.CallableSpinner;
+import ru.crystals.pos.docs.DocModule;
+import ru.crystals.pos.docs.data.Position;
 import ru.crystals.pos.hw.events.listeners.BarcodeListener;
 import ru.crystals.pos.hw.events.listeners.MSRTracks;
 import ru.crystals.pos.ui.UI;
@@ -24,14 +25,16 @@ public class AddItemsScenario implements SaleAddItemsScenario, BarcodeListener {
 
     private final UI ui;
     private final ScenarioManager scenarioManager;
+    private final DocModule docModule;
     private VoidListener onComplete;
 
     @Autowired
     private GoodsPluginScenario goodsPluginScenario;
 
-    public AddItemsScenario(UI ui, ScenarioManager scenarioManager) {
+    public AddItemsScenario(UI ui, ScenarioManager scenarioManager, DocModule docModule) {
         this.ui = ui;
         this.scenarioManager = scenarioManager;
+        this.docModule = docModule;
     }
 
     @Override
@@ -112,7 +115,7 @@ public class AddItemsScenario implements SaleAddItemsScenario, BarcodeListener {
     }
 
     private void addPositionToDB(Position position) {
-        System.out.println(position);
+        docModule.addPosition(position);
     }
 
     @Override

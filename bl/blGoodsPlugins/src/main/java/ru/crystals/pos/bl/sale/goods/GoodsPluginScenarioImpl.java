@@ -1,10 +1,10 @@
 package ru.crystals.pos.bl.sale.goods;
 
 import org.springframework.stereotype.Component;
+import ru.crystals.pos.bl.api.goods.GoodsPluginScenario;
+import ru.crystals.pos.bl.api.goods.Product;
 import ru.crystals.pos.bl.api.listener.VoidListener;
-import ru.crystals.pos.bl.api.sale.goods.GoodsPluginScenario;
-import ru.crystals.pos.bl.api.sale.goods.Position;
-import ru.crystals.pos.bl.api.sale.goods.Product;
+import ru.crystals.pos.docs.data.Position;
 import ru.crystals.pos.ui.UI;
 import ru.crystals.pos.ui.callback.InteractiveValueCancelledCallback;
 import ru.crystals.pos.ui.forms.sale.ProductCountModel;

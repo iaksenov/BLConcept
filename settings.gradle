@@ -10,6 +10,9 @@ project(':sl:eventsCore').projectDir = file("sl/eventsCore")
 include 'api:blApi'
 project(':api:blApi').projectDir = file("api/blApi")
 
+include 'api:blSaleApi'
+project(':api:blSaleApi').projectDir = file("api/blSaleApi")
+
 include 'api:uiApi'
 project(':api:uiApi').projectDir = file("api/uiApi")
 
@@ -30,6 +33,12 @@ include 'bl:blGoodsPlugins'
 project(':bl:blGoodsPlugins').projectDir = file("bl/blGoodsPlugins")
 
 // infrastructure layer
+include 'il:db:docs'
+project(':il:db:docs').projectDir = file("il/db/docs")
+
+include 'il:db:docsApi'
+project(':il:db:docsApi').projectDir = file("il/db/docsApi")
+
 include 'il:db:userApi'
 project(':il:db:userApi').projectDir = file("il/db/userApi")
 

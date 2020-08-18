@@ -1,4 +1,4 @@
-package ru.crystals.pos.bl.api.sale.goods;
+package ru.crystals.pos.bl.api.goods;
 
 public class Product {
 

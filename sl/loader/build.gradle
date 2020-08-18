@@ -7,6 +7,7 @@ dependencies {
 
         project(':api:uiApi'),
         project(':api:blApi'),
+        project(':api:blSaleApi'),
 
         project(':bl:blCore'),
         project(':bl:blCommon'),
@@ -14,6 +15,8 @@ dependencies {
         project(':bl:blSale'),
         project(':bl:blGoodsPlugins'),
 
+        project(':il:db:docsApi'),
+        project(':il:db:docs'),
         project(':il:db:userApi'),
         project(':il:db:user'),
         project(':il:hw:hwEventApi'),
