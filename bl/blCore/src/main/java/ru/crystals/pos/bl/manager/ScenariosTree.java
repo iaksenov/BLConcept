@@ -1,7 +1,7 @@
 package ru.crystals.pos.bl.manager;
 
-import ru.crystals.pos.bl.api.Scenario;
 import ru.crystals.pos.bl.api.layer.LayerScenario;
+import ru.crystals.pos.bl.api.scenarios.Scenario;
 
 import java.util.ArrayList;
 import java.util.List;

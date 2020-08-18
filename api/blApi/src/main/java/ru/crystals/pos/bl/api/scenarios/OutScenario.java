@@ -1,4 +1,4 @@
-package ru.crystals.pos.bl.api;
+package ru.crystals.pos.bl.api.scenarios;
 
 import java.util.function.Consumer;
 

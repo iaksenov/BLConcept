@@ -3,7 +3,7 @@ package ru.crystals.pos.bl.sale.plit;
 import org.springframework.stereotype.Component;
 import ru.crystals.pos.bl.LayersManager;
 import ru.crystals.pos.bl.ScenarioManager;
-import ru.crystals.pos.bl.api.sale.SaleAddItemsScenario;
+import ru.crystals.pos.bl.api.sale.AddPositionsScenario;
 import ru.crystals.pos.bl.api.sale.SaleScenarioAdditional;
 import ru.crystals.pos.ui.UILayer;
 import ru.crystals.pos.ui.forms.UIFormModel;
@@ -22,12 +22,12 @@ public class PlitkiController implements SaleScenarioAdditional {
     private final PlitkiFormModel plitkiModel;
     private final LayersManager layersManager;
     private final ScenarioManager scenarioManager;
-    private final SaleAddItemsScenario addItemsScenario;
+    private final AddPositionsScenario addPositionsScenario;
 
-    public PlitkiController(LayersManager layersManager, ScenarioManager scenarioManager, SaleAddItemsScenario addItemsScenario) {
+    public PlitkiController(LayersManager layersManager, ScenarioManager scenarioManager, AddPositionsScenario addPositionsScenario) {
         this.layersManager = layersManager;
         this.scenarioManager = scenarioManager;
-        this.addItemsScenario = addItemsScenario;
+        this.addPositionsScenario = addPositionsScenario;
         this.plitkiModel = new PlitkiFormModel(new ArrayList<>(), this::onPlitkaClick);
         initModel();
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(this::onTimer, 5, 5, TimeUnit.SECONDS);
@@ -55,8 +55,8 @@ public class PlitkiController implements SaleScenarioAdditional {
         if (s.contains("EXIT")) {
             layersManager.setLayer(UILayer.LOGIN);
         } else {
-            if (scenarioManager.isActive(addItemsScenario)) {
-                addItemsScenario.searchProduct(s);
+            if (scenarioManager.isActive(addPositionsScenario)) {
+                addPositionsScenario.onSearchProduct(s);
             }
         }
     }

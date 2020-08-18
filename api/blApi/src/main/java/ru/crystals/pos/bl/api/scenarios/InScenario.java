@@ -1,4 +1,4 @@
-package ru.crystals.pos.bl.api;
+package ru.crystals.pos.bl.api.scenarios;
 
 /**
  * Интерфейс сценария с аргументом и без результата

@@ -2,13 +2,16 @@ package ru.crystals.pos.bl.sale.purchase;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import ru.crystals.pos.bl.api.sale.SaleScenario;
 import ru.crystals.pos.bl.api.sale.SaleScenarioAdditional;
+import ru.crystals.pos.docs.data.Payment;
 import ru.crystals.pos.docs.data.Position;
 import ru.crystals.pos.docs.data.Purchase;
 import ru.crystals.pos.docs.event.PurchaseUpdatedEvent;
 import ru.crystals.pos.ui.forms.UIFormModel;
 import ru.crystals.pos.ui.forms.sale.purchase.PurchaseFormCallback;
 import ru.crystals.pos.ui.forms.sale.purchase.PurchaseFrameModel;
+import ru.crystals.pos.ui.forms.sale.purchase.UIPayment;
 import ru.crystals.pos.ui.forms.sale.purchase.UIPosition;
 import ru.crystals.pos.ui.forms.sale.purchase.UIPurchase;
 
@@ -19,13 +22,18 @@ import java.util.Collections;
 public class PurchaseFrameController implements SaleScenarioAdditional {
 
     private final PurchaseFrameModel model;
+    private final SaleScenario saleScenario;
 
-    public PurchaseFrameController() {
+    public PurchaseFrameController(SaleScenario saleScenario) {
+        this.saleScenario = saleScenario;
         this.model = new PurchaseFrameModel(this::frameCallback);
     }
 
     private void frameCallback(PurchaseFormCallback purchaseFormCallback) {
-
+        switch (purchaseFormCallback.getAction()) {
+            case SUBTOTOAL:saleScenario.onSubtotal();
+            break;
+        }
     }
 
     @EventListener
@@ -36,11 +44,18 @@ public class PurchaseFrameController implements SaleScenarioAdditional {
 
     private UIPurchase convertPurchase(Purchase purchase) {
         UIPurchase uip = new UIPurchase();
-        uip.getPositions().clear();
+        uip.setDiscountAmount(purchase.getDiscountAmount());
         for (Position position : purchase.getPositions()) {
             uip.getPositions().add(convertPosition(position));
         }
+        for (Payment payment : purchase.getPayments()) {
+            uip.getPayments().add(convertPayment(payment));
+        }
         return uip;
+    }
+
+    private UIPayment convertPayment(Payment payment) {
+        return new UIPayment(payment.getTypeName(), payment.getSumm());
     }
 
     private UIPosition convertPosition(Position position) {

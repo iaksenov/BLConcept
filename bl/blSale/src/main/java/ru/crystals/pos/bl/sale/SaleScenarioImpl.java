@@ -5,15 +5,19 @@ import org.springframework.stereotype.Component;
 import ru.crystals.pos.bl.LayersManager;
 import ru.crystals.pos.bl.ScenarioManager;
 import ru.crystals.pos.bl.api.sale.AddPaymentsScenario;
+import ru.crystals.pos.bl.api.sale.AddPositionsScenario;
 import ru.crystals.pos.bl.api.sale.CalcDiscountScenario;
+import ru.crystals.pos.bl.api.sale.RegisterPurchaseResult;
 import ru.crystals.pos.bl.api.sale.RegisterPurchaseScenario;
-import ru.crystals.pos.bl.api.sale.SaleAddItemsScenario;
 import ru.crystals.pos.bl.api.sale.SaleScenario;
 import ru.crystals.pos.bl.api.sale.SaleScenarioAdditional;
+import ru.crystals.pos.bl.api.scenarios.force.ForceCompleteImpossibleException;
+import ru.crystals.pos.docs.DocModule;
 import ru.crystals.pos.hw.events.keys.FuncKey;
 import ru.crystals.pos.ui.UI;
 import ru.crystals.pos.ui.UILayer;
 import ru.crystals.pos.ui.forms.UIFormModel;
+import ru.crystals.pos.ui.forms.message.MessageFormModel;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,26 +33,29 @@ public class SaleScenarioImpl implements SaleScenario {
     private final UI ui;
     private final ScenarioManager scenarioManager;
     private final LayersManager layersManager;
+    private final DocModule docModule;
 
     // stage 1
-    @Autowired
-    private SaleAddItemsScenario addItemsScenario;
+    private final AddPositionsScenario addPositionsScenario;
     // stage 2
-    //@Autowired
-    private CalcDiscountScenario calcDiscount;
+    private final CalcDiscountScenario calcDiscount;
     // stage 3
-    ///@Autowired
-    private AddPaymentsScenario addPayments;
+    private final AddPaymentsScenario addPayments;
     // stage 4
-    //@Autowired
-    private RegisterPurchaseScenario registerPurchase;
+    private final RegisterPurchaseScenario registerPurchase;
 
     private Collection<SaleScenarioAdditional> additional = new HashSet<>();
 
-    public SaleScenarioImpl(UI ui, ScenarioManager scenarioManager, LayersManager layersManager) {
+    public SaleScenarioImpl(UI ui, ScenarioManager scenarioManager, LayersManager layersManager, DocModule docModule, AddPositionsScenario addPositionsScenario,
+                            CalcDiscountScenario calcDiscount, AddPaymentsScenario addPayments, RegisterPurchaseScenario registerPurchase) {
         this.ui = ui;
         this.scenarioManager = scenarioManager;
         this.layersManager = layersManager;
+        this.docModule = docModule;
+        this.addPositionsScenario = addPositionsScenario;
+        this.calcDiscount = calcDiscount;
+        this.addPayments = addPayments;
+        this.registerPurchase = registerPurchase;
     }
 
     @Autowired(required = false)
@@ -60,7 +67,8 @@ public class SaleScenarioImpl implements SaleScenario {
      * Добавление позиций
      */
     private void addItems() {
-        scenarioManager.startChild(addItemsScenario, this::calcDiscount);
+        docModule.setDiscountAmount(null);
+        scenarioManager.startChild(addPositionsScenario, this::calcDiscount);
     }
 
     /**
@@ -78,16 +86,28 @@ public class SaleScenarioImpl implements SaleScenario {
      * Добавление оплат
      */
     private void addPayments() {
-        scenarioManager.startChild(addPayments, null, this::registerPurchase, this::calcDiscount);
+        scenarioManager.startChild(addPayments, "CASH", this::registerPurchase, this::addItems);
     }
 
     /**
      * Регистрация чека
      */
     private void registerPurchase() {
-        scenarioManager.startChild(registerPurchase, this::addItems);
+        try {
+            scenarioManager.startChild(registerPurchase, docModule.getCurrentPurchase(), this::purchaseRegistered);
+        } catch (Exception e) {
+            ui.showForm(new MessageFormModel("Всё. Приехали. Сценарий печати сломался.", this::onRegisterFail));
+        }
     }
 
+    private void onRegisterFail() {
+        System.exit(0);
+    }
+
+    private void purchaseRegistered(RegisterPurchaseResult registerPurchaseResult) {
+        docModule.purchaseRegistered(registerPurchaseResult.getPurchase());
+        addItems();
+    }
 
     @Override
     public void onFunctionalKey(FuncKey funcKey) {
@@ -104,8 +124,12 @@ public class SaleScenarioImpl implements SaleScenario {
     }
 
     private void doSubtotal() {
-        if (scenarioManager.getChildScenario(this) == addItemsScenario) {
-            addItemsScenario.doFinish();
+        if (scenarioManager.getChildScenario(this) == addPositionsScenario) {
+            try {
+                scenarioManager.tryToComplete(addPositionsScenario, this::calcDiscount);
+            } catch (ForceCompleteImpossibleException e) {
+                System.out.println("Can't force complete AddItemsScenario " + e.getLocalizedMessage());
+            }
         }
     }
 
@@ -121,10 +145,9 @@ public class SaleScenarioImpl implements SaleScenario {
         addItems();
     }
 
-
     @Override
-    public void onResume() {
-
+    public void onSubtotal() {
+        doSubtotal();
     }
 
 }

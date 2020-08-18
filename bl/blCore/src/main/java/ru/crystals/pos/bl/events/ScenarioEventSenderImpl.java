@@ -2,8 +2,8 @@ package ru.crystals.pos.bl.events;
 
 import org.springframework.stereotype.Service;
 import ru.crystals.pos.bl.ScenarioManager;
-import ru.crystals.pos.bl.api.Scenario;
 import ru.crystals.pos.bl.api.marker.IgnoreAllEvents;
+import ru.crystals.pos.bl.api.scenarios.Scenario;
 import ru.crystals.pos.hw.events.interceptor.CallbackInterceptor;
 import ru.crystals.pos.hw.events.keys.FuncKey;
 import ru.crystals.pos.hw.events.listeners.BarcodeListener;

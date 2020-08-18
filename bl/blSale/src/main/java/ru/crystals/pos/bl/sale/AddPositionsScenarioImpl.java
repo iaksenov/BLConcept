@@ -3,11 +3,13 @@ package ru.crystals.pos.bl.sale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.crystals.pos.bl.ScenarioManager;
-import ru.crystals.pos.bl.api.Scenario;
 import ru.crystals.pos.bl.api.goods.GoodsPluginScenario;
 import ru.crystals.pos.bl.api.goods.Product;
 import ru.crystals.pos.bl.api.listener.VoidListener;
-import ru.crystals.pos.bl.api.sale.SaleAddItemsScenario;
+import ru.crystals.pos.bl.api.sale.AddPositionsScenario;
+import ru.crystals.pos.bl.api.scenarios.Scenario;
+import ru.crystals.pos.bl.api.scenarios.force.ForceCompleteImpossibleException;
+import ru.crystals.pos.bl.api.scenarios.force.ForceCompletedVoidScenario;
 import ru.crystals.pos.bl.api.spinner.CallableSpinnerArg;
 import ru.crystals.pos.bl.common.CallableSpinner;
 import ru.crystals.pos.docs.DocModule;
@@ -21,7 +23,7 @@ import ru.crystals.pos.ui.forms.message.MessageFormModel;
 import java.util.concurrent.Callable;
 
 @Component
-public class AddItemsScenario implements SaleAddItemsScenario, BarcodeListener {
+public class AddPositionsScenarioImpl implements AddPositionsScenario, BarcodeListener, ForceCompletedVoidScenario {
 
     private final UI ui;
     private final ScenarioManager scenarioManager;
@@ -31,7 +33,7 @@ public class AddItemsScenario implements SaleAddItemsScenario, BarcodeListener {
     @Autowired
     private GoodsPluginScenario goodsPluginScenario;
 
-    public AddItemsScenario(UI ui, ScenarioManager scenarioManager, DocModule docModule) {
+    public AddPositionsScenarioImpl(UI ui, ScenarioManager scenarioManager, DocModule docModule) {
         this.ui = ui;
         this.scenarioManager = scenarioManager;
         this.docModule = docModule;
@@ -45,22 +47,11 @@ public class AddItemsScenario implements SaleAddItemsScenario, BarcodeListener {
 
     @Override
     public void onBarcode(String code) {
-        if (completeChildScenario()) {
-            searchProduct(code);
-        }
-    }
-
-    private boolean completeChildScenario() {
-        Scenario childScenario = scenarioManager.getChildScenario(this);
-        if (childScenario instanceof GoodsPluginScenario) {
-            if (scenarioManager.tryToComplete(childScenario, this::addPositionToDB)) {
-                return true;
-            } else {
-                System.out.println("Goods plugin can't complete");
-                return false;
-            }
-        } else {
-            return true;
+        try {
+            completeChildScenario();
+            onSearchProduct(code);
+        } catch (ForceCompleteImpossibleException e) {
+            System.out.println("AddItemsScenario.onBarcode: goods plugin can't complete " + e.getLocalizedMessage());
         }
     }
 
@@ -69,20 +60,35 @@ public class AddItemsScenario implements SaleAddItemsScenario, BarcodeListener {
         // поиск карты/купона...
     }
 
+    @Override
+    public void onSearchProduct(String searchString) {
+        try {
+            completeChildScenario();
+            searchProductInternal(searchString);
+        } catch (ForceCompleteImpossibleException e) {
+            System.out.println("AddItemsScenario.searchProduct: goods plugin can't complete " + e.getLocalizedMessage());
+        }
+    }
+
+    @Override
+    public void tryToComplete() throws ForceCompleteImpossibleException {
+        completeChildScenario();
+    }
+
+    private void completeChildScenario() throws ForceCompleteImpossibleException {
+        Scenario childScenario = scenarioManager.getChildScenario(this);
+        if (childScenario instanceof GoodsPluginScenario) {
+            scenarioManager.tryToComplete(childScenario, this::addPositionToDB);
+        }
+    }
+
     private void showSearchForm() {
         ui.showForm(new InputStringFormModel("Поиск товара", "введите код товара", this::onItemEntered));
     }
 
     private void onItemEntered(String s) {
         // поиск товара в БД
-        searchProduct(s);
-    }
-
-    @Override
-    public void searchProduct(String searchString) {
-        if (completeChildScenario()) {
-            searchProductInternal(searchString);
-        }
+        onSearchProduct(s);
     }
 
     private void searchProductInternal(String searchString) {
@@ -126,12 +132,6 @@ public class AddItemsScenario implements SaleAddItemsScenario, BarcodeListener {
 
     private void addPositionToDB(Position position) {
         docModule.addPosition(position);
-    }
-
-    @Override
-    public void doFinish() {
-        // if it possible to finish
-        onComplete.call();
     }
 
 }

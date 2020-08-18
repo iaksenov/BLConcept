@@ -5,18 +5,20 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 import ru.crystals.pos.bl.ScenarioManager;
-import ru.crystals.pos.bl.api.CompleteCancelScenario;
-import ru.crystals.pos.bl.api.CompleteScenario;
-import ru.crystals.pos.bl.api.ForceCompletedScenario;
-import ru.crystals.pos.bl.api.InCompleteCancelScenario;
-import ru.crystals.pos.bl.api.InOutCancelScenario;
-import ru.crystals.pos.bl.api.InOutScenario;
-import ru.crystals.pos.bl.api.InScenario;
-import ru.crystals.pos.bl.api.OutCancelScenario;
-import ru.crystals.pos.bl.api.OutScenario;
-import ru.crystals.pos.bl.api.Scenario;
 import ru.crystals.pos.bl.api.layer.LayerScenario;
 import ru.crystals.pos.bl.api.listener.VoidListener;
+import ru.crystals.pos.bl.api.scenarios.CompleteCancelScenario;
+import ru.crystals.pos.bl.api.scenarios.CompleteScenario;
+import ru.crystals.pos.bl.api.scenarios.InCompleteCancelScenario;
+import ru.crystals.pos.bl.api.scenarios.InOutCancelScenario;
+import ru.crystals.pos.bl.api.scenarios.InOutScenario;
+import ru.crystals.pos.bl.api.scenarios.InScenario;
+import ru.crystals.pos.bl.api.scenarios.OutCancelScenario;
+import ru.crystals.pos.bl.api.scenarios.OutScenario;
+import ru.crystals.pos.bl.api.scenarios.Scenario;
+import ru.crystals.pos.bl.api.scenarios.force.ForceCompleteImpossibleException;
+import ru.crystals.pos.bl.api.scenarios.force.ForceCompletedScenario;
+import ru.crystals.pos.bl.api.scenarios.force.ForceCompletedVoidScenario;
 import ru.crystals.pos.ui.UI;
 import ru.crystals.pos.ui.UILayer;
 
@@ -141,20 +143,49 @@ public final class ScenarioManagerImpl implements ScenarioManager, ApplicationCo
         scenario.start(arg, o -> removeAndAccept(scenario, onComplete, o), () -> removeAndCall(scenario, onCancel));
     }
 
+    ///////// tryTo
+
     @Override
-    public <C> boolean tryToComplete(Scenario scenario, Consumer<C> onComplete) {
+    public <C> void tryToComplete(Scenario scenario, Consumer<C> onComplete) throws ForceCompleteImpossibleException {
         if (scenario instanceof ForceCompletedScenario) {
             if (getTree().contains(scenario)) {
-                return ((ForceCompletedScenario<C>) scenario).tryToComplete(o -> removeAndAccept(scenario, onComplete, o));
+                ForceCompletedScenario<C> castedScenario = (ForceCompletedScenario<C>) scenario;
+                try {
+                    C c = castedScenario.tryToComplete();
+                    removeAndAccept(scenario, onComplete, c);
+                } catch (ForceCompleteImpossibleException e) {
+                    System.out.println("Can't force complete " + scenario.getClass().getName() + ". " + e.getLocalizedMessage());
+                    throw e;
+                }
             } else {
                 System.out.println("Scenario " + scenario.getClass().getName() + " is not active");
-                return false;
             }
         } else {
             System.out.println("Scenario " + scenario.getClass().getName() + " is not ForceCompletedScenario");
-            return false;
         }
     }
+
+    @Override
+    public void tryToComplete(Scenario scenario, VoidListener listener) throws ForceCompleteImpossibleException {
+        if (scenario instanceof ForceCompletedVoidScenario) {
+            if (getTree().contains(scenario)) {
+                ForceCompletedVoidScenario castedScenario = (ForceCompletedVoidScenario) scenario;
+                try {
+                    castedScenario.tryToComplete();
+                    removeAndCall(scenario, listener);
+                } catch (ForceCompleteImpossibleException e) {
+                    System.out.println("Can't force complete " + scenario.getClass().getName() + ". " + e.getLocalizedMessage());
+                    throw e;
+                }
+            } else {
+                System.out.println("Scenario " + scenario.getClass().getName() + " is not active");
+            }
+        } else {
+            System.out.println("Scenario " + scenario.getClass().getName() + " is not ForceCompletedScenario");
+        }
+    }
+
+    ///////// other
 
     @Override
     public Scenario getCurrentScenario() {

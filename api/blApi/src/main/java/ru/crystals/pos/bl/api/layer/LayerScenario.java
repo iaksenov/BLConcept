@@ -1,6 +1,6 @@
 package ru.crystals.pos.bl.api.layer;
 
-import ru.crystals.pos.bl.api.Scenario;
+import ru.crystals.pos.bl.api.scenarios.Scenario;
 import ru.crystals.pos.ui.UILayer;
 
 public interface LayerScenario extends Scenario {
@@ -24,6 +24,6 @@ public interface LayerScenario extends Scenario {
     /**
      * при возобновлении
      */
-    void onResume();
+    default void onResume() {};
 
 }

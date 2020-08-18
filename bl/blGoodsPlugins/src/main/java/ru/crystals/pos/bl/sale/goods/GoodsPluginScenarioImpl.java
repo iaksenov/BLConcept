@@ -1,16 +1,18 @@
 package ru.crystals.pos.bl.sale.goods;
 
 import org.springframework.stereotype.Component;
-import ru.crystals.pos.bl.api.ForceCompletedScenario;
 import ru.crystals.pos.bl.api.goods.GoodsPluginScenario;
 import ru.crystals.pos.bl.api.goods.Product;
 import ru.crystals.pos.bl.api.listener.VoidListener;
+import ru.crystals.pos.bl.api.scenarios.force.ForceCompleteImpossibleException;
+import ru.crystals.pos.bl.api.scenarios.force.ForceCompletedScenario;
 import ru.crystals.pos.docs.data.Position;
 import ru.crystals.pos.ui.UI;
 import ru.crystals.pos.ui.callback.InteractiveValueCancelledCallback;
 import ru.crystals.pos.ui.forms.sale.ProductCountModel;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 @Component
@@ -67,7 +69,12 @@ public class GoodsPluginScenarioImpl implements GoodsPluginScenario, ForceComple
     }
 
     @Override
-    public boolean tryToComplete(Consumer<Position> consumer) {
-        return ui.getFormValue(model).filter(value -> onCountEntered(value, consumer)).isPresent();
+    public Position tryToComplete() throws ForceCompleteImpossibleException {
+        Optional<Integer> formValue = ui.getFormValue(model);
+        if (formValue.isPresent() && checkValue(formValue.get())) {
+            return createPosition(formValue.get());
+        } else {
+            throw new ForceCompleteImpossibleException("Incorrect current value");
+        }
     }
 }

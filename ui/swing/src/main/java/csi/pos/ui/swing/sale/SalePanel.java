@@ -4,8 +4,11 @@ import csi.pos.ui.swing.LayerPanel;
 import csi.pos.ui.swing.forms.Form;
 import ru.crystals.pos.ui.forms.UIFormModel;
 import ru.crystals.pos.ui.forms.sale.PlitkiFormModel;
+import ru.crystals.pos.ui.forms.sale.purchase.PurchaseFormCallback;
 import ru.crystals.pos.ui.forms.sale.purchase.PurchaseFrameModel;
+import ru.crystals.pos.ui.forms.sale.purchase.UIPayment;
 import ru.crystals.pos.ui.forms.sale.purchase.UIPosition;
+import ru.crystals.pos.ui.forms.sale.purchase.UIPurchase;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
@@ -16,6 +19,7 @@ import java.awt.Button;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -24,27 +28,26 @@ public class SalePanel extends LayerPanel {
 
     public static final int ROWS = 5;
     public static final int COLS = 4;
-    private JPanel mainPanel;
-    private JPanel centerOnMainPanel;
+    private final JPanel mainPanel;
 
-    private JPanel rightOnMainPanel; // позиции чека
-    private JPanel bottomFormsPanel; // для отображения форм BL
-    private JPanel upLeftPanel; // для плиток
-    private PlitkiFormModel plitkiModel; //модель для плиток
+    private final JPanel bottomFormsPanel; // для отображения форм BL
 
     private final List<Button> buttons = new ArrayList<>();
     private Consumer<String> plitkaConsumer;
 
-    private DefaultListModel<UIPosition> positionsListModel;
-    private PurchaseFrameModel purchaseFrameModel;
-    private JList<UIPosition> positionsList;
+    private DefaultListModel<String> positionsListModel;
+    private JList<String> positionsList; // компонент список позиций
+    private PurchaseFrameModel purchaseFrameModel; // модель списка опзиций
+    private Consumer<PurchaseFormCallback> purchaseFrameModelCallback;
 
     public SalePanel() {
         mainPanel = createPanel(Color.black, 0, 0);
-        rightOnMainPanel = createPanel(Color.blue, 200, 0);
+        // позиции чека
+        JPanel rightOnMainPanel = createPanel(Color.white, 200, 0);
         createPurchaseComponents(rightOnMainPanel);
-        centerOnMainPanel = createPanel(Color.gray, 200, 300);
-        upLeftPanel = createPanel(Color.lightGray, 200, 100);
+        JPanel centerOnMainPanel = createPanel(Color.gray, 200, 300);
+        // для плиток
+        JPanel upLeftPanel = createPanel(Color.lightGray, 200, 100);
         createPlitkiComponents(upLeftPanel);
         bottomFormsPanel = createPanel(Color.green, 200, 100);
         mainPanel.add(rightOnMainPanel, BorderLayout.EAST);
@@ -57,8 +60,21 @@ public class SalePanel extends LayerPanel {
         positionsListModel = new DefaultListModel<>();
         positionsList = new JList<>(positionsListModel);
         positionsList.setLayoutOrientation(JList.VERTICAL);
+        positionsList.setFocusable(false);
         JScrollPane listScroller = new JScrollPane(positionsList);
         parent.add(positionsList, BorderLayout.CENTER);
+        Button btn = new Button("Расчет");
+        btn.setFocusable(false);
+        btn.setMinimumSize(new Dimension(0, 50));
+        btn.addActionListener(this::onCalculateBtn);
+        parent.add(btn, BorderLayout.SOUTH);
+    }
+
+    private void onCalculateBtn(ActionEvent actionEvent) {
+        if (purchaseFrameModelCallback != null) {
+            PurchaseFormCallback callback = PurchaseFormCallback.subtotal();
+            purchaseFrameModelCallback.accept(callback);
+        }
     }
 
     private void createPlitkiComponents(JPanel pnl) {
@@ -104,8 +120,9 @@ public class SalePanel extends LayerPanel {
     @Override
     public boolean setModel(UIFormModel uiFormModel) {
         if (uiFormModel instanceof PlitkiFormModel) {
-            this.plitkiModel = (PlitkiFormModel)uiFormModel;
-            this.plitkiModel.setListener(this::onPlitkiChanged);
+            //модель для плиток
+            PlitkiFormModel plitkiModel = (PlitkiFormModel) uiFormModel;
+            plitkiModel.setListener(this::onPlitkiChanged);
             return true;
         } else if (uiFormModel instanceof PurchaseFrameModel) {
             this.purchaseFrameModel = (PurchaseFrameModel)uiFormModel;
@@ -114,11 +131,23 @@ public class SalePanel extends LayerPanel {
         return super.setModel(uiFormModel);
     }
 
-    private void onPurchaseChanged(PurchaseFrameModel purchaseFrameModel) {
+    private void onPurchaseChanged(PurchaseFrameModel purchaseCallback) {
         positionsListModel.removeAllElements();
-        for (UIPosition position : purchaseFrameModel.getPurchase().getPositions()) {
-            positionsListModel.addElement(position);
+        UIPurchase purchase = purchaseCallback.getPurchase();
+        for (UIPosition position : purchase.getPositions()) {
+            positionsListModel.addElement(position.getName() + "[" + position.getCount() + "]");
         }
+        if (purchase.getDiscountAmount() != null) {
+            positionsListModel.addElement("----");
+            positionsListModel.addElement("Скидка " + purchase.getDiscountAmount());
+        }
+        if (!purchase.getPayments().isEmpty()) {
+            positionsListModel.addElement("----");
+        }
+        for (UIPayment payment : purchase.getPayments()) {
+            positionsListModel.addElement(payment.getTypeName() + "[" + payment.getAmount() + "]");
+        }
+        purchaseFrameModelCallback = purchaseCallback.getCallback();
     }
 
     public void onPlitkiChanged(PlitkiFormModel model) {

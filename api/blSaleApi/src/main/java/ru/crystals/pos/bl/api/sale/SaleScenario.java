@@ -11,4 +11,6 @@ public interface SaleScenario extends FuncKeyListener, LayerScenario {
         return UILayer.SALE;
     }
 
+    void onSubtotal();
+
 }
