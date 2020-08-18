@@ -18,6 +18,8 @@ import java.util.function.Consumer;
  */
 public interface ScenarioManager {
 
+    /// start
+
     <I> void start(InScenario<I> scenario, I arg);
 
     <O> void start(OutScenario<O> scenario, Consumer<O> onComplete);
@@ -28,7 +30,7 @@ public interface ScenarioManager {
 
     <I, O> void start(InOutCancelScenario<I, O> scenario, I arg, Consumer<O> onComplete, VoidListener onCancel);
 
-    /// child
+    /// startChild
 
     void startChild(CompleteScenario scenario, VoidListener onComplete);
 
@@ -46,6 +48,10 @@ public interface ScenarioManager {
 
     <I, O> void startChild(InOutCancelScenario<I, O> scenario, I arg, Consumer<O> onComplete, VoidListener onCancel);
 
+    ///
+
+    <C> boolean tryToComplete(Scenario scenario, Consumer<C> onComplete);
+
     /// other
 
     Scenario getCurrentScenario();
@@ -53,4 +59,6 @@ public interface ScenarioManager {
     Scenario getParentScenario(Scenario scenario);
 
     Scenario getChildScenario(Scenario parent);
+
+    boolean isActive(Scenario scenario);
 }

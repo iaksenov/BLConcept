@@ -10,7 +10,7 @@ import java.util.function.Consumer;
  * @param <V> тип значения
  * @param <C> тип колбэка значения
  */
-public class UIValueCallbackFormModel<V, C extends ValueCallback<V>> extends UIValueFormModel<V> implements UICallbackModel<C> {
+public abstract class UIValueCallbackFormModel<V, C extends ValueCallback<V>> extends UIValueFormModel<V> implements UICallbackModel<C> {
 
     private final Consumer<C> consumer;
 

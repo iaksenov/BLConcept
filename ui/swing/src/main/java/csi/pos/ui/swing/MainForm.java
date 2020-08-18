@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Container;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -99,7 +100,7 @@ public class MainForm extends JFrame implements UIKeyListener {
         }
     }
 
-    public void setLayerModels(UILayer uiLayer, UIFormModel... models) {
+    public void setLayerModels(UILayer uiLayer, Collection<UIFormModel> models) {
         if (models == null) {
             return;
         }
@@ -107,6 +108,7 @@ public class MainForm extends JFrame implements UIKeyListener {
         if (layerPanel != null) {
             for (UIFormModel model : models) {
                 layerPanel.setModel(model);
+                model.modelChanged();
             }
         }
     }

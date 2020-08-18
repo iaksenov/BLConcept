@@ -1,4 +1,4 @@
 package ru.crystals.pos.ui.forms;
 
-public class UIValueFormModel<V> extends UIFormModel {
+public abstract class UIValueFormModel<V> extends UIFormModel {
 }

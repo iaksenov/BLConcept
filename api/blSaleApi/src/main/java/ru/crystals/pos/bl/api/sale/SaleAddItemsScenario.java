@@ -6,6 +6,10 @@ import ru.crystals.pos.hw.events.listeners.MSRListener;
 
 public interface SaleAddItemsScenario extends CompleteScenario, BarcodeListener, MSRListener {
 
+    /**
+     * Поиск товара
+     * @param searchString строка поиска
+     */
     void searchProduct(String searchString);
 
     /**

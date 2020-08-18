@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import ru.crystals.pos.bl.ScenarioManager;
 import ru.crystals.pos.bl.api.CompleteCancelScenario;
 import ru.crystals.pos.bl.api.CompleteScenario;
+import ru.crystals.pos.bl.api.ForceCompletedScenario;
 import ru.crystals.pos.bl.api.InCompleteCancelScenario;
 import ru.crystals.pos.bl.api.InOutCancelScenario;
 import ru.crystals.pos.bl.api.InOutScenario;
@@ -141,6 +142,21 @@ public final class ScenarioManagerImpl implements ScenarioManager, ApplicationCo
     }
 
     @Override
+    public <C> boolean tryToComplete(Scenario scenario, Consumer<C> onComplete) {
+        if (scenario instanceof ForceCompletedScenario) {
+            if (getTree().contains(scenario)) {
+                return ((ForceCompletedScenario<C>) scenario).tryToComplete(o -> removeAndAccept(scenario, onComplete, o));
+            } else {
+                System.out.println("Scenario " + scenario.getClass().getName() + " is not active");
+                return false;
+            }
+        } else {
+            System.out.println("Scenario " + scenario.getClass().getName() + " is not ForceCompletedScenario");
+            return false;
+        }
+    }
+
+    @Override
     public Scenario getCurrentScenario() {
         return getTree().getLast();
     }
@@ -153,6 +169,11 @@ public final class ScenarioManagerImpl implements ScenarioManager, ApplicationCo
     @Override
     public Scenario getChildScenario(Scenario parent) {
         return getTree().getChild(parent);
+    }
+
+    @Override
+    public boolean isActive(Scenario scenario) {
+        return getTree().contains(scenario);
     }
 
     @Override

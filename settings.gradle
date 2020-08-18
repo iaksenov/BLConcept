@@ -32,6 +32,10 @@ project(':bl:blSale').projectDir = file("bl/blSale")
 include 'bl:blGoodsPlugins'
 project(':bl:blGoodsPlugins').projectDir = file("bl/blGoodsPlugins")
 
+include 'bl:blSalePlitki'
+project(':bl:blSalePlitki').projectDir = file("bl/blSalePlitki")
+
+
 // infrastructure layer
 include 'il:db:docs'
 project(':il:db:docs').projectDir = file("il/db/docs")

@@ -4,8 +4,13 @@ import csi.pos.ui.swing.LayerPanel;
 import csi.pos.ui.swing.forms.Form;
 import ru.crystals.pos.ui.forms.UIFormModel;
 import ru.crystals.pos.ui.forms.sale.PlitkiFormModel;
+import ru.crystals.pos.ui.forms.sale.purchase.PurchaseFrameModel;
+import ru.crystals.pos.ui.forms.sale.purchase.UIPosition;
 
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Color;
@@ -30,12 +35,17 @@ public class SalePanel extends LayerPanel {
     private final List<Button> buttons = new ArrayList<>();
     private Consumer<String> plitkaConsumer;
 
+    private DefaultListModel<UIPosition> positionsListModel;
+    private PurchaseFrameModel purchaseFrameModel;
+    private JList<UIPosition> positionsList;
+
     public SalePanel() {
         mainPanel = createPanel(Color.black, 0, 0);
         rightOnMainPanel = createPanel(Color.blue, 200, 0);
+        createPurchaseComponents(rightOnMainPanel);
         centerOnMainPanel = createPanel(Color.gray, 200, 300);
         upLeftPanel = createPanel(Color.lightGray, 200, 100);
-        plitki(upLeftPanel);
+        createPlitkiComponents(upLeftPanel);
         bottomFormsPanel = createPanel(Color.green, 200, 100);
         mainPanel.add(rightOnMainPanel, BorderLayout.EAST);
         mainPanel.add(centerOnMainPanel, BorderLayout.CENTER);
@@ -43,7 +53,15 @@ public class SalePanel extends LayerPanel {
         centerOnMainPanel.add(bottomFormsPanel, BorderLayout.SOUTH);
     }
 
-    private void plitki(JPanel pnl) {
+    private void createPurchaseComponents(JPanel parent) {
+        positionsListModel = new DefaultListModel<>();
+        positionsList = new JList<>(positionsListModel);
+        positionsList.setLayoutOrientation(JList.VERTICAL);
+        JScrollPane listScroller = new JScrollPane(positionsList);
+        parent.add(positionsList, BorderLayout.CENTER);
+    }
+
+    private void createPlitkiComponents(JPanel pnl) {
         pnl.setLayout(new GridLayout(ROWS, COLS, 10, 10));
         int i = 0;
         for (int r = 0; r < ROWS ; r++) {
@@ -87,10 +105,20 @@ public class SalePanel extends LayerPanel {
     public boolean setModel(UIFormModel uiFormModel) {
         if (uiFormModel instanceof PlitkiFormModel) {
             this.plitkiModel = (PlitkiFormModel)uiFormModel;
-            plitkiModel.setListener(this::onPlitkiChanged);
+            this.plitkiModel.setListener(this::onPlitkiChanged);
             return true;
+        } else if (uiFormModel instanceof PurchaseFrameModel) {
+            this.purchaseFrameModel = (PurchaseFrameModel)uiFormModel;
+            this.purchaseFrameModel.setListener(this::onPurchaseChanged);
         }
         return super.setModel(uiFormModel);
+    }
+
+    private void onPurchaseChanged(PurchaseFrameModel purchaseFrameModel) {
+        positionsListModel.removeAllElements();
+        for (UIPosition position : purchaseFrameModel.getPurchase().getPositions()) {
+            positionsListModel.addElement(position);
+        }
     }
 
     public void onPlitkiChanged(PlitkiFormModel model) {

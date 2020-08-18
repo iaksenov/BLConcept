@@ -8,6 +8,7 @@ import ru.crystals.pos.ui.UILayer;
 import ru.crystals.pos.ui.forms.UIFormModel;
 import ru.crystals.pos.ui.forms.UIValueFormModel;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -41,7 +42,7 @@ public class SwingUI implements UI {
     }
 
     @Override
-    public void setLayerModels(UILayer uiLayer, UIFormModel... models) {
+    public void setLayerModels(UILayer uiLayer, Collection<UIFormModel> models) {
         mainForm.setLayerModels(uiLayer, models);
     }
 

@@ -9,12 +9,16 @@ import ru.crystals.pos.bl.api.sale.CalcDiscountScenario;
 import ru.crystals.pos.bl.api.sale.RegisterPurchaseScenario;
 import ru.crystals.pos.bl.api.sale.SaleAddItemsScenario;
 import ru.crystals.pos.bl.api.sale.SaleScenario;
+import ru.crystals.pos.bl.api.sale.SaleScenarioAdditional;
 import ru.crystals.pos.hw.events.keys.FuncKey;
 import ru.crystals.pos.ui.UI;
 import ru.crystals.pos.ui.UILayer;
-import ru.crystals.pos.ui.forms.sale.PlitkiFormModel;
+import ru.crystals.pos.ui.forms.UIFormModel;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * Класс сценария продажи.
@@ -39,24 +43,17 @@ public class SaleScenarioImpl implements SaleScenario {
     //@Autowired
     private RegisterPurchaseScenario registerPurchase;
 
-    private final PlitkiFormModel plitkiModel;
+    private Collection<SaleScenarioAdditional> additional = new HashSet<>();
 
     public SaleScenarioImpl(UI ui, ScenarioManager scenarioManager, LayersManager layersManager) {
         this.ui = ui;
         this.scenarioManager = scenarioManager;
         this.layersManager = layersManager;
-        this.plitkiModel = new PlitkiFormModel(new ArrayList<>(), this::onPlitkaClick);
     }
 
-    private void onPlitkaClick(String s) {
-        System.out.println("Plitka clicked " + s);
-        if (s.contains("EXIT")) {
-            layersManager.setLayer(UILayer.LOGIN);
-        } else {
-            if (scenarioManager.getChildScenario(this) == addItemsScenario) {
-                addItemsScenario.searchProduct(s);
-            }
-        }
+    @Autowired(required = false)
+    private void setAdditional(List<SaleScenarioAdditional> additional) {
+        this.additional = additional;
     }
 
     /**
@@ -115,16 +112,12 @@ public class SaleScenarioImpl implements SaleScenario {
     @Override
     public void start() {
         // Тут в зависимости от состояния чека запускается нужный сценарий
-        ui.setLayerModels(UILayer.SALE, plitkiModel);
-        plitkiModel.getPlitki().clear();
-        plitkiModel.getPlitki().add("-= EXIT =- ");
-        plitkiModel.getPlitki().add("Кефир");
-        plitkiModel.getPlitki().add("Полбатона");
-        plitkiModel.getPlitki().add("Вода");
-        plitkiModel.getPlitki().add("Спички");
-        plitkiModel.getPlitki().add("Туалет");
-        plitkiModel.getPlitki().add("Капучино");
-        plitkiModel.modelChanged();
+        List<UIFormModel> addModels = new ArrayList<>();
+        for (SaleScenarioAdditional additional : additional) {
+            addModels.addAll(additional.getAdditionalModels());
+        }
+        ui.setLayerModels(UILayer.SALE, addModels);
+        ///
         addItems();
     }
 

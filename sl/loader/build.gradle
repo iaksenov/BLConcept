@@ -13,6 +13,7 @@ dependencies {
         project(':bl:blCommon'),
         project(':bl:blLogin'),
         project(':bl:blSale'),
+        project(':bl:blSalePlitki'),
         project(':bl:blGoodsPlugins'),
 
         project(':il:db:docsApi'),

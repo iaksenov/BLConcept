@@ -45,18 +45,23 @@ public class AddItemsScenario implements SaleAddItemsScenario, BarcodeListener {
 
     @Override
     public void onBarcode(String code) {
-        Scenario childScenario = scenarioManager.getChildScenario(this);
-        if (childScenario instanceof GoodsPluginScenario) {
-            if (((GoodsPluginScenario) childScenario).tryToComplete(this::addPositionToDB)) {
-                showProductPlugin(createFakeProduct(code));
-            } else {
-                System.out.println("Goods plugin cannot return position " + code);
-            };
-        } else {
+        if (completeChildScenario()) {
             searchProduct(code);
         }
-//        ui.showForm(new MessageFormModel("Товар по ШК не найден!", this::showSearchForm));
-        // поиск товара
+    }
+
+    private boolean completeChildScenario() {
+        Scenario childScenario = scenarioManager.getChildScenario(this);
+        if (childScenario instanceof GoodsPluginScenario) {
+            if (scenarioManager.tryToComplete(childScenario, this::addPositionToDB)) {
+                return true;
+            } else {
+                System.out.println("Goods plugin can't complete");
+                return false;
+            }
+        } else {
+            return true;
+        }
     }
 
     @Override
@@ -68,7 +73,6 @@ public class AddItemsScenario implements SaleAddItemsScenario, BarcodeListener {
         ui.showForm(new InputStringFormModel("Поиск товара", "введите код товара", this::onItemEntered));
     }
 
-
     private void onItemEntered(String s) {
         // поиск товара в БД
         searchProduct(s);
@@ -76,6 +80,12 @@ public class AddItemsScenario implements SaleAddItemsScenario, BarcodeListener {
 
     @Override
     public void searchProduct(String searchString) {
+        if (completeChildScenario()) {
+            searchProductInternal(searchString);
+        }
+    }
+
+    private void searchProductInternal(String searchString) {
         CallableSpinnerArg<Product> arg = new CallableSpinnerArg<>("Поиск товара ...", findProductCall(searchString));
         scenarioManager.startChildAsync(new CallableSpinner<>(ui), arg, this::showProductPlugin, e -> {
             ui.showForm(new MessageFormModel("Товар по строке не найден!", this::showSearchForm));

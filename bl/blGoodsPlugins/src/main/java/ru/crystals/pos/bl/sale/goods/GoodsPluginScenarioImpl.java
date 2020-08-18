@@ -1,6 +1,7 @@
 package ru.crystals.pos.bl.sale.goods;
 
 import org.springframework.stereotype.Component;
+import ru.crystals.pos.bl.api.ForceCompletedScenario;
 import ru.crystals.pos.bl.api.goods.GoodsPluginScenario;
 import ru.crystals.pos.bl.api.goods.Product;
 import ru.crystals.pos.bl.api.listener.VoidListener;
@@ -13,7 +14,7 @@ import java.math.BigDecimal;
 import java.util.function.Consumer;
 
 @Component
-public class GoodsPluginScenarioImpl implements GoodsPluginScenario {
+public class GoodsPluginScenarioImpl implements GoodsPluginScenario, ForceCompletedScenario<Position> {
 
     private final UI ui;
     private Product product;
