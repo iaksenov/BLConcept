@@ -15,6 +15,9 @@ import ru.crystals.pos.user.User;
 import ru.crystals.pos.user.UserModule;
 import ru.crystals.pos.user.UserRight;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 @Component
 public class LoginScenarioImpl implements LoginScenario {
 
@@ -88,7 +91,11 @@ public class LoginScenarioImpl implements LoginScenario {
     }
 
     private Label getInfoText() {
-        return Label.empty("Есть незавершенный чек");
+        String keys = Stream.of("F12 -> Barcode('XXXXX')",
+            "F5 -> Barcode('12345')",
+            "F2 -> Barcode('X-002')").collect(Collectors.joining("<br>", "<html>", "</html>"));
+
+        return Label.empty(keys);
     }
 
     private String getShiftText() {

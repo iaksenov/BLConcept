@@ -1,10 +1,13 @@
 package ru.crystals.pos.hw.events.keys;
 
-import ru.crystals.pos.hw.events.HWHumanEvent;
+import ru.crystals.pos.hw.events.bl.HWBLHumanEvent;
 
 import java.util.StringJoiner;
 
-public class FuncKey  implements HWHumanEvent {
+/**
+ * Событие о нажатии функциональной клавиши
+ */
+public class FuncKey  implements HWBLHumanEvent {
 
     private final FuncKeyType funcKeyType;
 

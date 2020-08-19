@@ -5,7 +5,7 @@ import ru.crystals.pos.bl.api.scenarios.Scenario;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 public class ScenariosTree {
 
@@ -74,10 +74,9 @@ public class ScenariosTree {
 
     @Override
     public String toString() {
+        String list = scenarioList.stream().map(s -> s.getClass().getSimpleName()).collect(Collectors.joining(" -> ", "[", "]"));
         return layerScenario.getClass().getSimpleName() + " -> "
-            + new StringJoiner(" -> ", "[", "]")
-            .add("scenarioList=" + scenarioList)
-            .toString();
+            + list;
     }
 
 }

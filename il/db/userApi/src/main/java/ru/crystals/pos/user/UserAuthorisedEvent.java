@@ -1,13 +1,14 @@
 package ru.crystals.pos.user;
 
-import ru.crystals.pos.hw.events.BaseEvent;
-
-public class UserAuthorisedEvent extends BaseEvent<User> {
+public class UserAuthorisedEvent {
 
     private User user;
 
-    public UserAuthorisedEvent(Object source, User user) {
-        super(source, user);
+    public UserAuthorisedEvent(User user) {
+        this.user = user;
     }
 
+    public User getUser() {
+        return user;
+    }
 }

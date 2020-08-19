@@ -1,7 +1,9 @@
 package ru.crystals.pos.hw.events;
 
+
 /**
- * Базовый интерфейс тела сообщения POS hardware
+ * HardWare Human Event
+ * События от действий человека на оборудование
  */
 public interface HWHumanEvent extends HumanEvent {
 }

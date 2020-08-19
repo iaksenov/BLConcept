@@ -1,10 +1,13 @@
 package ru.crystals.pos.hw.events.keys;
 
-import ru.crystals.pos.hw.events.HWHumanEvent;
+import ru.crystals.pos.hw.events.ui.HWUIHumanEvent;
 
 import java.util.StringJoiner;
 
-public class TypedKey implements HWHumanEvent {
+/**
+ * Событие о нажатии печатаемой клавиши
+ */
+public class TypedKey implements HWUIHumanEvent {
 
     private final Character character;
 

@@ -4,7 +4,7 @@ import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.stereotype.Service;
-import ru.crystals.pos.hw.events.UIHumanEvent;
+import ru.crystals.pos.hw.events.ui.UIHumanEvent;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;

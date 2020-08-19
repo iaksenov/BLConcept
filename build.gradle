@@ -1,4 +1,4 @@
-ext.Spring_VERSION = '5.2.3.RELEASE'
+ext.Spring_VERSION = '5.2.7.RELEASE'
 
 subprojects {
 

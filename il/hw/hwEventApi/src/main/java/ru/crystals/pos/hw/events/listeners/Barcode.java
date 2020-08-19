@@ -1,10 +1,10 @@
 package ru.crystals.pos.hw.events.listeners;
 
-import ru.crystals.pos.hw.events.HWHumanEvent;
+import ru.crystals.pos.hw.events.bl.HWBLHumanEvent;
 
 import java.util.StringJoiner;
 
-public class Barcode implements HWHumanEvent {
+public class Barcode implements HWBLHumanEvent {
 
     private final String code;
 

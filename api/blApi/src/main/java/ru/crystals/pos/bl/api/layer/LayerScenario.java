@@ -6,7 +6,7 @@ import ru.crystals.pos.ui.UILayer;
 public interface LayerScenario extends Scenario {
 
     /**
-     * Слой сцнария
+     * Слой сценария
      * @return слой
      */
     UILayer getLayer();

@@ -24,21 +24,21 @@ public class UserModuleImpl implements UserModule {
     @Override
     public User loginByPassword(String password) throws LoginFailedException {
         Optional<DBUser> user = dao.getUserByPassword(password);
-        dispatchEvent(user);
+        user.ifPresent(this::dispatchEvent);
         return user.orElseThrow(() -> new LoginFailedException("Пользователь не найден"));
     }
 
     @Override
     public User loginByBarcode(String code) throws LoginFailedException {
         Optional<DBUser> user = dao.getUserByBarcode(code);
-        dispatchEvent(user);
+        user.ifPresent(this::dispatchEvent);
         return user.orElseThrow(() -> new LoginFailedException("Пользователь не найден"));
     }
 
     @Override
     public User loginByMSR(MSRTracks msrTracks) throws LoginFailedException {
         Optional<DBUser> user = dao.getUserByMSR(msrTracks);
-        dispatchEvent(user);
+        user.ifPresent(this::dispatchEvent);
         return user.orElseThrow(() -> new LoginFailedException("Пользователь не найден"));
     }
 
@@ -47,11 +47,9 @@ public class UserModuleImpl implements UserModule {
         return user != null && user.getBarcode().equals(barcode);
     }
 
-    private void dispatchEvent(Optional<DBUser> user) {
-        if (user.isPresent()) {
-            this.user = user.get();
-            publisher.publishEvent(new UserAuthorisedEvent(this, user.get()));
-        }
+    private void dispatchEvent(DBUser user) {
+        this.user = user;
+        publisher.publishEvent(new UserAuthorisedEvent(user));
     }
 
 }

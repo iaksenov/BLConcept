@@ -1,10 +1,13 @@
 package ru.crystals.pos.hw.events.keys;
 
-import ru.crystals.pos.hw.events.HWHumanEvent;
+import ru.crystals.pos.hw.events.ui.HWUIHumanEvent;
 
 import java.util.StringJoiner;
 
-public class ControlKey implements HWHumanEvent {
+/**
+ * Событие о нажатии клавиши управления
+ */
+public class ControlKey implements HWUIHumanEvent {
 
     private final ControlKeyType controlKeyType;
 

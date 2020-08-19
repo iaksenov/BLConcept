@@ -1,10 +1,10 @@
 package ru.crystals.pos.hw.events.listeners;
 
-import ru.crystals.pos.hw.events.HWHumanEvent;
+import ru.crystals.pos.hw.events.bl.HWBLHumanEvent;
 
 import java.util.StringJoiner;
 
-public class MSRTracks implements HWHumanEvent {
+public class MSRTracks implements HWBLHumanEvent {
 
     private final String track1;
     private final String track2;

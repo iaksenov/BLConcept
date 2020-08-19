@@ -51,6 +51,7 @@ public class NativeInputAdapter implements NativeKeyListener {
         keysMap.put("Right", new ControlKey(ControlKeyType.RIGHT));
         keysMap.put("Escape", new ControlKey(ControlKeyType.ESC));
         keysMap.put("Backspace", new ControlKey(ControlKeyType.BACKSPACE));
+
         keysMap.put("F12", new Barcode("XXXXX"));
         keysMap.put("F5", new Barcode("12345"));
         keysMap.put("F2", new Barcode("X-002"));

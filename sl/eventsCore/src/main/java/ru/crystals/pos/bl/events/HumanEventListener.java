@@ -5,7 +5,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import ru.crystals.pos.hw.events.HWHumanEvent;
 import ru.crystals.pos.hw.events.HumanEvent;
-import ru.crystals.pos.hw.events.UIHumanEvent;
+import ru.crystals.pos.hw.events.ui.UIHumanEvent;
 
 import javax.annotation.PostConstruct;
 import java.util.concurrent.BlockingQueue;
@@ -19,13 +19,13 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Отправляет в HWEventRouter.
  */
 @Service
-public class HWEventListener {
+public class HumanEventListener {
 
     private final BlockingQueue<HumanEvent> eventQueue = new LinkedBlockingQueue<>();
 
     private final HWEventRouter processor;
 
-    public HWEventListener(HWEventRouter processor) {
+    public HumanEventListener(HWEventRouter processor) {
         this.processor = processor;
     }
 
@@ -37,7 +37,7 @@ public class HWEventListener {
 
     @Async
     @EventListener
-    public void onHwEvent(HumanEvent event) {
+    public void onHumanEvent(HumanEvent event) {
         eventQueue.add(event);
     }
 
@@ -52,8 +52,8 @@ public class HWEventListener {
                 }
             } catch (InterruptedException e) {
                 break;
-            } catch (Exception th){
-                th.printStackTrace();
+            } catch (Exception e){
+                e.printStackTrace();
             }
         }
     }

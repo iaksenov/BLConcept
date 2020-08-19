@@ -23,7 +23,7 @@ public class POSStatusListener {
     }
 
     private String getUserFIO(UserAuthorisedEvent event) {
-        return event.getPayload().getFirstName() + " " + event.getPayload().getLastName() + "." + event.getPayload().getMiddleName() + ".";
+        return event.getUser().getFirstName() + " " + event.getUser().getLastName() + "." + event.getUser().getMiddleName() + ".";
     }
 
 }

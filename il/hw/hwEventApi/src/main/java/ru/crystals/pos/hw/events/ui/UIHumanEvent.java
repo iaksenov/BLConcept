@@ -1,4 +1,6 @@
-package ru.crystals.pos.hw.events;
+package ru.crystals.pos.hw.events.ui;
+
+import ru.crystals.pos.hw.events.HumanEvent;
 
 import java.util.function.Consumer;
 
