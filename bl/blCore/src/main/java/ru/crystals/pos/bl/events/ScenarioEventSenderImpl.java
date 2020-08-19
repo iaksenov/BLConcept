@@ -4,12 +4,11 @@ import org.springframework.stereotype.Service;
 import ru.crystals.pos.bl.ScenarioManager;
 import ru.crystals.pos.bl.api.marker.IgnoreAllEvents;
 import ru.crystals.pos.bl.api.scenarios.Scenario;
+import ru.crystals.pos.bl.api.scenarios.special.ScenarioEventFilter;
+import ru.crystals.pos.hw.events.HWHumanEvent;
 import ru.crystals.pos.hw.events.interceptor.CallbackInterceptor;
 import ru.crystals.pos.hw.events.keys.FuncKey;
-import ru.crystals.pos.hw.events.listeners.BarcodeListener;
-import ru.crystals.pos.hw.events.listeners.FuncKeyListener;
-import ru.crystals.pos.hw.events.listeners.MSRListener;
-import ru.crystals.pos.hw.events.listeners.MSRTracks;
+import ru.crystals.pos.hw.events.listeners.*;
 
 @Service
 public class ScenarioEventSenderImpl implements ScenarioEventSender {
@@ -24,23 +23,33 @@ public class ScenarioEventSenderImpl implements ScenarioEventSender {
     }
 
     @Override
-    public void onBarcode(String code) {
-        if (!preProcessor.preProcessBarcode(code)) {
-            processBarcode(code, scenarioManager.getCurrentScenario());
+    public void processEvent(HWHumanEvent event) {
+        if (!preProcessor.processEvent(event)) {
+            if (event instanceof Barcode) {
+                onBarcode(event);
+            }
         }
     }
 
-    private void processBarcode(String code, Scenario scenario) {
+    public void onBarcode(HWHumanEvent event) {
+        processBarcode(event, scenarioManager.getCurrentScenario());
+    }
+
+    private void processBarcode(HWHumanEvent event, Scenario scenario) {
+        boolean processed = false;
+        if (scenario instanceof ScenarioEventFilter) {
+            processed = ((ScenarioEventFilter) scenario).filterEvent(event);
+        }
+        if ()
         if (scenario instanceof BarcodeListener) {
-            ((BarcodeListener)scenario).onBarcode(code);
+            ((BarcodeListener)scenario).onBarcode(((Barcode)event).getCode());
         } else {
-            processBarcode(code, scenarioManager.getParentScenario(scenario));
+            processBarcode(event, scenarioManager.getParentScenario(scenario));
         }
     }
 
     @Override
     public void onFunctionalKey(FuncKey funcKey) {
-        // preProcessor
         processFunctionalKey(funcKey, scenarioManager.getCurrentScenario());
     }
 
@@ -54,7 +63,6 @@ public class ScenarioEventSenderImpl implements ScenarioEventSender {
 
     @Override
     public void onMSR(MSRTracks msrTracks) {
-        // preProcessor
         processMSR(msrTracks, scenarioManager.getCurrentScenario());
     }
 

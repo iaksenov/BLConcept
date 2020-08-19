@@ -1,16 +1,8 @@
 package ru.crystals.pos.bl;
 
 import ru.crystals.pos.bl.api.listener.VoidListener;
-import ru.crystals.pos.bl.api.scenarios.CompleteCancelScenario;
-import ru.crystals.pos.bl.api.scenarios.CompleteScenario;
-import ru.crystals.pos.bl.api.scenarios.InCompleteCancelScenario;
-import ru.crystals.pos.bl.api.scenarios.InOutCancelScenario;
-import ru.crystals.pos.bl.api.scenarios.InOutScenario;
-import ru.crystals.pos.bl.api.scenarios.InScenario;
-import ru.crystals.pos.bl.api.scenarios.OutCancelScenario;
-import ru.crystals.pos.bl.api.scenarios.OutScenario;
-import ru.crystals.pos.bl.api.scenarios.Scenario;
-import ru.crystals.pos.bl.api.scenarios.force.ForceCompleteImpossibleException;
+import ru.crystals.pos.bl.api.scenarios.*;
+import ru.crystals.pos.bl.api.scenarios.special.ForceCompleteImpossibleException;
 
 import java.util.function.Consumer;
 

@@ -1,4 +1,4 @@
-package ru.crystals.pos.bl.api.scenarios.force;
+package ru.crystals.pos.bl.api.scenarios.special;
 
 /**
  * Опциональный интерфейс реализации сценариев для принудительного завершения
