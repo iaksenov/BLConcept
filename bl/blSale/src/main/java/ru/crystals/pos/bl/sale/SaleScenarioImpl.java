@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
- * Класс сценария продажи.
+ * Реализация сценария продажи.
  */
 @Component
 public class SaleScenarioImpl implements SaleScenario {
@@ -59,7 +59,7 @@ public class SaleScenarioImpl implements SaleScenario {
     }
 
     @Autowired(required = false)
-    private void setAdditional(List<SaleScenarioAdditional> additional) {
+    private void injectAdditional(List<SaleScenarioAdditional> additional) {
         this.additional = additional;
     }
 
@@ -68,25 +68,23 @@ public class SaleScenarioImpl implements SaleScenario {
      */
     private void addItems() {
         docModule.setDiscountAmount(null);
-        scenarioManager.startChild(addPositionsScenario, this::calcDiscount);
+        scenarioManager.startChild(addPositionsScenario, () -> calcDiscount(null));
     }
 
     /**
      * Расчет скидок
+     * @param payType
      */
-    private void calcDiscount() {
-        scenarioManager.startChild(calcDiscount, this::addPayments, this::onCancelDiscount);
-    }
-
-    private void onCancelDiscount() {
-        addItems();
+    private void calcDiscount(String payType) {
+        scenarioManager.startChild(calcDiscount, () -> addPayments(payType), this::addItems);
     }
 
     /**
      * Добавление оплат
+     * @param payType
      */
-    private void addPayments() {
-        scenarioManager.startChild(addPayments, "CASH", this::registerPurchase, this::addItems);
+    private void addPayments(String payType) {
+        scenarioManager.startChild(addPayments, payType, this::registerPurchase, this::addItems);
     }
 
     /**
@@ -113,20 +111,20 @@ public class SaleScenarioImpl implements SaleScenario {
     public void onFunctionalKey(FuncKey funcKey) {
         switch (funcKey.getFuncKeyType()) {
             case SUBTOTAL:
-                doSubtotal();
+                doSubtotalPrivate(null);
             case PAYMENT:
                 doPayment(funcKey.getPayload());
         }
     }
 
-    private void doPayment(String paymentName) {
-        doSubtotal();
+    private void doPayment(String payType) {
+        doSubtotalPrivate(payType);
     }
 
-    private void doSubtotal() {
+    private void doSubtotalPrivate(String payType) {
         if (scenarioManager.getChildScenario(this) == addPositionsScenario) {
             try {
-                scenarioManager.tryToComplete(addPositionsScenario, this::calcDiscount);
+                scenarioManager.tryToComplete(addPositionsScenario, () -> calcDiscount(payType));
             } catch (ForceCompleteImpossibleException e) {
                 System.out.println("Can't force complete AddItemsScenario " + e.getLocalizedMessage());
             }
@@ -135,19 +133,25 @@ public class SaleScenarioImpl implements SaleScenario {
 
     @Override
     public void start() {
+        initAdditional();
         // Тут в зависимости от состояния чека запускается нужный сценарий
+        addItems();
+    }
+
+    /**
+     * Инициализация дополнений
+     */
+    private void initAdditional() {
         List<UIFormModel> addModels = new ArrayList<>();
         for (SaleScenarioAdditional additional : additional) {
             addModels.addAll(additional.getAdditionalModels());
         }
         ui.setLayerModels(UILayer.SALE, addModels);
-        ///
-        addItems();
     }
 
     @Override
-    public void onSubtotal() {
-        doSubtotal();
+    public void doSubtotal(String paymentType) {
+        doSubtotalPrivate(paymentType);
     }
 
 }

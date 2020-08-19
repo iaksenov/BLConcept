@@ -1,5 +1,6 @@
 dependencies {
     compile project(':api:uiApi'),
             project(':api:blApi'),
-            project(':api:blSaleApi')
+            project(':api:blSaleApi'),
+            project(':bl:blCommon')
 }

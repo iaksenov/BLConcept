@@ -91,15 +91,19 @@ public class LoginScenarioImpl implements LoginScenario {
     }
 
     private Label getInfoText() {
-        String keys = Stream.of("F12 -> Barcode('XXXXX')",
+        String keys = Stream.of("Hot keys:",
+            "F2 -> Barcode('X-002')",
             "F5 -> Barcode('12345')",
-            "F2 -> Barcode('X-002')").collect(Collectors.joining("<br>", "<html>", "</html>"));
+            "F9 -> Payment('cash')",
+            "F10 -> Payment('bank')",
+            "F12 -> Barcode('XXXXX')",
+            "NumPad+ -> SUBTOTAL").collect(Collectors.joining("<br>", "<html>", "</html>"));
 
         return Label.empty(keys);
     }
 
     private String getShiftText() {
-        return "Открыта смена №00";
+        return "Открыта смена №00. Пароль кассира 2.";
     }
 
     @Override

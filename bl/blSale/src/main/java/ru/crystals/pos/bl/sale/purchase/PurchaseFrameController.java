@@ -31,7 +31,7 @@ public class PurchaseFrameController implements SaleScenarioAdditional {
 
     private void frameCallback(PurchaseFormCallback purchaseFormCallback) {
         switch (purchaseFormCallback.getAction()) {
-            case SUBTOTOAL:saleScenario.onSubtotal();
+            case SUBTOTOAL:saleScenario.doSubtotal(null);
             break;
         }
     }

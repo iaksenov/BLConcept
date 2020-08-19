@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import ru.crystals.pos.hw.events.HWHumanEvent;
 import ru.crystals.pos.hw.events.keys.ControlKey;
 import ru.crystals.pos.hw.events.keys.ControlKeyType;
+import ru.crystals.pos.hw.events.keys.FuncKey;
+import ru.crystals.pos.hw.events.keys.FuncKeyType;
 import ru.crystals.pos.hw.events.keys.TypedKey;
 import ru.crystals.pos.hw.events.listeners.Barcode;
 
@@ -52,9 +54,14 @@ public class NativeInputAdapter implements NativeKeyListener {
         keysMap.put("Escape", new ControlKey(ControlKeyType.ESC));
         keysMap.put("Backspace", new ControlKey(ControlKeyType.BACKSPACE));
 
-        keysMap.put("F12", new Barcode("XXXXX"));
-        keysMap.put("F5", new Barcode("12345"));
         keysMap.put("F2", new Barcode("X-002"));
+        keysMap.put("F5", new Barcode("12345"));
+        keysMap.put("F9", new FuncKey(FuncKeyType.PAYMENT, "cash"));
+        keysMap.put("F10", new FuncKey(FuncKeyType.PAYMENT, "bank"));
+
+        keysMap.put("NumPad Add", new FuncKey(FuncKeyType.SUBTOTAL, null));
+
+        keysMap.put("F12", new Barcode("XXXXX"));
     }
 
     @Override
