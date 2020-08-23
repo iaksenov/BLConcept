@@ -7,11 +7,11 @@ import ru.crystals.pos.bl.api.login.LoginScenario;
 import ru.crystals.pos.hw.events.listeners.MSRTracks;
 import ru.crystals.pos.ui.UI;
 import ru.crystals.pos.ui.UILayer;
-import ru.crystals.pos.ui.events.POSStatusEvent;
 import ru.crystals.pos.ui.forms.loading.LoginFormModel;
 import ru.crystals.pos.ui.label.Label;
 import ru.crystals.pos.user.LoginFailedException;
 import ru.crystals.pos.user.User;
+import ru.crystals.pos.user.UserAuthorisedEvent;
 import ru.crystals.pos.user.UserModule;
 import ru.crystals.pos.user.UserRight;
 
@@ -118,8 +118,7 @@ public class LoginScenarioImpl implements LoginScenario {
 
     private void startPrivate() {
         this.model = showLoginForm("");
-        POSStatusEvent event = new POSStatusEvent();
-        event.setCurrentCashierFIO("нет кассира");
+        UserAuthorisedEvent event = new UserAuthorisedEvent(null);
         publisher.publishEvent(event);
     }
 

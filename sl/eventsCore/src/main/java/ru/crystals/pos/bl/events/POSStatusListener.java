@@ -9,21 +9,32 @@ import ru.crystals.pos.user.UserAuthorisedEvent;
 @Service
 public class POSStatusListener {
 
-    private ApplicationEventPublisher publisher;
+    // из контекста UI
+    private static ApplicationEventPublisher uiPublisher;
+    private POSStatusEvent lastEvent = new POSStatusEvent();
 
-    public POSStatusListener(ApplicationEventPublisher publisher) {
-        this.publisher = publisher;
+    public static void setUiPublisher(ApplicationEventPublisher uiPublisher) {
+        POSStatusListener.uiPublisher = uiPublisher;
     }
 
     @EventListener
     private void onUserAuthorised(UserAuthorisedEvent event) {
-        POSStatusEvent posStatusEvent = new POSStatusEvent();
-        posStatusEvent.setCurrentCashierFIO(getUserFIO(event));
-        publisher.publishEvent(posStatusEvent);
+        lastEvent.setCurrentCashierFIO(getUserFIO(event));
+        publishToUi(lastEvent);
+    }
+
+    private void publishToUi(POSStatusEvent posStatusEvent) {
+        if (uiPublisher != null) {
+            uiPublisher.publishEvent(posStatusEvent);
+        }
     }
 
     private String getUserFIO(UserAuthorisedEvent event) {
-        return event.getUser().getFirstName() + " " + event.getUser().getLastName() + "." + event.getUser().getMiddleName() + ".";
+        if (event.getUser() == null) {
+            return "Нет кассира";
+        } else {
+            return event.getUser().getFirstName() + " " + event.getUser().getLastName() + "." + event.getUser().getMiddleName() + ".";
+        }
     }
 
 }

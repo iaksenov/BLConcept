@@ -31,31 +31,31 @@ public class Loader {
 
     public static void main(String[] args) throws InterruptedException {
         log.info("App start");
+        System.setProperty("awt.useSystemAAFontSettings","on");
+        System.setProperty("swing.aatext", "true");
+
         Loader loader = new Loader();
         loader.startSpring();
     }
 
     private void startSpring() throws InterruptedException {
         // загрузим только UI, он в отдельном пакете
-        AnnotationConfigApplicationContext context1 = new AnnotationConfigApplicationContext();
-        context1.scan("csi.pos.ui");
-        context1.refresh();
+        AnnotationConfigApplicationContext uiContext = new AnnotationConfigApplicationContext();
+        uiContext.scan("csi.pos.ui");
+        uiContext.refresh();
 
-        UI ui = context1.getBean(UI.class);
+        UI ui = uiContext.getBean(UI.class);
         LoadingFormModel loadingFormModel = new LoadingFormModel("Загрузка", "v0.0.1");
         ui.setLayerModels(UILayer.START, Collections.singleton(loadingFormModel));
 
-        HWEventRouter.setUiKeyListener(context1.getBean(UIKeyListener.class));
-
-        //Thread.sleep(1500L); //
-
-        UILayers uiLayers = context1.getBean(UILayers.class);
+        HWEventRouter.setUiKeyListener(uiContext.getBean(UIKeyListener.class));
+        UILayers uiLayers = uiContext.getBean(UILayers.class);
         ScenarioManagerImpl.setUi(ui, uiLayers);
 
         try {
             AnnotationConfigApplicationContext context2 = new AnnotationConfigApplicationContext();
             context2.scan("ru.crystals.pos");
-            //context2.setParent(context1);
+            //context2.setParent(uiContext);
             context2.refresh();
             startBL(context2);
         } catch (Exception e) {

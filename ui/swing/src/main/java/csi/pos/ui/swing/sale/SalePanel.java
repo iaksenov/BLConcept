@@ -6,6 +6,7 @@ import ru.crystals.pos.ui.forms.UIFormModel;
 import ru.crystals.pos.ui.forms.sale.PlitkiFormModel;
 import ru.crystals.pos.ui.forms.sale.purchase.PurchaseFormCallback;
 import ru.crystals.pos.ui.forms.sale.purchase.PurchaseFrameModel;
+import ru.crystals.pos.ui.forms.sale.purchase.PurchaseStages;
 import ru.crystals.pos.ui.forms.sale.purchase.UIPayment;
 import ru.crystals.pos.ui.forms.sale.purchase.UIPosition;
 import ru.crystals.pos.ui.forms.sale.purchase.UIPurchase;
@@ -21,6 +22,7 @@ import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
@@ -43,6 +45,7 @@ public class SalePanel extends LayerPanel {
     private PurchaseFrameModel purchaseFrameModel; // модель списка опзиций
     private Consumer<PurchaseFormCallback> purchaseFrameModelCallback;
     private JLabel stageLabel;
+    private Button calcButton;
 
     public SalePanel() {
         mainPanel = createPanel(Color.black, 0, 0);
@@ -70,11 +73,12 @@ public class SalePanel extends LayerPanel {
         positionsList.setFocusable(false);
         JScrollPane listScroller = new JScrollPane(positionsList);
         parent.add(positionsList, BorderLayout.CENTER);
-        Button btn = new Button("Расчет");
-        btn.setFocusable(false);
-        btn.setMinimumSize(new Dimension(0, 50));
-        btn.addActionListener(this::onCalculateBtn);
-        parent.add(btn, BorderLayout.SOUTH);
+        calcButton = new Button("Расчет");
+        calcButton.setFont(new Font("Roboto", Font.PLAIN, 20));
+        calcButton.setFocusable(false);
+        calcButton.setMinimumSize(new Dimension(0, 50));
+        calcButton.addActionListener(this::onCalculateBtn);
+        parent.add(calcButton, BorderLayout.SOUTH);
     }
 
     private void onCalculateBtn(ActionEvent actionEvent) {
@@ -156,6 +160,7 @@ public class SalePanel extends LayerPanel {
                 positionsListModel.addElement(payment.getTypeName() + "[" + payment.getAmount() + "]");
             }
             stageLabel.setText(purchaseModel.getPurchaseStage() == null ? "" : purchaseModel.getPurchaseStage().toString());
+            calcButton.setEnabled(PurchaseStages.ADD == purchaseModel.getPurchaseStage());
             purchaseFrameModelCallback = purchaseModel.getCallback();
         });
     }
