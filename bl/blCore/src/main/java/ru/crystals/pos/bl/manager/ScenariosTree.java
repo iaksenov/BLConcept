@@ -1,7 +1,9 @@
 package ru.crystals.pos.bl.manager;
 
+import org.springframework.context.ApplicationEventPublisher;
 import ru.crystals.pos.bl.api.layer.LayerScenario;
 import ru.crystals.pos.bl.api.scenarios.Scenario;
+import ru.crystals.pos.bl.events.CurrentScenarioChanged;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,9 +12,11 @@ import java.util.stream.Collectors;
 public class ScenariosTree {
 
     private final List<Scenario> scenarioList = new ArrayList<>();
+    private final ApplicationEventPublisher publisher;
     private final LayerScenario layerScenario;
 
-    public ScenariosTree(LayerScenario layerScenario) {
+    public ScenariosTree(ApplicationEventPublisher publisher, LayerScenario layerScenario) {
+        this.publisher = publisher;
         this.layerScenario = layerScenario;
     }
 
@@ -22,15 +26,22 @@ public class ScenariosTree {
 
     public void addChild(Scenario scenario) {
         scenarioList.add(scenario);
+        event(scenario);
         log();
+    }
+
+    private void event(Scenario scenario) {
+        publisher.publishEvent(new CurrentScenarioChanged(scenario));
     }
 
     public void replaceLast(Scenario scenario) {
         try {
             if (scenarioList.isEmpty()) {
                 scenarioList.add(scenario);
+                event(scenario);
             } else {
                 scenarioList.set(scenarioList.size() - 1, scenario);
+                event(scenario);
             }
         } finally {
             log();
@@ -44,6 +55,7 @@ public class ScenariosTree {
                 scenarioList.remove(scenarioList.size() - 1);
             }
         }
+        event(getLast());
         log();
     }
 

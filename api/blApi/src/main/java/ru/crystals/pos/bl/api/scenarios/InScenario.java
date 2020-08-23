@@ -1,11 +1,9 @@
 package ru.crystals.pos.bl.api.scenarios;
 
-/**
- * Интерфейс сценария с аргументом и без результата
- * @param <IN> тип аргумента
- */
+import ru.crystals.pos.ui.UI;
+
 public interface InScenario<IN> extends Scenario {
 
-    void start(IN inArg);
+    void start(UI ui, IN inArg);
 
 }

@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.crystals.pos.bl.LayersManager;
 import ru.crystals.pos.bl.api.layer.LayerScenario;
-import ru.crystals.pos.ui.UI;
 import ru.crystals.pos.ui.UILayer;
 
 import java.util.HashMap;
@@ -21,7 +20,7 @@ public class LayersManagerImpl implements LayersManager {
 
     private Set<LayerScenario> suspended = new HashSet<>();
 
-    public LayersManagerImpl(ScenarioManagerImpl scenarioManager, UI ui) {
+    public LayersManagerImpl(ScenarioManagerImpl scenarioManager) {
         this.scenarioManager = scenarioManager;
     }
 
@@ -46,7 +45,7 @@ public class LayersManagerImpl implements LayersManager {
             suspended.remove(layerScenario);
             layerScenario.onResume();
         } else {
-            layerScenario.start();
+            scenarioManager.start(layerScenario);
         }
     }
 

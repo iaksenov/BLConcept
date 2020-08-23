@@ -7,6 +7,9 @@ import ru.crystals.pos.bl.api.listener.VoidListener;
 import ru.crystals.pos.bl.api.payment.PaymentPluginInArg;
 import ru.crystals.pos.bl.api.payment.PaymentPluginScenario;
 import ru.crystals.pos.bl.api.sale.AddPaymentsScenario;
+import ru.crystals.pos.bl.api.scenarios.Scenario;
+import ru.crystals.pos.bl.api.scenarios.special.ForceCancelledScenario;
+import ru.crystals.pos.bl.api.scenarios.special.ForceImpossibleException;
 import ru.crystals.pos.docs.DocModule;
 import ru.crystals.pos.docs.data.Payment;
 import ru.crystals.pos.ui.UI;
@@ -19,20 +22,21 @@ import java.util.Map;
 import java.util.Optional;
 
 @Component
-public class AddPaymentsScenarioImpl implements AddPaymentsScenario  {
+public class AddPaymentsScenarioImpl implements AddPaymentsScenario, ForceCancelledScenario {
 
     private UI ui;
-    private ScenarioManager scenarioManager;
-    private DocModule docModule;
-    private Map<String, PaymentPluginScenario> pluginsMap;
+    private VoidListener onComplete;
+    private VoidListener onCancel;
+    private final ScenarioManager scenarioManager;
+    private final DocModule docModule;
+    private final Map<String, PaymentPluginScenario> pluginsMap;
 
     private static final String DEFAULT_PAYMENT_TYPE = "cash";
 
-    public AddPaymentsScenarioImpl(UI ui, ScenarioManager scenarioManager,
+    public AddPaymentsScenarioImpl(ScenarioManager scenarioManager,
                                    DocModule docModule,
                                    @Autowired(required = false)
                                    Collection<PaymentPluginScenario> plugins) {
-        this.ui = ui;
         this.scenarioManager = scenarioManager;
         this.docModule = docModule;
         pluginsMap = new HashMap<>();
@@ -44,19 +48,26 @@ public class AddPaymentsScenarioImpl implements AddPaymentsScenario  {
     }
 
     @Override
-    public void start(String preferredPaymentType, VoidListener onComplete, VoidListener onCancel) {
+    public void start(UI ui, String preferredPaymentType, VoidListener onComplete, VoidListener onCancel) {
+        this.ui = ui;
+        this.onComplete = onComplete;
+        this.onCancel = onCancel;
+        startPaymentPlugin(preferredPaymentType);
+    }
+
+    private void startPaymentPlugin(String preferredPaymentType) {
         if (pluginsMap.isEmpty()) {
-            ui.showForm(new MessageFormModel("Плагины оплат отсутствуют", onCancel::call));
+            this.ui.showForm(new MessageFormModel("Плагины оплат отсутствуют", this.onCancel::call));
         } else {
             String paymentType = Optional.ofNullable(preferredPaymentType).orElse(DEFAULT_PAYMENT_TYPE);
             PaymentPluginScenario preferredPlugin = pluginsMap.get(paymentType.toLowerCase());
             if (preferredPlugin == null) {
-                ui.showForm(new MessageFormModel("Плагин " + paymentType + " отсутствует", onCancel::call));
+                this.ui.showForm(new MessageFormModel("Плагин " + paymentType + " отсутствует", this.onCancel::call));
             } else {
                 PaymentPluginInArg arg = new PaymentPluginInArg(new BigDecimal("0.00"));
                 scenarioManager.startChild(preferredPlugin, arg,
-                    p -> onPluginComplete(p, onComplete),
-                    () -> onPaymentPluginCancel(onCancel));
+                    p -> onPluginComplete(p, this.onComplete),
+                    () -> onPaymentPluginCancel(this.onCancel));
             }
         }
     }
@@ -70,6 +81,26 @@ public class AddPaymentsScenarioImpl implements AddPaymentsScenario  {
     private void onPaymentPluginCancel(VoidListener onScenarioCancel) {
         // TODO: если в чеке есть оплаты, то назад пути нет
         onScenarioCancel.call();
+    }
+
+    @Override
+    public void changePaymentType(String paymentType) {
+        Scenario childScenario = scenarioManager.getChildScenario(this);
+        if (childScenario instanceof PaymentPluginScenario) {
+            try {
+                scenarioManager.tryToCancel(childScenario, () -> startPaymentPlugin(paymentType));
+            } catch (ForceImpossibleException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void tryToCancel() throws ForceImpossibleException {
+        Scenario childScenario = scenarioManager.getChildScenario(this);
+        if (childScenario instanceof PaymentPluginScenario) {
+            scenarioManager.tryToCancel(childScenario, null);
+        }
     }
 
 }

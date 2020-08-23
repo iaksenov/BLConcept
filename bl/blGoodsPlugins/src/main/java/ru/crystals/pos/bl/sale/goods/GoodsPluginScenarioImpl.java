@@ -4,8 +4,7 @@ import org.springframework.stereotype.Component;
 import ru.crystals.pos.bl.api.goods.GoodsPluginScenario;
 import ru.crystals.pos.bl.api.goods.Product;
 import ru.crystals.pos.bl.api.listener.VoidListener;
-import ru.crystals.pos.bl.api.scenarios.special.ForceCompleteImpossibleException;
-import ru.crystals.pos.bl.api.scenarios.special.ForceCompletedScenario;
+import ru.crystals.pos.bl.api.scenarios.special.ForceImpossibleException;
 import ru.crystals.pos.docs.data.Position;
 import ru.crystals.pos.ui.UI;
 import ru.crystals.pos.ui.callback.InteractiveValueCancelledCallback;
@@ -16,22 +15,19 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 @Component
-public class GoodsPluginScenarioImpl implements GoodsPluginScenario, ForceCompletedScenario<Position> {
+public class GoodsPluginScenarioImpl implements GoodsPluginScenario {
 
-    private final UI ui;
     private Product product;
     private Consumer<Position> onComplete;
     private VoidListener onCancel;
     private ProductCountModel model;
 
     private Integer count;
-
-    public GoodsPluginScenarioImpl(UI ui) {
-        this.ui = ui;
-    }
+    private UI ui;
 
     @Override
-    public void start(Product product, Consumer<Position> onComplete, VoidListener onCancel) {
+    public void start(UI ui, Product product, Consumer<Position> onComplete, VoidListener onCancel) {
+        this.ui = ui;
         this.count = null;
         this.product = product;
         this.onComplete = onComplete;
@@ -69,12 +65,12 @@ public class GoodsPluginScenarioImpl implements GoodsPluginScenario, ForceComple
     }
 
     @Override
-    public Position tryToComplete() throws ForceCompleteImpossibleException {
+    public Position tryToComplete() throws ForceImpossibleException {
         Optional<Integer> formValue = ui.getFormValue(model);
         if (formValue.isPresent() && checkValue(formValue.get())) {
             return createPosition(formValue.get());
         } else {
-            throw new ForceCompleteImpossibleException("Incorrect current value");
+            throw new ForceImpossibleException("Incorrect current value");
         }
     }
 }

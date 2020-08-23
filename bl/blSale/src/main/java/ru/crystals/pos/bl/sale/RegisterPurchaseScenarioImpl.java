@@ -16,22 +16,22 @@ import java.util.function.Consumer;
 @Component
 public class RegisterPurchaseScenarioImpl implements RegisterPurchaseScenario {
 
-    private final UI ui;
+    private UI ui;
     private final ScenarioManager scenarioManager;
 
-    public RegisterPurchaseScenarioImpl(UI ui, ScenarioManager scenarioManager) {
-        this.ui = ui;
+    public RegisterPurchaseScenarioImpl(ScenarioManager scenarioManager) {
         this.scenarioManager = scenarioManager;
     }
 
     @Override
-    public void start(Purchase purchase, Consumer<RegisterPurchaseResult> onComplete) throws Exception {
+    public void start(UI ui, Purchase purchase, Consumer<RegisterPurchaseResult> onComplete) throws Exception {
+        this.ui = ui;
         printPurchase(purchase, onComplete);
     }
 
     private void printPurchase(Purchase purchase, Consumer<RegisterPurchaseResult> onComplete) {
         CallableSpinnerArg<Purchase> process = new CallableSpinnerArg<>("Печать чека ...", printCheck(purchase));
-        scenarioManager.startChildAsync(new CallableSpinner<>(ui), process,
+        scenarioManager.startChildAsync(new CallableSpinner<>(), process,
             p -> onPrintComplete(p, onComplete),
             e -> onPrintError(e, purchase, onComplete));
     }

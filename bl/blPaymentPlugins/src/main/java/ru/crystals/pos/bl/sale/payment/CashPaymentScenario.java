@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import ru.crystals.pos.bl.api.listener.VoidListener;
 import ru.crystals.pos.bl.api.payment.PaymentPluginInArg;
 import ru.crystals.pos.bl.api.payment.PaymentPluginScenario;
+import ru.crystals.pos.bl.api.scenarios.special.ForceImpossibleException;
 import ru.crystals.pos.docs.data.Payment;
 import ru.crystals.pos.ui.UI;
 import ru.crystals.pos.ui.callback.InteractiveValueCancelledCallback;
@@ -17,14 +18,9 @@ public class CashPaymentScenario implements PaymentPluginScenario {
 
     public static final String CASH = "Наличные";
     private static final String CASH_TYPE = "cash";
-    private UI ui;
-
-    public CashPaymentScenario(UI ui) {
-        this.ui = ui;
-    }
 
     @Override
-    public void start(PaymentPluginInArg inArg, Consumer<Payment> onComplete, VoidListener onCancel) {
+    public void start(UI ui, PaymentPluginInArg inArg, Consumer<Payment> onComplete, VoidListener onCancel) {
         PaymentAmountModel paymentAmountModel = new PaymentAmountModel("Оплата наличными", BigDecimal.valueOf(0, 2),
             callback -> formConsumer(callback, onComplete, onCancel));
         ui.showForm(paymentAmountModel);
@@ -60,5 +56,9 @@ public class CashPaymentScenario implements PaymentPluginScenario {
     @Override
     public String getPaymentTypeName() {
         return CASH_TYPE;
+    }
+
+    @Override
+    public void tryToCancel() throws ForceImpossibleException {
     }
 }

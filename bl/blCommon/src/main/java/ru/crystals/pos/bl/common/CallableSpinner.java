@@ -9,14 +9,8 @@ import java.util.function.Consumer;
 
 public class CallableSpinner<O> implements CallableSpinnerScenario<O> {
 
-    private final UI ui;
-
-    public CallableSpinner(UI ui) {
-        this.ui = ui;
-    }
-
     @Override
-    public void start(CallableSpinnerArg<O> inArg, Consumer<O> onComplete) throws Exception {
+    public void start(UI ui, CallableSpinnerArg<O> inArg, Consumer<O> onComplete) throws Exception {
         ui.showForm(new SpinnerModel(inArg.getMessage()));
         O result = inArg.getCallable().call();
         onComplete.accept(result);

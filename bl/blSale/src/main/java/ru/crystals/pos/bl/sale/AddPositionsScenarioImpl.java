@@ -5,15 +5,19 @@ import org.springframework.stereotype.Component;
 import ru.crystals.pos.bl.ScenarioManager;
 import ru.crystals.pos.bl.api.goods.GoodsPluginScenario;
 import ru.crystals.pos.bl.api.goods.Product;
-import ru.crystals.pos.bl.api.listener.VoidListener;
 import ru.crystals.pos.bl.api.sale.AddPositionsScenario;
 import ru.crystals.pos.bl.api.scenarios.Scenario;
-import ru.crystals.pos.bl.api.scenarios.special.ForceCompleteImpossibleException;
 import ru.crystals.pos.bl.api.scenarios.special.ForceCompletedVoidScenario;
+import ru.crystals.pos.bl.api.scenarios.special.ForceImpossibleException;
+import ru.crystals.pos.bl.api.scenarios.special.ScenarioEventProcessor;
 import ru.crystals.pos.bl.api.spinner.CallableSpinnerArg;
 import ru.crystals.pos.bl.common.CallableSpinner;
 import ru.crystals.pos.docs.DocModule;
 import ru.crystals.pos.docs.data.Position;
+import ru.crystals.pos.docs.data.Purchase;
+import ru.crystals.pos.hw.events.bl.HWBLHumanEvent;
+import ru.crystals.pos.hw.events.keys.FuncKey;
+import ru.crystals.pos.hw.events.keys.FuncKeyType;
 import ru.crystals.pos.hw.events.listeners.BarcodeListener;
 import ru.crystals.pos.hw.events.listeners.MSRTracks;
 import ru.crystals.pos.ui.UI;
@@ -23,34 +27,36 @@ import ru.crystals.pos.ui.forms.message.MessageFormModel;
 import java.util.concurrent.Callable;
 
 @Component
-public class AddPositionsScenarioImpl implements AddPositionsScenario, BarcodeListener, ForceCompletedVoidScenario {
+public class AddPositionsScenarioImpl implements AddPositionsScenario, BarcodeListener, ForceCompletedVoidScenario, ScenarioEventProcessor {
 
-    private final UI ui;
+    private UI ui;
     private final ScenarioManager scenarioManager;
     private final DocModule docModule;
-    private VoidListener onComplete;
 
     @Autowired
     private GoodsPluginScenario goodsPluginScenario;
 
-    public AddPositionsScenarioImpl(UI ui, ScenarioManager scenarioManager, DocModule docModule) {
-        this.ui = ui;
+    public AddPositionsScenarioImpl(ScenarioManager scenarioManager, DocModule docModule) {
         this.scenarioManager = scenarioManager;
         this.docModule = docModule;
     }
 
     @Override
-    public void start(VoidListener onComplete) {
-        this.onComplete = onComplete;
-        showSearchForm();
+    public void start(UI ui, String searchString) {
+        this.ui = ui;
+        if (searchString == null || searchString.trim().length() == 0) {
+            showSearchForm();
+        } else {
+            searchProduct(searchString);
+        }
     }
 
     @Override
     public void onBarcode(String code) {
         try {
             completeChildScenario();
-            onSearchProduct(code);
-        } catch (ForceCompleteImpossibleException e) {
+            searchProduct(code);
+        } catch (ForceImpossibleException e) {
             System.out.println("AddItemsScenario.onBarcode: goods plugin can't complete " + e.getLocalizedMessage());
         }
     }
@@ -61,21 +67,25 @@ public class AddPositionsScenarioImpl implements AddPositionsScenario, BarcodeLi
     }
 
     @Override
-    public void onSearchProduct(String searchString) {
+    public void searchProduct(String searchString) {
         try {
             completeChildScenario();
             searchProductInternal(searchString);
-        } catch (ForceCompleteImpossibleException e) {
+        } catch (ForceImpossibleException e) {
             System.out.println("AddItemsScenario.searchProduct: goods plugin can't complete " + e.getLocalizedMessage());
         }
     }
 
     @Override
-    public void tryToComplete() throws ForceCompleteImpossibleException {
+    public void tryToComplete() throws ForceImpossibleException {
         completeChildScenario();
+        Purchase currentPurchase = docModule.getCurrentPurchase();
+        if (currentPurchase == null || currentPurchase.getPositions().isEmpty()) {
+            throw new ForceImpossibleException("Purchase is empty");
+        }
     }
 
-    private void completeChildScenario() throws ForceCompleteImpossibleException {
+    private void completeChildScenario() throws ForceImpossibleException {
         Scenario childScenario = scenarioManager.getChildScenario(this);
         if (childScenario instanceof GoodsPluginScenario) {
             scenarioManager.tryToComplete(childScenario, this::addPositionToDB);
@@ -88,12 +98,12 @@ public class AddPositionsScenarioImpl implements AddPositionsScenario, BarcodeLi
 
     private void onItemEntered(String s) {
         // поиск товара в БД
-        onSearchProduct(s);
+        searchProduct(s);
     }
 
     private void searchProductInternal(String searchString) {
         CallableSpinnerArg<Product> arg = new CallableSpinnerArg<>("Поиск товара ...", findProductCall(searchString));
-        scenarioManager.startChildAsync(new CallableSpinner<>(ui), arg, this::showProductPlugin, e -> {
+        scenarioManager.startChildAsync(new CallableSpinner<>(), arg, this::showProductPlugin, e -> {
             ui.showForm(new MessageFormModel("Товар по строке не найден!", this::showSearchForm));
         });
     }
@@ -134,4 +144,12 @@ public class AddPositionsScenarioImpl implements AddPositionsScenario, BarcodeLi
         docModule.addPosition(position);
     }
 
+    @Override
+    public boolean processEvent(HWBLHumanEvent event) {
+        if (event instanceof FuncKey && ((FuncKey)event).getFuncKeyType() == FuncKeyType.GOOD) {
+            searchProduct(((FuncKey)event).getPayload());
+            return true;
+        }
+        return false;
+    }
 }

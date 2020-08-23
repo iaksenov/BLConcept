@@ -9,8 +9,8 @@ public interface ForceCompletedScenario<C> {
     /**
      * Призыв завершиться
      * @return результат завершения
-     * @throws ForceCompleteImpossibleException если не удалось, невозможно, недопустимо и пр.
+     * @throws ForceImpossibleException если не удалось, невозможно, недопустимо и пр.
      */
-    C tryToComplete() throws ForceCompleteImpossibleException;
+    C tryToComplete() throws ForceImpossibleException;
 
 }

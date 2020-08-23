@@ -1,10 +1,13 @@
 package ru.crystals.pos.bl.api.sale;
 
-import ru.crystals.pos.bl.api.listener.VoidListener;
 import ru.crystals.pos.bl.api.scenarios.InCompleteCancelScenario;
+import ru.crystals.pos.ui.forms.sale.purchase.PurchaseStages;
 
-public interface AddPaymentsScenario extends InCompleteCancelScenario<String> {
+public interface AddPaymentsScenario extends InCompleteCancelScenario<String>, PurchaseStage {
 
-    void start(String preferredPaymentType, VoidListener onComplete, VoidListener onCancel);
+    void changePaymentType(String paymentType);
 
+    default PurchaseStages getPurchaseStage() {
+        return PurchaseStages.PAY;
+    }
 }

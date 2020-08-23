@@ -16,11 +16,14 @@ public class HWEventRouter {
 
     private final ScenarioEventSender scenarioEventSender;
 
-    private final UIKeyListener uiKeyListener;
+    private static UIKeyListener uiKeyListener;
 
-    public HWEventRouter(ScenarioEventSender scenarioEventSender, UIKeyListener uiKeyListener) {
+    public static void setUiKeyListener(UIKeyListener uiKeyListener) {
+        HWEventRouter.uiKeyListener = uiKeyListener;
+    }
+
+    public HWEventRouter(ScenarioEventSender scenarioEventSender) {
         this.scenarioEventSender = scenarioEventSender;
-        this.uiKeyListener = uiKeyListener;
     }
 
     public <T extends HWHumanEvent> void processEvent(T event) {

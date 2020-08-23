@@ -1,5 +1,7 @@
 package ru.crystals.pos.bl.api.scenarios;
 
+import ru.crystals.pos.ui.UI;
+
 import java.util.function.Consumer;
 
 /**
@@ -9,6 +11,6 @@ import java.util.function.Consumer;
  */
 public interface InOutScenario<IN, OUT> extends Scenario {
 
-    void start(IN inArg, Consumer<OUT> onComplete) throws Exception;
+    void start(UI ui, IN inArg, Consumer<OUT> onComplete) throws Exception;
 
 }

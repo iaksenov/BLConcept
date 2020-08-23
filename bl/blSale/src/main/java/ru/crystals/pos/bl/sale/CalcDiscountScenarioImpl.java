@@ -17,21 +17,19 @@ import java.util.concurrent.Callable;
 @Component
 public class CalcDiscountScenarioImpl implements CalcDiscountScenario {
 
-    private final UI ui;
     private final ScenarioManager scenarioManager;
     private final DocModule docModule;
 
-    public CalcDiscountScenarioImpl(UI ui, ScenarioManager scenarioManager, DocModule docModule) {
-        this.ui = ui;
+    public CalcDiscountScenarioImpl(ScenarioManager scenarioManager, DocModule docModule) {
         this.scenarioManager = scenarioManager;
         this.docModule = docModule;
     }
 
     @Override
-    public void start(VoidListener onComplete, VoidListener onCancel) {
+    public void start(UI ui, VoidListener onComplete, VoidListener onCancel) {
         Purchase purchase = docModule.getCurrentPurchase();
         CallableSpinnerArg<BigDecimal> arg = new CallableSpinnerArg<>("Расчет скидок ...", calculateDiscounts(purchase));
-        scenarioManager.startChildAsync(new CallableSpinner<>(ui), arg, bd -> onCalcComplete(bd, onComplete), e -> onCalculateError(e, onCancel));
+        scenarioManager.startChildAsync(new CallableSpinner<>(), arg, bd -> onCalcComplete(bd, onComplete), e -> onCalculateError(ui, e, onCancel));
     }
 
     private void onCalcComplete(BigDecimal result, VoidListener onComplete) {
@@ -39,7 +37,7 @@ public class CalcDiscountScenarioImpl implements CalcDiscountScenario {
         onComplete.call();
     }
 
-    private void onCalculateError(Exception e, VoidListener onConfirm) {
+    private void onCalculateError(UI ui, Exception e, VoidListener onConfirm) {
         ui.showForm(new MessageFormModel(e.getLocalizedMessage(), onConfirm::call));
     }
 

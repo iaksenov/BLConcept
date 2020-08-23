@@ -6,6 +6,8 @@ import java.util.function.Consumer;
 
 public class PurchaseFrameModel extends UIFormCallbackModel<PurchaseFormCallback> {
 
+    private PurchaseStages purchaseStage;
+
     private UIPurchase purchase = new UIPurchase();
 
     public PurchaseFrameModel(Consumer<PurchaseFormCallback> callback) {
@@ -18,5 +20,13 @@ public class PurchaseFrameModel extends UIFormCallbackModel<PurchaseFormCallback
 
     public void setPurchase(UIPurchase purchase) {
         this.purchase = purchase;
+    }
+
+    public PurchaseStages getPurchaseStage() {
+        return purchaseStage;
+    }
+
+    public void setPurchaseStage(PurchaseStages purchaseStage) {
+        this.purchaseStage = purchaseStage;
     }
 }

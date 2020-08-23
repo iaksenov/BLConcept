@@ -8,7 +8,7 @@ public interface ForceCompletedVoidScenario {
 
     /**
      * Призыв завершиться
-     * @throws ForceCompleteImpossibleException если не удалось, невозможно, недопустимо и пр.
+     * @throws ForceImpossibleException если не удалось, невозможно, недопустимо и пр.
      */
-    void tryToComplete() throws ForceCompleteImpossibleException;
+    void tryToComplete() throws ForceImpossibleException;
 }

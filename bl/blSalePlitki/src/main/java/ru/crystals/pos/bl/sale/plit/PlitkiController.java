@@ -1,11 +1,11 @@
 package ru.crystals.pos.bl.sale.plit;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import ru.crystals.pos.bl.LayersManager;
-import ru.crystals.pos.bl.ScenarioManager;
-import ru.crystals.pos.bl.api.sale.AddPositionsScenario;
-import ru.crystals.pos.bl.api.sale.SaleScenario;
 import ru.crystals.pos.bl.api.sale.SaleScenarioAdditional;
+import ru.crystals.pos.hw.events.keys.FuncKey;
+import ru.crystals.pos.hw.events.keys.FuncKeyType;
 import ru.crystals.pos.ui.UILayer;
 import ru.crystals.pos.ui.forms.UIFormModel;
 import ru.crystals.pos.ui.forms.sale.PlitkiFormModel;
@@ -22,15 +22,11 @@ public class PlitkiController implements SaleScenarioAdditional {
 
     private final PlitkiFormModel plitkiModel;
     private final LayersManager layersManager;
-    private final ScenarioManager scenarioManager;
-    private final AddPositionsScenario addPositionsScenario;
-    private final SaleScenario saleScenario;
+    private final ApplicationEventPublisher publisher;
 
-    public PlitkiController(LayersManager layersManager, ScenarioManager scenarioManager, AddPositionsScenario addPositionsScenario, SaleScenario saleScenario) {
+    public PlitkiController(LayersManager layersManager, ApplicationEventPublisher publisher) {
         this.layersManager = layersManager;
-        this.scenarioManager = scenarioManager;
-        this.addPositionsScenario = addPositionsScenario;
-        this.saleScenario = saleScenario;
+        this.publisher = publisher;
         this.plitkiModel = new PlitkiFormModel(new ArrayList<>(), this::onPlitkaClick);
         initModel();
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(this::onTimer, 5, 5, TimeUnit.SECONDS);
@@ -44,7 +40,7 @@ public class PlitkiController implements SaleScenarioAdditional {
 
     private void initModel() {
         plitkiModel.getPlitki().clear();
-        plitkiModel.getPlitki().add("-= EXIT =- ");
+        plitkiModel.getPlitki().add("-= Logoff =- ");
 
         plitkiModel.getPlitki().add("p:cash");
         plitkiModel.getPlitki().add("p:bank");
@@ -59,14 +55,12 @@ public class PlitkiController implements SaleScenarioAdditional {
 
     private void onPlitkaClick(String s) {
         System.out.println("Plitka clicked " + s);
-        if (s.contains("EXIT")) {
+        if (s.contains("Logoff")) {
             layersManager.setLayer(UILayer.LOGIN);
         } else if (s.startsWith("p:")) {
-            saleScenario.doSubtotal(s.replace("p:", ""));
+            publisher.publishEvent(new FuncKey(FuncKeyType.PAYMENT, s.replace("p:", "")));
         } else {
-            if (scenarioManager.isActive(addPositionsScenario)) {
-                addPositionsScenario.onSearchProduct(s);
-            }
+            publisher.publishEvent(new FuncKey(FuncKeyType.GOOD, s));
         }
     }
 

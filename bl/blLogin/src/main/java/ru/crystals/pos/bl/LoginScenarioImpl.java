@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 @Component
 public class LoginScenarioImpl implements LoginScenario {
 
-    private final UI ui;
+    private UI ui;
     private final LayersManager layersManager;
     private final UserModule userModule;
 
@@ -30,8 +30,7 @@ public class LoginScenarioImpl implements LoginScenario {
 
     private LoginFormModel model;
 
-    public LoginScenarioImpl(UI ui, LayersManager layersManager, UserModule userModule) {
-        this.ui = ui;
+    public LoginScenarioImpl(LayersManager layersManager, UserModule userModule) {
         this.layersManager = layersManager;
         this.userModule = userModule;
     }
@@ -108,11 +107,16 @@ public class LoginScenarioImpl implements LoginScenario {
 
     @Override
     public void onResume() {
-        start();
+        startPrivate();
     }
 
     @Override
-    public void start() {
+    public void start(UI ui) {
+        this.ui = ui;
+        startPrivate();
+    }
+
+    private void startPrivate() {
         this.model = showLoginForm("");
         POSStatusEvent event = new POSStatusEvent();
         event.setCurrentCashierFIO("нет кассира");

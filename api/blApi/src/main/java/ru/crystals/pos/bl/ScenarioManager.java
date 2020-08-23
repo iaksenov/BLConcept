@@ -8,9 +8,8 @@ import ru.crystals.pos.bl.api.scenarios.InOutCancelScenario;
 import ru.crystals.pos.bl.api.scenarios.InOutScenario;
 import ru.crystals.pos.bl.api.scenarios.InScenario;
 import ru.crystals.pos.bl.api.scenarios.OutCancelScenario;
-import ru.crystals.pos.bl.api.scenarios.OutScenario;
 import ru.crystals.pos.bl.api.scenarios.Scenario;
-import ru.crystals.pos.bl.api.scenarios.special.ForceCompleteImpossibleException;
+import ru.crystals.pos.bl.api.scenarios.special.ForceImpossibleException;
 
 import java.util.function.Consumer;
 
@@ -20,10 +19,6 @@ import java.util.function.Consumer;
 public interface ScenarioManager {
 
     /// start
-
-    <I> void start(InScenario<I> scenario, I arg);
-
-    <O> void start(OutScenario<O> scenario, Consumer<O> onComplete);
 
     <I, O> void start(InOutScenario<I, O> scenario, I arg, Consumer<O> onComplete) throws Exception;
 
@@ -37,9 +32,9 @@ public interface ScenarioManager {
 
     void startChild(CompleteCancelScenario scenario, VoidListener onComplete,  VoidListener onCancel);
 
-    <I> void startChild(InCompleteCancelScenario<I> scenario, I arg, VoidListener onComplete, VoidListener onCancel);
+    <I> void startChild(InScenario<I> scenario, I arg);
 
-    <O> void startChild(OutScenario<O> scenario, Consumer<O> onComplete);
+    <I> void startChild(InCompleteCancelScenario<I> scenario, I arg, VoidListener onComplete, VoidListener onCancel);
 
     <I, O> void startChild(InOutScenario<I, O> scenario, I arg, Consumer<O> onComplete) throws Exception;
 
@@ -53,9 +48,11 @@ public interface ScenarioManager {
 
     /// tryTo
 
-    <C> void tryToComplete(Scenario scenario, Consumer<C> onComplete) throws ForceCompleteImpossibleException;
+    <C> void tryToComplete(Scenario scenario, Consumer<C> onComplete) throws ForceImpossibleException;
 
-    void tryToComplete(Scenario scenario, VoidListener listener) throws ForceCompleteImpossibleException;
+    void tryToComplete(Scenario scenario, VoidListener listener) throws ForceImpossibleException;
+
+    void tryToCancel(Scenario scenario, VoidListener listener) throws ForceImpossibleException;
 
     /// other
 
@@ -66,4 +63,5 @@ public interface ScenarioManager {
     Scenario getChildScenario(Scenario parent);
 
     boolean isActive(Scenario scenario);
+
 }

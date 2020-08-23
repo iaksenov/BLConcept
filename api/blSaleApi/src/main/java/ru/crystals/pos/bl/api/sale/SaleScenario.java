@@ -12,9 +12,14 @@ public interface SaleScenario extends FuncKeyListener, LayerScenario {
     }
 
     /**
-     * Выполнить подитог
+     * Выбрана оплата
      * @param paymentType
      */
-    void doSubtotal(String paymentType);
+    void paymentSelected(String paymentType);
+
+    /**
+     * Выполнить подитог
+     */
+    void doSubtotal();
 
 }

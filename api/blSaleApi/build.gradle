@@ -1,4 +1,5 @@
 dependencies {
     compile project(':api:blApi'),
+        project(':api:uiApi'),
         project(':il:db:docsApi')
 }

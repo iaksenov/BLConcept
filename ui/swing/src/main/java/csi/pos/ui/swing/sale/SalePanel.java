@@ -11,9 +11,12 @@ import ru.crystals.pos.ui.forms.sale.purchase.UIPosition;
 import ru.crystals.pos.ui.forms.sale.purchase.UIPurchase;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Color;
@@ -39,6 +42,7 @@ public class SalePanel extends LayerPanel {
     private JList<String> positionsList; // компонент список позиций
     private PurchaseFrameModel purchaseFrameModel; // модель списка опзиций
     private Consumer<PurchaseFormCallback> purchaseFrameModelCallback;
+    private JLabel stageLabel;
 
     public SalePanel() {
         mainPanel = createPanel(Color.black, 0, 0);
@@ -57,6 +61,9 @@ public class SalePanel extends LayerPanel {
     }
 
     private void createPurchaseComponents(JPanel parent) {
+        stageLabel = new JLabel();
+        stageLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        parent.add(stageLabel, BorderLayout.NORTH);
         positionsListModel = new DefaultListModel<>();
         positionsList = new JList<>(positionsListModel);
         positionsList.setLayoutOrientation(JList.VERTICAL);
@@ -131,23 +138,26 @@ public class SalePanel extends LayerPanel {
         return super.setModel(uiFormModel);
     }
 
-    private void onPurchaseChanged(PurchaseFrameModel purchaseCallback) {
-        positionsListModel.removeAllElements();
-        UIPurchase purchase = purchaseCallback.getPurchase();
-        for (UIPosition position : purchase.getPositions()) {
-            positionsListModel.addElement(position.getName() + "[" + position.getCount() + "]");
-        }
-        if (purchase.getDiscountAmount() != null) {
-            positionsListModel.addElement("----");
-            positionsListModel.addElement("Скидка " + purchase.getDiscountAmount());
-        }
-        if (!purchase.getPayments().isEmpty()) {
-            positionsListModel.addElement("----");
-        }
-        for (UIPayment payment : purchase.getPayments()) {
-            positionsListModel.addElement(payment.getTypeName() + "[" + payment.getAmount() + "]");
-        }
-        purchaseFrameModelCallback = purchaseCallback.getCallback();
+    private void onPurchaseChanged(PurchaseFrameModel purchaseModel) {
+        SwingUtilities.invokeLater(() -> {
+            positionsListModel.removeAllElements();
+            UIPurchase purchase = purchaseModel.getPurchase();
+            for (UIPosition position : purchase.getPositions()) {
+                positionsListModel.addElement(position.getName() + "[" + position.getCount() + "]");
+            }
+            if (purchase.getDiscountAmount() != null) {
+                positionsListModel.addElement("----");
+                positionsListModel.addElement("Скидка " + purchase.getDiscountAmount());
+            }
+            if (!purchase.getPayments().isEmpty()) {
+                positionsListModel.addElement("----");
+            }
+            for (UIPayment payment : purchase.getPayments()) {
+                positionsListModel.addElement(payment.getTypeName() + "[" + payment.getAmount() + "]");
+            }
+            stageLabel.setText(purchaseModel.getPurchaseStage() == null ? "" : purchaseModel.getPurchaseStage().toString());
+            purchaseFrameModelCallback = purchaseModel.getCallback();
+        });
     }
 
     public void onPlitkiChanged(PlitkiFormModel model) {

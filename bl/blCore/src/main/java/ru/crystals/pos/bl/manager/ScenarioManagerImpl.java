@@ -1,8 +1,6 @@
 package ru.crystals.pos.bl.manager;
 
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import ru.crystals.pos.bl.ScenarioManager;
 import ru.crystals.pos.bl.api.layer.LayerScenario;
@@ -14,13 +12,14 @@ import ru.crystals.pos.bl.api.scenarios.InOutCancelScenario;
 import ru.crystals.pos.bl.api.scenarios.InOutScenario;
 import ru.crystals.pos.bl.api.scenarios.InScenario;
 import ru.crystals.pos.bl.api.scenarios.OutCancelScenario;
-import ru.crystals.pos.bl.api.scenarios.OutScenario;
 import ru.crystals.pos.bl.api.scenarios.Scenario;
-import ru.crystals.pos.bl.api.scenarios.special.ForceCompleteImpossibleException;
+import ru.crystals.pos.bl.api.scenarios.special.ForceCancelledScenario;
 import ru.crystals.pos.bl.api.scenarios.special.ForceCompletedScenario;
 import ru.crystals.pos.bl.api.scenarios.special.ForceCompletedVoidScenario;
+import ru.crystals.pos.bl.api.scenarios.special.ForceImpossibleException;
 import ru.crystals.pos.ui.UI;
 import ru.crystals.pos.ui.UILayer;
+import ru.crystals.pos.ui.UILayers;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,20 +28,25 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 @Component
-public final class ScenarioManagerImpl implements ScenarioManager, ApplicationContextAware {
+public final class ScenarioManagerImpl implements ScenarioManager {
 
-    private ApplicationContext applicationContext;
+    private static UI ui;
+    private static UILayers uiLayers;
+    private ExecutorService executorService = Executors.newCachedThreadPool();
 
-    private final UI ui;
+    private final ApplicationEventPublisher publisher;
 
     private UILayer currentLayer;
 
-    private final Map<UILayer, ScenariosTree> layersTrees = new HashMap<>();
-    private final ExecutorService executorService;
+    private Map<UILayer, ScenariosTree> layersTrees = new HashMap<>();
 
-    public ScenarioManagerImpl(UI ui) {
-        this.ui = ui;
-        executorService = Executors.newCachedThreadPool();
+    public ScenarioManagerImpl(ApplicationEventPublisher publisher) {
+        this.publisher = publisher;
+    }
+
+    public static void setUi(UI ui, UILayers uiLayers) {
+        ScenarioManagerImpl.ui = ui;
+        ScenarioManagerImpl.uiLayers = uiLayers;
     }
 
     UILayer getCurrentLayer() {
@@ -51,37 +55,35 @@ public final class ScenarioManagerImpl implements ScenarioManager, ApplicationCo
 
     void setCurrentLayer(UILayer currentLayer, LayerScenario layerScenario) {
         this.currentLayer = currentLayer;
-        ui.setLayer(currentLayer);
-        layersTrees.putIfAbsent(currentLayer, new ScenariosTree(layerScenario));
+        uiLayers.setLayer(currentLayer);
+        layersTrees.putIfAbsent(currentLayer, new ScenariosTree(publisher, layerScenario));
     }
 
     private ScenariosTree getTree() {
         return layersTrees.get(currentLayer);
     }
 
-    public <I> void start(InScenario<I> scenario, I arg) {
-        getTree().replaceLast(scenario);
-        scenario.start(arg);
+    public void start(LayerScenario layerScenario) {
+        layerScenario.start(createUIProxy(layerScenario));
     }
 
-    public <O> void start(OutScenario<O> scenario, Consumer<O> onComplete) {
-        getTree().replaceLast(scenario);
-        scenario.start(o -> removeAndAccept(scenario, onComplete, o));
+    private UI createUIProxy(Scenario scenario) {
+        return new UIProxyImpl(scenario, ui, s -> getCurrentScenario() == s);
     }
 
     public <I, O> void start(InOutScenario<I, O> scenario, I arg, Consumer<O> onComplete) throws Exception {
         getTree().replaceLast(scenario);
-        scenario.start(arg, o -> removeAndAccept(scenario, onComplete, o));
+        scenario.start(createUIProxy(scenario), arg, o -> removeAndAccept(scenario, onComplete, o));
     }
 
     public <O> void start(OutCancelScenario<O> scenario, Consumer<O> onComplete, VoidListener onCancel) {
         getTree().replaceLast(scenario);
-        scenario.start(o -> removeAndAccept(scenario, onComplete, o), () -> removeAndCall(scenario, onCancel));
+        scenario.start(createUIProxy(scenario), o -> removeAndAccept(scenario, onComplete, o), () -> removeAndCall(scenario, onCancel));
     }
 
     public <I, O> void start(InOutCancelScenario<I, O> scenario, I arg, Consumer<O> onComplete, VoidListener onCancel) {
         getTree().replaceLast(scenario);
-        scenario.start(arg, o -> removeAndAccept(scenario, onComplete, o), () -> removeAndCall(scenario, onCancel));
+        scenario.start(createUIProxy(scenario), arg, o -> removeAndAccept(scenario, onComplete, o), () -> removeAndCall(scenario, onCancel));
     }
 
     /// child
@@ -89,30 +91,31 @@ public final class ScenarioManagerImpl implements ScenarioManager, ApplicationCo
     @Override
     public void startChild(CompleteScenario scenario, VoidListener onComplete) {
         getTree().addChild(scenario);
-        scenario.start(() -> removeAndCall(scenario, onComplete));
+        scenario.start(createUIProxy(scenario), () -> removeAndCall(scenario, onComplete));
     }
 
     @Override
     public void startChild(CompleteCancelScenario scenario, VoidListener onComplete, VoidListener onCancel) {
         getTree().addChild(scenario);
-        scenario.start(() -> removeAndCall(scenario, onComplete), () -> removeAndCall(scenario, onCancel));
+        scenario.start(createUIProxy(scenario), () -> removeAndCall(scenario, onComplete), () -> removeAndCall(scenario, onCancel));
+    }
+
+    @Override
+    public <I> void startChild(InScenario<I> scenario, I arg) {
+        getTree().addChild(scenario);
+        scenario.start(createUIProxy(scenario), arg);
     }
 
     @Override
     public <I> void startChild(InCompleteCancelScenario<I> scenario, I arg, VoidListener onComplete, VoidListener onCancel) {
         getTree().addChild(scenario);
-        scenario.start(arg, () -> removeAndCall(scenario, onComplete), () -> removeAndCall(scenario, onCancel));
-    }
-
-    public <O> void startChild(OutScenario<O> scenario, Consumer<O> onComplete) {
-        getTree().addChild(scenario);
-        scenario.start(o -> removeAndAccept(scenario, onComplete, o));
+        scenario.start(createUIProxy(scenario), arg, () -> removeAndCall(scenario, onComplete), () -> removeAndCall(scenario, onCancel));
     }
 
     public <I, O> void startChild(InOutScenario<I, O> scenario, I arg, Consumer<O> onComplete) throws Exception {
         getTree().addChild(scenario);
         try {
-            scenario.start(arg, o -> removeAndAccept(scenario, onComplete, o));
+            scenario.start(createUIProxy(scenario), arg, o -> removeAndAccept(scenario, onComplete, o));
         } catch (Exception e) {
             getTree().remove(scenario);
             throw e;
@@ -124,7 +127,7 @@ public final class ScenarioManagerImpl implements ScenarioManager, ApplicationCo
         getTree().addChild(scenario);
         executorService.submit(() -> {
             try {
-                scenario.start(arg, o -> removeAndAccept(scenario, onComplete, o));
+                scenario.start(createUIProxy(scenario), arg, o -> removeAndAccept(scenario, onComplete, o));
             } catch (Exception e) {
                 e.printStackTrace();
                 getTree().remove(scenario);
@@ -136,25 +139,25 @@ public final class ScenarioManagerImpl implements ScenarioManager, ApplicationCo
 
     public <O> void startChild(OutCancelScenario<O> scenario, Consumer<O> onComplete, VoidListener onCancel) {
         getTree().addChild(scenario);
-        scenario.start(o -> removeAndAccept(scenario, onComplete, o), () -> removeAndCall(scenario, onCancel));
+        scenario.start(createUIProxy(scenario), o -> removeAndAccept(scenario, onComplete, o), () -> removeAndCall(scenario, onCancel));
     }
 
     public <I, O> void startChild(InOutCancelScenario<I, O> scenario, I arg, Consumer<O> onComplete, VoidListener onCancel) {
         getTree().addChild(scenario);
-        scenario.start(arg, o -> removeAndAccept(scenario, onComplete, o), () -> removeAndCall(scenario, onCancel));
+        scenario.start(createUIProxy(scenario), arg, o -> removeAndAccept(scenario, onComplete, o), () -> removeAndCall(scenario, onCancel));
     }
 
     ///////// tryTo
 
     @Override
-    public <C> void tryToComplete(Scenario scenario, Consumer<C> onComplete) throws ForceCompleteImpossibleException {
+    public <C> void tryToComplete(Scenario scenario, Consumer<C> onComplete) throws ForceImpossibleException {
         if (scenario instanceof ForceCompletedScenario) {
             if (getTree().contains(scenario)) {
                 ForceCompletedScenario<C> castedScenario = (ForceCompletedScenario<C>) scenario;
                 try {
                     C c = castedScenario.tryToComplete();
                     removeAndAccept(scenario, onComplete, c);
-                } catch (ForceCompleteImpossibleException e) {
+                } catch (ForceImpossibleException e) {
                     System.out.println("Can't force complete " + scenario.getClass().getName() + ". " + e.getLocalizedMessage());
                     throw e;
                 }
@@ -167,14 +170,34 @@ public final class ScenarioManagerImpl implements ScenarioManager, ApplicationCo
     }
 
     @Override
-    public void tryToComplete(Scenario scenario, VoidListener listener) throws ForceCompleteImpossibleException {
+    public void tryToComplete(Scenario scenario, VoidListener listener) throws ForceImpossibleException {
         if (scenario instanceof ForceCompletedVoidScenario) {
             if (getTree().contains(scenario)) {
                 ForceCompletedVoidScenario castedScenario = (ForceCompletedVoidScenario) scenario;
                 try {
                     castedScenario.tryToComplete();
                     removeAndCall(scenario, listener);
-                } catch (ForceCompleteImpossibleException e) {
+                } catch (ForceImpossibleException e) {
+                    System.out.println("Can't force complete " + scenario.getClass().getName() + ". " + e.getLocalizedMessage());
+                    throw e;
+                }
+            } else {
+                System.out.println("Scenario " + scenario.getClass().getName() + " is not active");
+            }
+        } else {
+            System.out.println("Scenario " + scenario.getClass().getName() + " is not ForceCompletedScenario");
+        }
+    }
+
+    @Override
+    public void tryToCancel(Scenario scenario, VoidListener listener) throws ForceImpossibleException {
+        if (scenario instanceof ForceCancelledScenario) {
+            if (getTree().contains(scenario)) {
+                ForceCancelledScenario castedScenario = (ForceCancelledScenario) scenario;
+                try {
+                    castedScenario.tryToCancel();
+                    removeAndCall(scenario, listener);
+                } catch (ForceImpossibleException e) {
                     System.out.println("Can't force complete " + scenario.getClass().getName() + ". " + e.getLocalizedMessage());
                     throw e;
                 }
@@ -208,20 +231,20 @@ public final class ScenarioManagerImpl implements ScenarioManager, ApplicationCo
         return getTree().contains(scenario);
     }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
-
     // private
 
     private <O> void removeAndAccept(Scenario scenario, Consumer<O> onComplete, O o) {
         getTree().remove(scenario);
-        onComplete.accept(o);
+        if (onComplete != null) {
+            onComplete.accept(o);
+        }
     }
 
     private void removeAndCall(Scenario scenario, VoidListener listener) {
         getTree().remove(scenario);
-        listener.call();
+        if (listener != null) {
+            listener.call();
+        }
     }
+
 }

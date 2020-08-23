@@ -1,6 +1,7 @@
 package ru.crystals.pos.bl.api.layer;
 
 import ru.crystals.pos.bl.api.scenarios.Scenario;
+import ru.crystals.pos.ui.UI;
 import ru.crystals.pos.ui.UILayer;
 
 public interface LayerScenario extends Scenario {
@@ -14,7 +15,7 @@ public interface LayerScenario extends Scenario {
     /**
      * Запуск сценария
      */
-    void start();
+    void start(UI ui);
 
     /**
      * при приостановлении

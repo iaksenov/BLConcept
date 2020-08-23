@@ -10,7 +10,7 @@ public interface ScenarioEventProcessor {
     /**
      * Обработать событие.
      * @param event событие
-     * @return true обработано и больше никому не будет отправлено, в.т.ч. и в этот сценарий,
+     * @return true обработано и больше никому не будет отправлено, в.т.ч. и в этот сценарий, <p>
      *         false не обработано и будет отправлено в родительский сценарий
      */
     boolean processEvent(HWBLHumanEvent event);

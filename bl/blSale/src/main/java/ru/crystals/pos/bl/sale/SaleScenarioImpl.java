@@ -2,7 +2,6 @@ package ru.crystals.pos.bl.sale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.crystals.pos.bl.LayersManager;
 import ru.crystals.pos.bl.ScenarioManager;
 import ru.crystals.pos.bl.api.sale.AddPaymentsScenario;
 import ru.crystals.pos.bl.api.sale.AddPositionsScenario;
@@ -11,7 +10,8 @@ import ru.crystals.pos.bl.api.sale.RegisterPurchaseResult;
 import ru.crystals.pos.bl.api.sale.RegisterPurchaseScenario;
 import ru.crystals.pos.bl.api.sale.SaleScenario;
 import ru.crystals.pos.bl.api.sale.SaleScenarioAdditional;
-import ru.crystals.pos.bl.api.scenarios.special.ForceCompleteImpossibleException;
+import ru.crystals.pos.bl.api.scenarios.Scenario;
+import ru.crystals.pos.bl.api.scenarios.special.ForceImpossibleException;
 import ru.crystals.pos.docs.DocModule;
 import ru.crystals.pos.hw.events.keys.FuncKey;
 import ru.crystals.pos.ui.UI;
@@ -30,9 +30,8 @@ import java.util.List;
 @Component
 public class SaleScenarioImpl implements SaleScenario {
 
-    private final UI ui;
+    private UI ui;
     private final ScenarioManager scenarioManager;
-    private final LayersManager layersManager;
     private final DocModule docModule;
 
     // stage 1
@@ -46,11 +45,9 @@ public class SaleScenarioImpl implements SaleScenario {
 
     private Collection<SaleScenarioAdditional> additional = new HashSet<>();
 
-    public SaleScenarioImpl(UI ui, ScenarioManager scenarioManager, LayersManager layersManager, DocModule docModule, AddPositionsScenario addPositionsScenario,
+    public SaleScenarioImpl(ScenarioManager scenarioManager, DocModule docModule, AddPositionsScenario addPositionsScenario,
                             CalcDiscountScenario calcDiscount, AddPaymentsScenario addPayments, RegisterPurchaseScenario registerPurchase) {
-        this.ui = ui;
         this.scenarioManager = scenarioManager;
-        this.layersManager = layersManager;
         this.docModule = docModule;
         this.addPositionsScenario = addPositionsScenario;
         this.calcDiscount = calcDiscount;
@@ -67,9 +64,14 @@ public class SaleScenarioImpl implements SaleScenario {
      * Добавление позиций
      */
     private void addItems() {
-        docModule.setDiscountAmount(null);
-        scenarioManager.startChild(addPositionsScenario, () -> calcDiscount(null));
+        addItems(null);
     }
+
+    private void addItems(String searchString) {
+        docModule.setDiscountAmount(null);
+        scenarioManager.startChild(addPositionsScenario, searchString);
+    }
+
 
     /**
      * Расчет скидок
@@ -111,9 +113,26 @@ public class SaleScenarioImpl implements SaleScenario {
     public void onFunctionalKey(FuncKey funcKey) {
         switch (funcKey.getFuncKeyType()) {
             case SUBTOTAL:
-                doSubtotalPrivate(null);
+                doSubtotal();
+                break;
             case PAYMENT:
                 doPayment(funcKey.getPayload());
+                break;
+            case GOOD:
+                doSearchProduct(funcKey.getPayload());
+                break;
+        }
+    }
+
+    private void doSearchProduct(String searchSting) {
+        if (scenarioManager.getChildScenario(this) == addPositionsScenario) {
+            addPositionsScenario.searchProduct(searchSting);
+        } else if (scenarioManager.getChildScenario(this) == addPayments) {
+            try {
+                scenarioManager.tryToCancel(addPayments, () -> addItems(searchSting));
+            } catch (ForceImpossibleException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -125,14 +144,17 @@ public class SaleScenarioImpl implements SaleScenario {
         if (scenarioManager.getChildScenario(this) == addPositionsScenario) {
             try {
                 scenarioManager.tryToComplete(addPositionsScenario, () -> calcDiscount(payType));
-            } catch (ForceCompleteImpossibleException e) {
+            } catch (ForceImpossibleException e) {
                 System.out.println("Can't force complete AddItemsScenario " + e.getLocalizedMessage());
             }
+        } else if (scenarioManager.getChildScenario(this) == addPayments) {
+            addPayments.changePaymentType(payType);
         }
     }
 
     @Override
-    public void start() {
+    public void start(UI ui) {
+        this.ui = ui;
         initAdditional();
         // Тут в зависимости от состояния чека запускается нужный сценарий
         addItems();
@@ -150,7 +172,15 @@ public class SaleScenarioImpl implements SaleScenario {
     }
 
     @Override
-    public void doSubtotal(String paymentType) {
+    public void doSubtotal() {
+        Scenario childScenario = scenarioManager.getChildScenario(this);
+        if (childScenario == addPositionsScenario) {
+            doSubtotalPrivate(null);
+        }
+    }
+
+    @Override
+    public void paymentSelected(String paymentType) {
         doSubtotalPrivate(paymentType);
     }
 

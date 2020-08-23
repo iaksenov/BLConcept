@@ -1,7 +1,6 @@
 package ru.crystals.pos.bl.events;
 
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import ru.crystals.pos.hw.events.HWHumanEvent;
 import ru.crystals.pos.hw.events.HumanEvent;
@@ -35,7 +34,6 @@ public class HumanEventListener {
         executorService.submit(this::loop);
     }
 
-    @Async
     @EventListener
     public void onHumanEvent(HumanEvent event) {
         eventQueue.add(event);

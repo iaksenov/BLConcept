@@ -5,9 +5,16 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.crystals.pos.bl.LayersManager;
+import ru.crystals.pos.bl.events.HWEventRouter;
+import ru.crystals.pos.bl.manager.ScenarioManagerImpl;
 import ru.crystals.pos.ui.UI;
+import ru.crystals.pos.ui.UIKeyListener;
 import ru.crystals.pos.ui.UILayer;
+import ru.crystals.pos.ui.UILayers;
 import ru.crystals.pos.ui.forms.loading.LoadingFormModel;
+import ru.crystals.pos.ui.forms.message.MessageFormModel;
+
+import java.util.Collections;
 
 /**
  * Старт приложения
@@ -36,16 +43,24 @@ public class Loader {
 
         UI ui = context1.getBean(UI.class);
         LoadingFormModel loadingFormModel = new LoadingFormModel("Загрузка", "v0.0.1");
-        ui.setLayer(UILayer.START);
-        ui.showForm(loadingFormModel);
+        ui.setLayerModels(UILayer.START, Collections.singleton(loadingFormModel));
+
+        HWEventRouter.setUiKeyListener(context1.getBean(UIKeyListener.class));
 
         //Thread.sleep(1500L); //
 
-        AnnotationConfigApplicationContext context2 = new AnnotationConfigApplicationContext();
-        context2.scan("ru.crystals.pos");
-        context2.setParent(context1);
-        context2.refresh();
-        startBL(context2);
+        UILayers uiLayers = context1.getBean(UILayers.class);
+        ScenarioManagerImpl.setUi(ui, uiLayers);
+
+        try {
+            AnnotationConfigApplicationContext context2 = new AnnotationConfigApplicationContext();
+            context2.scan("ru.crystals.pos");
+            //context2.setParent(context1);
+            context2.refresh();
+            startBL(context2);
+        } catch (Exception e) {
+            ui.showForm(new MessageFormModel(e.getMessage(), () -> System.exit(0)));
+        }
     }
 
     /**
