@@ -5,6 +5,6 @@ import ru.crystals.pos.bl.api.scenarios.InCompleteCancelScenario;
 
 public interface AddPaymentsScenario extends InCompleteCancelScenario<String> {
 
-    void start(String prefferedPaymentType, VoidListener onComplete, VoidListener onCancel);
+    void start(String preferredPaymentType, VoidListener onComplete, VoidListener onCancel);
 
 }

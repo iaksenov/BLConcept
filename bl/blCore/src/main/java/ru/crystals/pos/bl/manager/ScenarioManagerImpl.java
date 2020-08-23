@@ -126,6 +126,7 @@ public final class ScenarioManagerImpl implements ScenarioManager, ApplicationCo
             try {
                 scenario.start(arg, o -> removeAndAccept(scenario, onComplete, o));
             } catch (Exception e) {
+                e.printStackTrace();
                 getTree().remove(scenario);
                 onError.accept(e);
             }
