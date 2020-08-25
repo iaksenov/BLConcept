@@ -74,7 +74,7 @@ public class SalePanel extends LayerPanel {
         JScrollPane listScroller = new JScrollPane(positionsList);
         parent.add(positionsList, BorderLayout.CENTER);
         calcButton = new Button("Расчет");
-        calcButton.setFont(new Font("Roboto", Font.PLAIN, 20));
+        calcButton.setFont(new Font("Arial", Font.PLAIN, 20));
         calcButton.setFocusable(false);
         calcButton.setMinimumSize(new Dimension(0, 50));
         calcButton.addActionListener(this::onCalculateBtn);
@@ -138,6 +138,7 @@ public class SalePanel extends LayerPanel {
         } else if (uiFormModel instanceof PurchaseFrameModel) {
             this.purchaseFrameModel = (PurchaseFrameModel)uiFormModel;
             this.purchaseFrameModel.setListener(this::onPurchaseChanged);
+            return true;
         }
         return super.setModel(uiFormModel);
     }

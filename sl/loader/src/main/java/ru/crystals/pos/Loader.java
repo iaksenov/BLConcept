@@ -14,8 +14,6 @@ import ru.crystals.pos.ui.UILayers;
 import ru.crystals.pos.ui.forms.loading.LoadingFormModel;
 import ru.crystals.pos.ui.forms.message.MessageFormModel;
 
-import java.util.Collections;
-
 /**
  * Старт приложения
  */
@@ -46,16 +44,18 @@ public class Loader {
 
         UI ui = uiContext.getBean(UI.class);
         LoadingFormModel loadingFormModel = new LoadingFormModel("Загрузка", "v0.0.1");
-        ui.setLayerModels(UILayer.START, Collections.singleton(loadingFormModel));
+        UILayers uiLayers = uiContext.getBean(UILayers.class);
+        uiLayers.setLayer(UILayer.START);
+        ui.showForm(loadingFormModel);
+
+        //Thread.sleep(1000);
 
         HWEventRouter.setUiKeyListener(uiContext.getBean(UIKeyListener.class));
-        UILayers uiLayers = uiContext.getBean(UILayers.class);
         ScenarioManagerImpl.setUi(ui, uiLayers);
 
         try {
             AnnotationConfigApplicationContext context2 = new AnnotationConfigApplicationContext();
             context2.scan("ru.crystals.pos");
-            //context2.setParent(uiContext);
             context2.refresh();
             startBL(context2);
         } catch (Exception e) {
