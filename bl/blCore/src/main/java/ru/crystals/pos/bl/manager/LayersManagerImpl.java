@@ -61,7 +61,8 @@ public class LayersManagerImpl implements LayersManager {
         return suspended.contains(layerScenario);
     }
 
-    private UILayer getCurrentLayer() {
+    @Override
+    public UILayer getCurrentLayer() {
         return scenarioManager.getCurrentLayer();
     }
 

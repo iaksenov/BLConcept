@@ -9,4 +9,5 @@ public interface LayersManager {
 
     void setLayer(UILayer layer);
 
+    UILayer getCurrentLayer();
 }

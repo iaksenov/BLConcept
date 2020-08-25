@@ -4,6 +4,7 @@ import ru.crystals.pos.bl.api.listener.VoidListener;
 import ru.crystals.pos.bl.api.scenarios.CompleteCancelScenario;
 import ru.crystals.pos.bl.api.scenarios.CompleteScenario;
 import ru.crystals.pos.bl.api.scenarios.InCompleteCancelScenario;
+import ru.crystals.pos.bl.api.scenarios.InCompleteScenario;
 import ru.crystals.pos.bl.api.scenarios.InOutCancelScenario;
 import ru.crystals.pos.bl.api.scenarios.InOutScenario;
 import ru.crystals.pos.bl.api.scenarios.InScenario;
@@ -20,6 +21,8 @@ public interface ScenarioManager {
 
     /// start
 
+    <I> void start(InCompleteScenario<I> scenario, I arg, VoidListener onComplete);
+
     <I, O> void start(InOutScenario<I, O> scenario, I arg, Consumer<O> onComplete) throws Exception;
 
     <O> void start(OutCancelScenario<O> scenario, Consumer<O> onComplete, VoidListener onCancel);
@@ -33,6 +36,8 @@ public interface ScenarioManager {
     void startChild(CompleteCancelScenario scenario, VoidListener onComplete,  VoidListener onCancel);
 
     <I> void startChild(InScenario<I> scenario, I arg);
+
+    <I> void startChild(InCompleteScenario<I> scenario, I arg, VoidListener onComplete);
 
     <I> void startChild(InCompleteCancelScenario<I> scenario, I arg, VoidListener onComplete, VoidListener onCancel);
 

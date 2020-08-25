@@ -16,7 +16,7 @@ import java.awt.Color;
  */
 public class LayerPanel implements TypedKeyListener, ControlKeyListener {
 
-    private JPanel jPanel;
+    protected JPanel jPanel;
 
     protected Form<?> currentForm;
 
@@ -34,7 +34,6 @@ public class LayerPanel implements TypedKeyListener, ControlKeyListener {
         jPanel.removeAll();
         this.currentForm = form;
         jPanel.add(form.create(), BorderLayout.CENTER);
-        jPanel.invalidate();
     }
 
     @Override

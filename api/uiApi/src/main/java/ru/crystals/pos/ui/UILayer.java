@@ -8,14 +8,5 @@ public enum UILayer {
 
     SALE,
 
-    RETURN,
-
-    FREE_RETURN,
-
-    MENU,
-
-    CONFIGURATION,
-
-    FIRST_START;
-
+    POPUP;
 }

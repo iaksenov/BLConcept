@@ -80,7 +80,7 @@ public class ScenariosTree {
         return scenario == layerScenario || scenarioList.contains(scenario);
     }
 
-    private void log() {
+    public void log() {
         System.out.println(this);
     }
 

@@ -11,13 +11,14 @@ import java.util.stream.Stream;
 @Service
 public class UserDAO {
 
+    public static final String PREFIX = "X-";
     private final List<DBUser> users;
 
     public UserDAO() {
         users = Stream.of(
-            getUser("Кассир", "К", "К", "2", "X-002", "X-002", UserRight.SALE),
-            getUser("Ст.кассир", "С", "С", "1", "X-001", "X-001", UserRight.SHIFT),
-            getUser("Инженер", "И", "И", "3", "X-003", "X-003", UserRight.CONFIGURATION)
+            getUser("Кассир", "К", "К", "2", PREFIX + "002", "X-002", UserRight.SALE),
+            getUser("Ст.кассир", "С", "С", "1", PREFIX + "001", "X-001", UserRight.SHIFT),
+            getUser("Инженер", "И", "И", "3", PREFIX + "003", "X-003", UserRight.CONFIGURATION)
         ).collect(Collectors.toList());
     }
 

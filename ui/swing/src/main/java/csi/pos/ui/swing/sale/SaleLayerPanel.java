@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class SalePanel extends LayerPanel {
+public class SaleLayerPanel extends LayerPanel {
 
     public static final int ROWS = 5;
     public static final int COLS = 4;
@@ -41,13 +41,11 @@ public class SalePanel extends LayerPanel {
     private Consumer<String> plitkaConsumer;
 
     private DefaultListModel<String> positionsListModel;
-    private JList<String> positionsList; // компонент список позиций
-    private PurchaseFrameModel purchaseFrameModel; // модель списка опзиций
     private Consumer<PurchaseFormCallback> purchaseFrameModelCallback;
     private JLabel stageLabel;
     private Button calcButton;
 
-    public SalePanel() {
+    public SaleLayerPanel() {
         mainPanel = createPanel(Color.black, 0, 0);
         // позиции чека
         JPanel rightOnMainPanel = createPanel(Color.white, 200, 0);
@@ -68,10 +66,11 @@ public class SalePanel extends LayerPanel {
         stageLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         parent.add(stageLabel, BorderLayout.NORTH);
         positionsListModel = new DefaultListModel<>();
-        positionsList = new JList<>(positionsListModel);
+        // компонент список позиций
+        JList<String> positionsList = new JList<>(positionsListModel);
         positionsList.setLayoutOrientation(JList.VERTICAL);
         positionsList.setFocusable(false);
-        JScrollPane listScroller = new JScrollPane(positionsList);
+        new JScrollPane(positionsList);
         parent.add(positionsList, BorderLayout.CENTER);
         calcButton = new Button("Расчет");
         calcButton.setFont(new Font("Arial", Font.PLAIN, 20));
@@ -136,8 +135,9 @@ public class SalePanel extends LayerPanel {
             plitkiModel.setListener(this::onPlitkiChanged);
             return true;
         } else if (uiFormModel instanceof PurchaseFrameModel) {
-            this.purchaseFrameModel = (PurchaseFrameModel)uiFormModel;
-            this.purchaseFrameModel.setListener(this::onPurchaseChanged);
+            // модель списка опзиций
+            PurchaseFrameModel purchaseFrameModel = (PurchaseFrameModel) uiFormModel;
+            purchaseFrameModel.setListener(this::onPurchaseChanged);
             return true;
         }
         return super.setModel(uiFormModel);

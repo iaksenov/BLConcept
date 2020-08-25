@@ -43,8 +43,19 @@ public class UserModuleImpl implements UserModule {
     }
 
     @Override
+    public boolean isBarcodeForLogin(String barcode) {
+        return barcode != null && barcode.startsWith(UserDAO.PREFIX);
+    }
+
+    @Override
     public boolean isCurrentUserBarcode(String barcode) {
         return user != null && user.getBarcode().equals(barcode);
+    }
+
+    @Override
+    public void logoff() {
+        this.user = null;
+        publisher.publishEvent(new UserAuthorisedEvent(null));
     }
 
     private void dispatchEvent(DBUser user) {

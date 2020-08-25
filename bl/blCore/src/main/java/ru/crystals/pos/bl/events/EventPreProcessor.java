@@ -23,9 +23,18 @@ public class EventPreProcessor {
     }
 
     private boolean preProcessBarcode(String barcode) {
-        if (!(scenarioManager.getCurrentScenario() instanceof LoginScenario) && userModule.isCurrentUserBarcode(barcode)) {
-            layersManager.setLayer(UILayer.LOGIN);
-            return true;
+        if (userModule.isBarcodeForLogin(barcode)) {
+            if (scenarioManager.getCurrentScenario() instanceof LoginScenario) {
+                return false;
+            } else {
+                layersManager.setLayer(UILayer.LOGIN);
+                if (userModule.isCurrentUserBarcode(barcode)) {
+                    userModule.logoff();
+                    return true;
+                } else {
+                    return false;
+                }
+            }
         }
         return false;
     }

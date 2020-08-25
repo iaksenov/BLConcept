@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import ru.crystals.pos.bl.api.login.LoginScenario;
+import ru.crystals.pos.bl.events.ShowPopupMessage;
 import ru.crystals.pos.hw.events.listeners.MSRTracks;
 import ru.crystals.pos.ui.UI;
 import ru.crystals.pos.ui.UILayer;
@@ -24,15 +25,17 @@ public class LoginScenarioImpl implements LoginScenario {
     private UI ui;
     private final LayersManager layersManager;
     private final UserModule userModule;
+    private final ShowPopupMessage showPopupMessage;
 
     @Autowired
     private ApplicationEventPublisher publisher;
 
     private LoginFormModel model;
 
-    public LoginScenarioImpl(LayersManager layersManager, UserModule userModule) {
+    public LoginScenarioImpl(LayersManager layersManager, UserModule userModule, ShowPopupMessage showPopupMessage) {
         this.layersManager = layersManager;
         this.userModule = userModule;
+        this.showPopupMessage = showPopupMessage;
     }
 
     private LoginFormModel showLoginForm(String errorText) {
@@ -74,8 +77,7 @@ public class LoginScenarioImpl implements LoginScenario {
     }
 
     private void onLoginError(LoginFailedException error) {
-        model.setLoginFailedText(Label.error(error.getLocalizedMessage()));
-        model.modelChanged();
+        showPopupMessage.shopPopup(error.getLocalizedMessage(), this::startPrivate);
     }
 
     private void startNextScenario(User user) {
@@ -91,8 +93,9 @@ public class LoginScenarioImpl implements LoginScenario {
 
     private Label getInfoText() {
         String keys = Stream.of("Hot keys:",
-            "F2 -> Barcode('X-002')",
+            "F2 -> Barcode('X-002') (Кассир)",
             "F5 -> Barcode('12345')",
+            "F8 -> TypedKey('8') + Barcode('00000008')",
             "F9 -> Payment('cash')",
             "F10 -> Payment('bank')",
             "F12 -> Barcode('XXXXX')",
@@ -106,14 +109,15 @@ public class LoginScenarioImpl implements LoginScenario {
     }
 
     @Override
-    public void onResume() {
+    public void start(UI ui) {
+        this.ui = ui;
         startPrivate();
     }
 
     @Override
-    public void start(UI ui) {
-        this.ui = ui;
-        startPrivate();
+    public void onResume() {
+        this.model.setLoginFailedText(Label.empty(""));
+        this.model.modelChanged();
     }
 
     private void startPrivate() {

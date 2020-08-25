@@ -10,6 +10,9 @@ public interface UserModule {
 
     User loginByMSR(MSRTracks msrTracks) throws LoginFailedException;
 
+    boolean isBarcodeForLogin(String barcode);
+
     boolean isCurrentUserBarcode(String barcode);
 
+    void logoff();
 }

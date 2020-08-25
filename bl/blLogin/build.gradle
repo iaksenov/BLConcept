@@ -1,5 +1,6 @@
 dependencies {
     compile project(':api:uiApi'),
             project(':api:blApi'),
+            project(':bl:blCore')
             project(':il:db:userApi')
 }

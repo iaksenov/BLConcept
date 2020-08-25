@@ -2,7 +2,8 @@ package csi.pos.ui.swing;
 
 import csi.pos.ui.swing.forms.Form;
 import csi.pos.ui.swing.forms.ValueForm;
-import csi.pos.ui.swing.sale.SalePanel;
+import csi.pos.ui.swing.popup.PopupLayerPanel;
+import csi.pos.ui.swing.sale.SaleLayerPanel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -21,11 +22,13 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
+import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.EnumMap;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -48,12 +51,14 @@ public class MainForm extends JFrame implements UIKeyListener {
 
     public MainForm(@Autowired FormsCatalog formsCatalog) {
         this.formsCatalog = formsCatalog;
-        layerPanel = new HashMap<>();
-        layerPanel.put(UILayer.SALE, new SalePanel());
+        layerPanel = new LinkedHashMap<>();
+        layerPanel.put(UILayer.SALE, new SaleLayerPanel());
+        layerPanel.put(UILayer.POPUP, new PopupLayerPanel());
+        layerPanel.put(UILayer.START, new LayerPanel());
     }
 
     @PostConstruct
-    private void init() {
+    private void init() throws InvocationTargetException, InterruptedException {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setFocusable(true);
         setSize(640, 480);
@@ -85,8 +90,16 @@ public class MainForm extends JFrame implements UIKeyListener {
             }
 
             private void resizeChildren(java.awt.Component component) {
+                Rectangle bounds = component.getBounds();
+                int width = bounds.width;
+                int height = bounds.height;
                 for (java.awt.Component child : layeredPane.getComponents()) {
-                    child.setBounds(component.getBounds());
+                    if (child.getName() != null && child.getName().equals("popup")) {
+                        // странно, но стабильную прозрачность только так удалось сделать
+                        child.setBounds(new Rectangle(1, 1, width - 1, height - 1));
+                    } else {
+                        child.setBounds(bounds);
+                    }
                 }
             }
         });
@@ -103,11 +116,21 @@ public class MainForm extends JFrame implements UIKeyListener {
 
     public void setLayer(UILayer layer) {
         if (this.currentLayer != layer) {
-            this.currentLayer = layer;
-            JPanel pnl = layers.get(layer).getPanel();
-            layeredPane.setLayer(pnl, 1000, 0);
-            pnl.setVisible(true);
-            statusPanel.setVisible(layer != UILayer.START);
+            try {
+                SwingUtilities.invokeAndWait(() -> {
+                    if (this.currentLayer != null) {
+                        UILayer prevLayer = this.currentLayer;
+                        JPanel prevPnl = layers.get(prevLayer).getPanel();
+                        layeredPane.setLayer(prevPnl, 999, 0);
+                    }
+                    this.currentLayer = layer;
+                    JPanel pnl = layers.get(layer).getPanel();
+                    layeredPane.setLayer(pnl, 1000, 1);
+                    statusPanel.setVisible(layer != UILayer.START);
+                });
+            } catch (InterruptedException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
         }
     }
 

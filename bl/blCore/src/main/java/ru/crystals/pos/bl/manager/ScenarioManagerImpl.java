@@ -8,6 +8,7 @@ import ru.crystals.pos.bl.api.listener.VoidListener;
 import ru.crystals.pos.bl.api.scenarios.CompleteCancelScenario;
 import ru.crystals.pos.bl.api.scenarios.CompleteScenario;
 import ru.crystals.pos.bl.api.scenarios.InCompleteCancelScenario;
+import ru.crystals.pos.bl.api.scenarios.InCompleteScenario;
 import ru.crystals.pos.bl.api.scenarios.InOutCancelScenario;
 import ru.crystals.pos.bl.api.scenarios.InOutScenario;
 import ru.crystals.pos.bl.api.scenarios.InScenario;
@@ -57,6 +58,7 @@ public final class ScenarioManagerImpl implements ScenarioManager {
         this.currentLayer = currentLayer;
         uiLayers.setLayer(currentLayer);
         layersTrees.putIfAbsent(currentLayer, new ScenariosTree(publisher, layerScenario));
+        layersTrees.get(currentLayer).log();
     }
 
     private ScenariosTree getTree() {
@@ -69,6 +71,12 @@ public final class ScenarioManagerImpl implements ScenarioManager {
 
     private UI createUIProxy(Scenario scenario) {
         return new UIProxyImpl(scenario, ui, s -> getCurrentScenario() == s);
+    }
+
+    @Override
+    public <I> void start(InCompleteScenario<I> scenario, I arg, VoidListener onComplete) {
+        getTree().replaceLast(scenario);
+        scenario.start(createUIProxy(scenario), arg, () -> removeAndCall(scenario, onComplete));
     }
 
     public <I, O> void start(InOutScenario<I, O> scenario, I arg, Consumer<O> onComplete) throws Exception {
@@ -104,6 +112,12 @@ public final class ScenarioManagerImpl implements ScenarioManager {
     public <I> void startChild(InScenario<I> scenario, I arg) {
         getTree().addChild(scenario);
         scenario.start(createUIProxy(scenario), arg);
+    }
+
+    @Override
+    public <I> void startChild(InCompleteScenario<I> scenario, I arg, VoidListener onComplete) {
+        getTree().addChild(scenario);
+        scenario.start(createUIProxy(scenario), arg, () -> removeAndCall(scenario, onComplete));
     }
 
     @Override
