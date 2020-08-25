@@ -1,7 +1,8 @@
 package ru.crystals.pos.screensaver;
 
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import ru.crystals.pos.bl.LayersManager;
 import ru.crystals.pos.bl.ScenarioManager;
@@ -30,8 +31,8 @@ public class ScreenSaverTimer {
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(this::oTimer, 3, 3, TimeUnit.SECONDS);
     }
 
+    @Order(Ordered.HIGHEST_PRECEDENCE)
     @EventListener
-    @Async
     void onHumanEvent(HumanEvent humanEvent) {
         this.lastEventTimestamp = System.currentTimeMillis();
         if (layersManager.getCurrentLayer() == UILayer.SCREEN_SAVER) {

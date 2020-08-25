@@ -39,10 +39,10 @@ public class StatusPanel extends JPanel {
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 Calendar c = Calendar.getInstance();
-                boolean dots = (c.get(Calendar.SECOND) % 2) == 0;
+                boolean dots = c.get(Calendar.MILLISECOND) < 500;
                 String timeText = String.format("%1$tH" + (dots ? ":" : " ") + "%1$tM", c);
                 clock.setText(timeText);
-                Thread.sleep(1000L);
+                Thread.sleep(250L);
             } catch (InterruptedException e) {
                 break;
             }

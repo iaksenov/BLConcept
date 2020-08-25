@@ -55,7 +55,7 @@ public class UserModuleImpl implements UserModule {
     @Override
     public void logoff() {
         this.user = null;
-        publisher.publishEvent(new UserAuthorisedEvent(null));
+        dispatchEvent(null);
     }
 
     private void dispatchEvent(DBUser user) {
