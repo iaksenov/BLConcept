@@ -3,6 +3,7 @@ package csi.pos.ui.swing;
 import csi.pos.ui.swing.forms.Form;
 import csi.pos.ui.swing.forms.ValueForm;
 import csi.pos.ui.swing.popup.PopupLayerPanel;
+import csi.pos.ui.swing.popup.ScreenSaverLayerPanel;
 import csi.pos.ui.swing.sale.SaleLayerPanel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -52,6 +53,7 @@ public class MainForm extends JFrame implements UIKeyListener {
     public MainForm(@Autowired FormsCatalog formsCatalog) {
         this.formsCatalog = formsCatalog;
         layerPanel = new LinkedHashMap<>();
+        layerPanel.put(UILayer.SCREEN_SAVER, new ScreenSaverLayerPanel());
         layerPanel.put(UILayer.SALE, new SaleLayerPanel());
         layerPanel.put(UILayer.POPUP, new PopupLayerPanel());
         layerPanel.put(UILayer.START, new LayerPanel());
@@ -126,7 +128,7 @@ public class MainForm extends JFrame implements UIKeyListener {
                     this.currentLayer = layer;
                     JPanel pnl = layers.get(layer).getPanel();
                     layeredPane.setLayer(pnl, 1000, 1);
-                    statusPanel.setVisible(layer != UILayer.START);
+                    statusPanel.setVisible(layer != UILayer.START && layer != UILayer.SCREEN_SAVER);
                 });
             } catch (InterruptedException | InvocationTargetException e) {
                 e.printStackTrace();

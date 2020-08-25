@@ -99,7 +99,9 @@ public class LoginScenarioImpl implements LoginScenario {
             "F9 -> Payment('cash')",
             "F10 -> Payment('bank')",
             "F12 -> Barcode('XXXXX')",
-            "NumPad+ -> SUBTOTAL").collect(Collectors.joining("<br>", "<html>", "</html>"));
+            "NumPad+ -> SUBTOTAL",
+            "ScreenSaver idle = 30 секунд",
+            "Уберите товар с весов в продаже idle = 15 секунд").collect(Collectors.joining("<br>", "<html>", "</html>"));
 
         return Label.empty(keys);
     }

@@ -1,4 +1,4 @@
-package ru.crystals.pos;
+package ru.crystals.pos.sco;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;

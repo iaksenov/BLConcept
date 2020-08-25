@@ -8,5 +8,7 @@ public enum UILayer {
 
     SALE,
 
-    POPUP;
+    POPUP,
+
+    SCREEN_SAVER;
 }

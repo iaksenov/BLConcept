@@ -40,6 +40,9 @@ public class EventPreProcessor {
     }
 
     public boolean processEvent(HWHumanEvent event) {
+        if (layersManager.getCurrentLayer() == UILayer.SCREEN_SAVER) {
+            layersManager.setLayer(UILayer.LOGIN);
+        }
         if (event instanceof Barcode) {
             return preProcessBarcode(((Barcode) event).getCode());
         } else {
