@@ -1,5 +1,6 @@
 package ru.crystals.pos.bl.events;
 
+import ru.crystals.pos.bl.api.scenarios.special.IgnoreAllEvents;
 import ru.crystals.pos.hw.events.bl.HWBLHumanEvent;
 
 /**
@@ -15,7 +16,7 @@ public interface ScenarioEventSender {
 
     /**
      * Надо ли игнорировать все события
-     * @see ru.crystals.pos.bl.api.scenarios.special.ScenarioIgnoreAllEvents
+     * @see IgnoreAllEvents
      * @return true - игнорировать, false - не игнорировать
      */
     boolean isIgnoreAllEvents();

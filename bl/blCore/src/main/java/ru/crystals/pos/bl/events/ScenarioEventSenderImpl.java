@@ -3,8 +3,8 @@ package ru.crystals.pos.bl.events;
 import org.springframework.stereotype.Service;
 import ru.crystals.pos.bl.ScenarioManager;
 import ru.crystals.pos.bl.api.scenarios.Scenario;
+import ru.crystals.pos.bl.api.scenarios.special.IgnoreAllEvents;
 import ru.crystals.pos.bl.api.scenarios.special.ScenarioEventProcessor;
-import ru.crystals.pos.bl.api.scenarios.special.ScenarioIgnoreAllEvents;
 import ru.crystals.pos.hw.events.bl.HWBLHumanEvent;
 import ru.crystals.pos.hw.events.interceptor.CallbackInterceptor;
 import ru.crystals.pos.hw.events.keys.FuncKey;
@@ -29,7 +29,7 @@ public class ScenarioEventSenderImpl implements ScenarioEventSender {
 
     @Override
     public boolean isIgnoreAllEvents() {
-        return scenarioManager.getCurrentScenario() instanceof ScenarioIgnoreAllEvents;
+        return scenarioManager.getCurrentScenario() instanceof IgnoreAllEvents;
     }
 
     @Override
