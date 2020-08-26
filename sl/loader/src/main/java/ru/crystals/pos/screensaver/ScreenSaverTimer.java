@@ -4,7 +4,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import ru.crystals.pos.bl.LayersManager;
 import ru.crystals.pos.bl.ScenarioManager;
 import ru.crystals.pos.hw.events.HumanEvent;
 import ru.crystals.pos.ui.UILayer;
@@ -17,12 +16,10 @@ import java.util.concurrent.TimeUnit;
 public class ScreenSaverTimer {
 
     private static final long SCREEN_SAVER_TIMEOUT = 30000;
-    private final LayersManager layersManager;
     private final ScenarioManager scenarioManager;
     private long lastEventTimestamp = System.currentTimeMillis();
 
-    public ScreenSaverTimer(LayersManager layersManager, ScenarioManager scenarioManager) {
-        this.layersManager = layersManager;
+    public ScreenSaverTimer(ScenarioManager scenarioManager) {
         this.scenarioManager = scenarioManager;
     }
 
@@ -35,14 +32,14 @@ public class ScreenSaverTimer {
     @EventListener
     void onHumanEvent(HumanEvent humanEvent) {
         this.lastEventTimestamp = System.currentTimeMillis();
-        if (layersManager.getCurrentLayer() == UILayer.SCREEN_SAVER) {
-            layersManager.setLayer(UILayer.LOGIN);
+        if (scenarioManager.getCurrentLayer() == UILayer.SCREEN_SAVER) {
+            scenarioManager.setLayer(UILayer.LOGIN);
         }
     }
 
     private void oTimer() {
-        if (System.currentTimeMillis() - lastEventTimestamp > SCREEN_SAVER_TIMEOUT && layersManager.getCurrentLayer() != UILayer.SCREEN_SAVER) {
-            layersManager.setLayer(UILayer.SCREEN_SAVER);
+        if (System.currentTimeMillis() - lastEventTimestamp > SCREEN_SAVER_TIMEOUT && scenarioManager.getCurrentLayer() != UILayer.SCREEN_SAVER) {
+            scenarioManager.setLayer(UILayer.SCREEN_SAVER);
         }
     }
 

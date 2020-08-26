@@ -8,6 +8,13 @@ public enum ControlKeyType {
     DOWN,
     ENTER,
     ESC,
-    BACKSPACE
+    BACKSPACE,
+    TAB,
+    PAGE_UP,
+    PAGE_DOWN,
+    HOME,
+    END,
+    DELETE,
+    INSERT
 
 }

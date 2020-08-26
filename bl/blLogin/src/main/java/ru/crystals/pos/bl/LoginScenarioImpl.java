@@ -3,8 +3,10 @@ package ru.crystals.pos.bl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
-import ru.crystals.pos.bl.api.login.LoginScenario;
+import ru.crystals.pos.bl.api.layer.LayerScenario;
 import ru.crystals.pos.bl.events.ShowPopupMessage;
+import ru.crystals.pos.hw.events.listeners.BarcodeListener;
+import ru.crystals.pos.hw.events.listeners.MSRListener;
 import ru.crystals.pos.hw.events.listeners.MSRTracks;
 import ru.crystals.pos.ui.UI;
 import ru.crystals.pos.ui.UILayer;
@@ -20,22 +22,22 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
-public class LoginScenarioImpl implements LoginScenario {
+public class LoginScenarioImpl implements BarcodeListener, MSRListener, LayerScenario {
 
     private UI ui;
-    private final LayersManager layersManager;
     private final UserModule userModule;
     private final ShowPopupMessage showPopupMessage;
+    private final ScenarioManager scenarioManager;
 
     @Autowired
     private ApplicationEventPublisher publisher;
 
     private LoginFormModel model;
 
-    public LoginScenarioImpl(LayersManager layersManager, UserModule userModule, ShowPopupMessage showPopupMessage) {
-        this.layersManager = layersManager;
+    public LoginScenarioImpl(UserModule userModule, ShowPopupMessage showPopupMessage, ScenarioManager scenarioManager) {
         this.userModule = userModule;
         this.showPopupMessage = showPopupMessage;
+        this.scenarioManager = scenarioManager;
     }
 
     private LoginFormModel showLoginForm(String errorText) {
@@ -83,7 +85,7 @@ public class LoginScenarioImpl implements LoginScenario {
     private void startNextScenario(User user) {
         showLoginForm(user.getFirstName() + " ");
         if (user.hasRight(UserRight.SALE)) {
-            layersManager.setLayer(UILayer.SALE);
+            scenarioManager.setLayer(UILayer.SALE);
         } else if (user.hasRight(UserRight.SHIFT)) {
             showLoginForm(user.getFirstName() + " еще не реализовано");
         } else if (user.hasRight(UserRight.CONFIGURATION)) {
@@ -108,6 +110,11 @@ public class LoginScenarioImpl implements LoginScenario {
 
     private String getShiftText() {
         return "Открыта смена №00. Пароль кассира 2.";
+    }
+
+    @Override
+    public UILayer getLayer() {
+        return UILayer.LOGIN;
     }
 
     @Override

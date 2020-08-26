@@ -6,6 +6,9 @@ import ru.crystals.pos.ui.forms.UIValueFormModel;
 import java.util.Collection;
 import java.util.Optional;
 
+/**
+ * Интерфейс для реализации GUI
+ */
 public interface UI {
 
     /**
@@ -15,15 +18,17 @@ public interface UI {
     void showForm(UIFormModel uiForm);
 
     /**
-     * Синхронное получение значения с формы
+     * Получить значение с формы
+     *
      * @param model модель формы
      * @param <V> тип значения
-     * @return опционал значения
+     * @return опциональное значение
      */
     <V> Optional<V> getFormValue(UIValueFormModel<V> model);
 
     /**
      * Передать модели для слоя
+     *
      * @param uiLayer слой
      * @param models модели
      */

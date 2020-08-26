@@ -3,7 +3,6 @@ package ru.crystals.pos.sco;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import ru.crystals.pos.bl.LayersManager;
 import ru.crystals.pos.bl.ScenarioManager;
 import ru.crystals.pos.bl.events.ShowMessageScenario;
 import ru.crystals.pos.hw.events.HumanEvent;
@@ -18,12 +17,10 @@ public class RemoveGoodsFromScaleSpammer {
 
     private static final long IDLE_MAX_TIME_MS = 15000;
 
-    private final LayersManager layersManager;
     private final ScenarioManager scenarioManager;
     private long lastEventTimeStamp;
 
-    public RemoveGoodsFromScaleSpammer(LayersManager layersManager, ScenarioManager scenarioManager) {
-        this.layersManager = layersManager;
+    public RemoveGoodsFromScaleSpammer(ScenarioManager scenarioManager) {
         this.scenarioManager = scenarioManager;
     }
 
@@ -39,10 +36,10 @@ public class RemoveGoodsFromScaleSpammer {
     }
 
     private void onTimer() {
-        if ((System.currentTimeMillis() - lastEventTimeStamp) > IDLE_MAX_TIME_MS && layersManager.getCurrentLayer() == UILayer.SALE) {
-            UILayer prevLayer = layersManager.getCurrentLayer();
-            layersManager.setLayer(UILayer.POPUP);
-            scenarioManager.start(new ShowMessageScenario(), "Уберите товар с весов :)", () -> layersManager.setLayer(prevLayer));
+        if ((System.currentTimeMillis() - lastEventTimeStamp) > IDLE_MAX_TIME_MS && scenarioManager.getCurrentLayer() == UILayer.SALE) {
+            UILayer prevLayer = scenarioManager.getCurrentLayer();
+            scenarioManager.setLayer(UILayer.POPUP);
+            scenarioManager .start(new ShowMessageScenario(), "Уберите товар с весов :)", () -> scenarioManager.setLayer(prevLayer));
         }
     }
 

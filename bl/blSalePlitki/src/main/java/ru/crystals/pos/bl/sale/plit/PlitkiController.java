@@ -2,7 +2,7 @@ package ru.crystals.pos.bl.sale.plit;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
-import ru.crystals.pos.bl.LayersManager;
+import ru.crystals.pos.bl.ScenarioManager;
 import ru.crystals.pos.bl.api.sale.SaleScenarioAdditional;
 import ru.crystals.pos.hw.events.keys.FuncKey;
 import ru.crystals.pos.hw.events.keys.FuncKeyType;
@@ -21,11 +21,11 @@ import java.util.concurrent.TimeUnit;
 public class PlitkiController implements SaleScenarioAdditional {
 
     private final PlitkiFormModel plitkiModel;
-    private final LayersManager layersManager;
+    private final ScenarioManager scenarioManager;
     private final ApplicationEventPublisher publisher;
 
-    public PlitkiController(LayersManager layersManager, ApplicationEventPublisher publisher) {
-        this.layersManager = layersManager;
+    public PlitkiController(ScenarioManager scenarioManager, ApplicationEventPublisher publisher) {
+        this.scenarioManager = scenarioManager;
         this.publisher = publisher;
         this.plitkiModel = new PlitkiFormModel(new ArrayList<>(), this::onPlitkaClick);
         initModel();
@@ -56,7 +56,7 @@ public class PlitkiController implements SaleScenarioAdditional {
     private void onPlitkaClick(String s) {
         System.out.println("Plitka clicked " + s);
         if (s.contains("Logoff")) {
-            layersManager.setLayer(UILayer.LOGIN);
+            scenarioManager.setLayer(UILayer.LOGIN);
         } else if (s.startsWith("p:")) {
             publisher.publishEvent(new FuncKey(FuncKeyType.PAYMENT, s.replace("p:", "")));
         } else {
