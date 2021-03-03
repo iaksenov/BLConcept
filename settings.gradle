@@ -1,62 +1,62 @@
 rootProject.name = 'BLConcept'
 
 include  'sl:loader'
-project(':sl:loader').projectDir = file("sl/loader")
+project(':sl:loader').projectDir = file('sl/loader')
 
 include  'sl:eventsCore'
-project(':sl:eventsCore').projectDir = file("sl/eventsCore")
+project(':sl:eventsCore').projectDir = file('sl/eventsCore')
 
 // api
 include  'api:blApi'
-project(':api:blApi').projectDir = file("api/blApi")
+project(':api:blApi').projectDir = file('api/blApi')
 
 include  'api:blSaleApi'
-project(':api:blSaleApi').projectDir = file("api/blSaleApi")
+project(':api:blSaleApi').projectDir = file('api/blSaleApi')
 
 include  'api:uiApi'
-project(':api:uiApi').projectDir = file("api/uiApi")
+project(':api:uiApi').projectDir = file('api/uiApi')
 
 // business logic layer
 include  'bl:blCore'
-project(':bl:blCore').projectDir = file("bl/blCore")
+project(':bl:blCore').projectDir = file('bl/blCore')
 
 include  'bl:blCommon'
-project(':bl:blCommon').projectDir = file("bl/blCommon")
+project(':bl:blCommon').projectDir = file('bl/blCommon')
 
 include  'bl:blLogin'
-project(':bl:blLogin').projectDir = file("bl/blLogin")
+project(':bl:blLogin').projectDir = file('bl/blLogin')
 
 include  'bl:blSale'
-project(':bl:blSale').projectDir = file("bl/blSale")
+project(':bl:blSale').projectDir = file('bl/blSale')
 
 include  'bl:blGoodsPlugins'
-project(':bl:blGoodsPlugins').projectDir = file("bl/blGoodsPlugins")
+project(':bl:blGoodsPlugins').projectDir = file('bl/blGoodsPlugins')
 
 include  'bl:blPaymentPlugins'
-project(':bl:blPaymentPlugins').projectDir = file("bl/blPaymentPlugins")
+project(':bl:blPaymentPlugins').projectDir = file('bl/blPaymentPlugins')
 
 include  'bl:blSalePlitki'
-project(':bl:blSalePlitki').projectDir = file("bl/blSalePlitki")
+project(':bl:blSalePlitki').projectDir = file('bl/blSalePlitki')
 
 
 // infrastructure layer
 include  'il:db:docs'
-project(':il:db:docs').projectDir = file("il/db/docs")
+project(':il:db:docs').projectDir = file('il/db/docs')
 
 include  'il:db:docsApi'
-project(':il:db:docsApi').projectDir = file("il/db/docsApi")
+project(':il:db:docsApi').projectDir = file('il/db/docsApi')
 
 include  'il:db:userApi'
-project(':il:db:userApi').projectDir = file("il/db/userApi")
+project(':il:db:userApi').projectDir = file('il/db/userApi')
 
 include 'il:db:user'
-project(':il:db:user').projectDir = file("il/db/user")
+project(':il:db:user').projectDir = file('il/db/user')
 
 include  'il:hw:hwEventApi'
-project(':il:hw:hwEventApi').projectDir = file("il/hw/hwEventApi")
+project(':il:hw:hwEventApi').projectDir = file('il/hw/hwEventApi')
 
 include  'il:hw:kbdHook'
-project(':il:hw:kbdHook').projectDir = file("il/hw/kbdHook")
+project(':il:hw:kbdHook').projectDir = file('il/hw/kbdHook')
 
 
 include 'il:integration'
