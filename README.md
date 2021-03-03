@@ -76,6 +76,14 @@
 ##### Context
   Реализация UI выполнена в отдельном package, запускается спрингом первой в отдельном контексте.  
      
-#### Demo 
-  Запуск проекта: ru.crystals.pos.Loader
+#### Demo
+  Проект собирается gradle-плагином application
+  Запуск проекта:
+```bash
+gradle -p sl/loader run
+```
+  Сборка дистрибутива:
+```bash
+gradle -p sl/loader distTar
+```
   Возможности перечислены на экране логина.
