@@ -33,4 +33,10 @@ dependencies {
 
 application {
     mainClassName = 'ru.crystals.pos.Loader'
+    applicationDefaultJvmArgs = [
+//        '-Xdebug',
+//        '-Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=n',
+        '-Dawt.useSystemAAFontSettings=on',
+        '-Dswing.aatext=true'
+    ]
 }

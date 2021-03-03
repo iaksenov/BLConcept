@@ -29,9 +29,6 @@ public class Loader {
 
     public static void main(String[] args) throws InterruptedException {
         log.info("App start");
-        System.setProperty("awt.useSystemAAFontSettings","on");
-        System.setProperty("swing.aatext", "true");
-
         Loader loader = new Loader();
         loader.startSpring();
     }
