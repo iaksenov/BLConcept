@@ -1,3 +1,7 @@
+plugins {
+    id 'application'
+}
+
 dependencies {
     compile 'org.slf4j:jul-to-slf4j:1.7.30',
         'org.slf4j:slf4j-api:1.7.30',
@@ -25,4 +29,14 @@ dependencies {
         project(':il:hw:kbdHook'),
 
         project(':ui:swing')
+}
+
+application {
+    mainClassName = 'ru.crystals.pos.Loader'
+    applicationDefaultJvmArgs = [
+//        '-Xdebug',
+//        '-Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=n',
+        '-Dawt.useSystemAAFontSettings=on',
+        '-Dswing.aatext=true'
+    ]
 }

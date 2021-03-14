@@ -15,7 +15,7 @@ subprojects {
   }
 
   dependencies {
-      compile	"org.springframework:spring-context:${Spring_VERSION}",
+      compile   "org.springframework:spring-context:${Spring_VERSION}",
                 "org.springframework:spring-core:${Spring_VERSION}"
 
       testCompile 'junit:junit:4.12'
