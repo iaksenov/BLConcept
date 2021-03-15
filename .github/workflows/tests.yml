@@ -1,0 +1,31 @@
+name: Tests
+
+on:
+  push:
+    paths:
+      # '*' matches any character except '/'
+      - 'api/*'
+      - 'bl/*'
+      - 'il/*'
+      - 'sl/*'
+      - 'ui/*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Set up Gradle 5.6.4
+        run: |
+          mkdir /opt/gradle
+          wget https://services.gradle.org/distributions/gradle-5.6.4-bin.zip
+          unzip -d /opt/gradle gradle-5.6.4-bin.zip
+      - uses: eskatos/gradle-command-action@v1
+        with:
+          gradle-executable: /opt/gradle/gradle-5.6.4/bin/gradle
+          arguments: build
